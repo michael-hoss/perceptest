@@ -1,0 +1,10 @@
+# TO COME
+[submodule "third_party/nuscenes-devkit"]
+	path = third_party/nuscenes-devkit
+	url = git@github.com:nutonomy/nuscenes-devkit.git
+[submodule "third_party/private-research"]
+	path = third_party/private-research
+	url = git@github.com:michael-hoss/private-research.git
+[submodule "third_party/omega_format"]
+	path = third_party/omega_format
+	url = git@github.com:michael-hoss/omega_format.git

@@ -1,0 +1,114 @@
+[tool.ruff]
+# See https://docs.astral.sh/ruff/configuration/
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+    "third_party",
+]
+
+# Same as Black.
+line-length = 120
+indent-width = 4
+
+# Assume Python 3.10
+target-version = "py310"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["E4", "E7", "E9", "F"]
+ignore = []
+
+# Sort imports. Note that is part of the linter, not the formatter.
+# This means it does not get triggered by VSCode's format-on-save.
+# To also have something on save, I use isort additionally.
+extend-select = ["I"]  
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = false
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+
+[tool.mypy]
+# See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
+
+python_version = "3.10"
+
+# Add the nuscenes submodule path to the mypy path such that errors caused by
+# nuscenes imports can successfully be ignored by the exclude third_party rule.
+mypy_path = "$MYPY_CONFIG_FILE_DIR/third_party/nuscenes-devkit/python-sdk"
+warn_return_any = true
+warn_unused_configs = true
+exclude = [
+    'third_party/*',  # TOML literal string (single-quotes, no escaping necessary)
+]
+
+# This allows multiple files to be called conftest.py in the absence of __init__.py files
+explicit_package_bases = true  
+
+
+# Don't check errors regarding the following dependencies because they 
+# have no typing information.
+[[tool.mypy.overrides]]
+# Need to add "nuscenes.eval.tracking.evaluate" here despite mypy_path and exclude
+# settings because the linter in CI doesn't check out submodules and thus
+# can't get these paths working.
+module = ["utm", "debugpy", "matplotlib", "nuscenes.eval.tracking.evaluate"] 
+ignore_missing_imports = true

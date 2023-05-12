@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "bazelbuild.vscode-bazel",
+    "charliermarsh.ruff",
+    "matangover.mypy",
+    "ms-python.debugpy",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "esbenp.prettier-vscode", // mostly for json
+    "redhat.vscode-yaml",
+    "tamasfe.even-better-toml",
+    "eamodio.gitlens",
+  ]
+}

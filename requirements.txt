@@ -1,0 +1,4 @@
+# All Python dependencies for running the entire project
+pyproj==3.6.1
+utm==0.7.0
+-r third_party/nuscenes-devkit/setup/requirements.txt

@@ -1,0 +1,42 @@
+default_language_version:
+    python: python3.10
+exclude: '^third_party/'
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    # run `pre-commit autoupdate` to update the rev below
+    rev: v4.5.0
+    hooks:
+      - id: end-of-file-fixer
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.3.4
+    hooks:
+      # Run the linter.
+      - id: ruff
+        types_or: [ python, pyi, jupyter ]
+        args: [ --fix ]
+      # Run the formatter.
+      - id: ruff-format
+        types_or: [ python, pyi, jupyter ]
+  - repo: https://github.com/jlebar/pre-commit-hooks
+    rev: f2d115a052860b09b2888b4f104be614bf3b4779
+    hooks:
+      - id: bazel-buildifier
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.9.0  # this should correspond to the mypy version in requirements-dev.txt
+    hooks:
+      - id: mypy
+        types: [python]
+        args: [--config-file, pyproject.toml]
+        # Use version numbers of requirements.txt files here to ensure compatibility
+        # of the pre-commit hooks's environment with the actual environment.
+        # To avoid having to update th epackages here, I could also add 
+        # --ignore-missing-imports to the args.
+        additional_dependencies: [
+          debugpy==1.8.1, 
+          pytest==8.1.1,
+          types-Pillow==10.2.0.20240331,
+          pyproj==3.6.1, 
+          utm==0.7.0,
+        ]
+        # args: [--strict] # strict is quite heavy, so disable it for now

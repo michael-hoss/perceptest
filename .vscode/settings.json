@@ -1,0 +1,29 @@
+{
+  // These settings facilitate working on this repo in VSCode.
+
+  // Without specifying any details here, this settings just uses those installed
+  // extensions for formatters (not linters) that are available and enabled.
+  "editor.formatOnSave": true,
+
+  // Don't format other people's existing code. Useful for changes in third-party repos.
+  "editor.formatOnSaveMode": "modifications",
+
+  // Note: it is a bad idea to enable ruff formatting and isort at the same time
+  // because this can kinda mess up the imports and also needs 2 or 3 saves
+  // until it stops changing.
+  // Thus, I will just use ruff for now and wait for it to also include sorting
+  // of imports into its formatter (not just its linter).
+
+  // Specify some specific formatters to clarify to vscode in case of ambiguity.
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "mypy.configFile": "./pyproject.toml"
+}
