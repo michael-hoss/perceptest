@@ -2,9 +2,9 @@
 
 ## Installations
 
-- Create a Python 3.10 environment for perceptest via miniconda or similar
-- Install the Python requirements into your environment: `pip install -r requirements-dev.txt`
-- Install [bazelisk](https://github.com/bazelbuild/bazelisk) and [buildifier](https://github.com/bazelbuild/buildtools/blob/master/buildifier/README.md). The most basic way is to download released binaries, place them under `/usr/local/bin/`, and make them executable.
+- See the [README.md](README.md) for general installation instructions
+- `pip install -r requirements-dev.txt` for developer dependencies
+- Install [buildifier](https://github.com/bazelbuild/buildtools/blob/master/buildifier/README.md) to format bazel files. The most basic way is to download the released binary, place it under `/usr/local/bin/`, and make it executable.
 
 ## Environment variables
 

@@ -2,6 +2,7 @@
 # See https://docs.astral.sh/ruff/configuration/
 
 # Exclude a variety of commonly ignored directories.
+# Ruff ignores git-ignored file by default.
 exclude = [
     ".bzr",
     ".direnv",
@@ -29,6 +30,7 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
+    'bazel-*',
     "third_party",
 ]
 
@@ -97,6 +99,7 @@ mypy_path = "$MYPY_CONFIG_FILE_DIR/third_party/nuscenes-devkit/python-sdk"
 warn_return_any = true
 warn_unused_configs = true
 exclude = [
+    'bazel-*',
     'third_party/*',  # TOML literal string (single-quotes, no escaping necessary)
 ]
 
