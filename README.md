@@ -1,6 +1,6 @@
 # Perceptest
 
-[![Pytests with bazel](https://github.com/michael-hoss/perceptest/actions/workflows/pytest_with_bazel.yml/badge.svg)](https://github.com/michael-hoss/perceptest/actions/workflows/pytest_with_bazel.yml)
+[![Pytests with bazel](https://github.com/michael-hoss/perceptest/actions/workflows/pytest_with_bazel.yaml/badge.svg)](https://github.com/michael-hoss/perceptest/actions/workflows/pytest_with_bazel.yaml)
 
 Test the object-based environment perception of automated driving systems.
 
