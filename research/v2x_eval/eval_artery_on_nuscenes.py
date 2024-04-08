@@ -50,7 +50,7 @@ def eval_artery_on_nuscenes() -> None:
         artery_data=artery_data, nuscenes_version_dirname=NUSCENES_VERSION_DIRNAME
     )
 
-    nuscenes_dump_dir = path.join(NUSCENES_DATAROOT, NUSCENES_VERSION_DIRNAME)
+    nuscenes_dump_dir: str = path.join(NUSCENES_DATAROOT, NUSCENES_VERSION_DIRNAME)
     dump_to_nuscenes_dir(nuscenes_all=nuscenes_all, nuscenes_version_dir=nuscenes_dump_dir, force_overwrite=True)
 
     tracking_eval_params = TrackingEvalParams(
