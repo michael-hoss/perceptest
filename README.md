@@ -4,10 +4,28 @@
 
 Test the object-based environment perception of automated driving systems.
 
-This repo does it all, e.g.
-- Convert various input data into a common format
-- Use third-party software to compute metrics
-- Compute perception algorithm benchmarking metrics (HOTA, MOTA etc.)
-- Compare criticality metrics between reference and tested object lists to infer perception safety
-- Analyze how well certain metrics are suitable for making certain statements about the perception quality
-- *Change to try token access again*
+## Directory structure
+
+- `base`: multi-purpose utilities and functional code
+- `inputs`: read input data and convert them to needed formats
+    - `artery`: read logs from the Artery simulator; convert to nuScenes format
+    - `nuscenes`: helpers for the nuScenes 3D object tracking evaluation
+- `research`: code for specific academic publications
+    - `v2x_eval`: Evaluate collaborative object perception simulated in artery on the nuscenes tracking metrics
+    - `delta_crit`: (TBD) Compare criticality metrics between reference and tested object lists to infer perception safety
+    - `metric_bench`: (TBD) Analyze how well certain metrics can make statements about the perception quality
+- `third_party`: third-party software as git submodules
+
+## Run the code on your own
+
+- Create a Python 3.10 environment for perceptest via miniconda or similar
+- Install the Python requirements into your environment: `pip install -r requirements.txt`
+- Install [bazel](https://bazel.build/)
+    - Via [bazelisk](https://github.com/bazelbuild/bazelisk), you automatically get the version given in `.bazelversion`
+    - The most basic way is to download bazelisk's released binaries, place them under `/usr/local/bin/`, and make them executable
+- Run an executable with `bazel run //path/to:executable`
+
+
+## Contribute to perceptest
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
