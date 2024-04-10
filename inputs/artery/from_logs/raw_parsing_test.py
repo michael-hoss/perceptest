@@ -3,12 +3,12 @@ import sys
 import pytest
 
 from conftest import use_debugpy
-from inputs.artery.artery_format import ArteryData, FilePaths
+from inputs.artery.artery_format import ArteryData, ArterySimLog
 from inputs.artery.from_logs.raw_parsing import load_from_artery_logs
 from inputs.artery.from_logs.timestamps import tidy_up_timestamps
 
 
-def test_load_example_log_files_pass(test_case_paths: FilePaths) -> None:
+def test_load_example_log_files_pass(test_case_paths: ArterySimLog) -> None:
     """This tests the code for loading the artery logs."""
 
     # Function under test

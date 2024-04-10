@@ -57,7 +57,7 @@ class ArteryObject(TypedDict):
 
 
 @dataclass
-class FilePaths:
+class ArterySimLog:
     # Root directory of the files below
     root_dir: str
 

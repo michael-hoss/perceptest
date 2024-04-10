@@ -16,7 +16,7 @@ def manual_data_analysis() -> None:
     raw_time_stamps: TimeStamps = extract_time_stamps(artery_data=artery_data_raw)
     visualize_time_stamps(time_stamps=raw_time_stamps, additional_heading="Raw time stamps")
 
-    artery_data_timestamps_tidy: ArteryData = pull_artery_data(file_paths=get_test_case_paths())
+    artery_data_timestamps_tidy: ArteryData = pull_artery_data(artery_sim_log=get_test_case_paths())
     tidy_time_stamps: TimeStamps = extract_time_stamps(artery_data=artery_data_timestamps_tidy)
     visualize_time_stamps(time_stamps=tidy_time_stamps, additional_heading="Tidy time stamps")
 

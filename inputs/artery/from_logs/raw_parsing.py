@@ -3,7 +3,7 @@ import os
 import re
 from typing import Literal
 
-from inputs.artery.artery_format import ArteryData, ArteryObject, FilePaths, ObjectType
+from inputs.artery.artery_format import ArteryData, ArteryObject, ArterySimLog, ObjectType
 
 
 class LineIsListError(json.JSONDecodeError):
@@ -93,7 +93,7 @@ def load_ego_data(file_path: str) -> list[ArteryObject]:
     return ego_data
 
 
-def load_from_artery_logs(file_paths: FilePaths) -> ArteryData:
+def load_from_artery_logs(file_paths: ArterySimLog) -> ArteryData:
     # Time stamps are not yet aligned here.
     # Locations are still in WGS84.
 
