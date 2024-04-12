@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 from inputs.artery.artery_format import ArterySimLog
 from inputs.artery.from_logs.main_loader import pull_artery_data
 from inputs.artery.to_nuscenes.to_nuscenes import convert_to_nuscenes_classes, dump_to_nuscenes_dir
+from inputs.nuscenes.nuscenes_format import NuScenesAll
+from inputs.nuscenes.nuscenes_format_utils import merge_nuscenes_all
 
 if TYPE_CHECKING:
     from inputs.artery.artery_format import ArteryData
@@ -35,7 +37,7 @@ def convert_to_nuscenes_files(artery_logs_root_dir: str, nuscenes_version_dirnam
     artery_log_dirs: dict = get_structured_artery_log_dirs(artery_logs_root_dir)
 
     for artery_config_name, artery_iteration_names in artery_log_dirs.items():
-        pulled_iterations: list[ArteryData] = []
+        nuscenes_all_list: list[NuScenesAll] = []
 
         for artery_iteration_name in artery_iteration_names:
             artery_sim_log = ArterySimLog(
@@ -44,17 +46,20 @@ def convert_to_nuscenes_files(artery_logs_root_dir: str, nuscenes_version_dirnam
                 out_file="localperception-vehicle_0.out",
                 ego_file="monitor_car-vehicle_0.out",
             )
-            pulled_iterations.append(pull_artery_data(artery_sim_log=artery_sim_log))
+            pulled_sim_log: ArteryData = pull_artery_data(artery_sim_log=artery_sim_log)
 
-        # TODO convert multiple artery log directories into the same nuscenes directory!
+            nuscenes_all_of_artery_iteration: NuScenesAll = convert_to_nuscenes_classes(
+                artery_data=pulled_sim_log,
+                nuscenes_version_dirname=nuscenes_version_dirname,
+            )
+            nuscenes_all_list.append(nuscenes_all_of_artery_iteration)
 
-        nuscenes_all = convert_to_nuscenes_classes(
-            artery_data=pulled_iterations[0],  # TODO enable this for list[ArteryData]
-            nuscenes_version_dirname=nuscenes_version_dirname,
-        )
+        nuscenes_all_combined = merge_nuscenes_all(nuscenes_all_list)
 
         nuscenes_dump_dir: str = path.join(NUSCENES_DATAROOT, nuscenes_version_dirname)
-        dump_to_nuscenes_dir(nuscenes_all=nuscenes_all, nuscenes_version_dir=nuscenes_dump_dir, force_overwrite=True)
+        dump_to_nuscenes_dir(
+            nuscenes_all=nuscenes_all_combined, nuscenes_version_dir=nuscenes_dump_dir, force_overwrite=True
+        )
 
 
 def get_structured_artery_log_dirs(artery_logs_root_dir: str) -> dict[str, list]:

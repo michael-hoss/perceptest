@@ -69,7 +69,7 @@ def get_nuscenes_reference(artery_data: ArteryData, nuscenes_version_dirname: st
         categories=[ARTERY_CONSTANTS.category_car],
         ego_poses=ego_poses,
         instances=instances,
-        logs=[ARTERY_CONSTANTS.log],
+        logs=[ARTERY_CONSTANTS.log],  # TODO get actual log with artery root dir
         maps=[artery_map],
         samples=samples,
         sample_annotations=sample_annotations,
