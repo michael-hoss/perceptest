@@ -266,8 +266,8 @@ def get_samples_and_scenes(artery_data: ArteryData) -> tuple[list[Sample], list[
             nbr_samples=len(artery_data.timestamps),
             first_sample_token=samples[0].token,
             last_sample_token=samples[-1].token,
-            name="artery-example-scene-0001",  # TODO make this more dynamic!
-            description="Single artery scene that contains entire simulation run",
+            name=artery_data.name,
+            description="Converted scene from an artery simulation log",
         )
     ]
     return samples, scenes

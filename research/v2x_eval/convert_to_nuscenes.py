@@ -34,20 +34,24 @@ TODO:
 def convert_to_nuscenes_files(artery_logs_root_dir: str, nuscenes_version_dirname: str) -> None:
     artery_log_dirs: dict = get_structured_artery_log_dirs(artery_logs_root_dir)
 
-    for nuscenes_dir_name, nuscenes_scene_names in artery_log_dirs.items():
-        for nuscenes_scene_name in nuscenes_scene_names:
+    for artery_config_name, artery_iteration_names in artery_log_dirs.items():
+        pulled_iterations: list[ArteryData] = []
+
+        for artery_iteration_name in artery_iteration_names:
             artery_sim_log = ArterySimLog(
-                root_dir=path.join(artery_logs_root_dir, nuscenes_dir_name, nuscenes_scene_name),
+                root_dir=path.join(artery_logs_root_dir, artery_config_name, artery_iteration_name),
                 res_file="localperceptionGT-vehicle_0.out",
                 out_file="localperception-vehicle_0.out",
                 ego_file="monitor_car-vehicle_0.out",
             )
-            artery_data: ArteryData = pull_artery_data(artery_sim_log=artery_sim_log)
-            nuscenes_all = convert_to_nuscenes_classes(
-                artery_data=artery_data, nuscenes_version_dirname=nuscenes_version_dirname
-            )
+            pulled_iterations.append(pull_artery_data(artery_sim_log=artery_sim_log))
+
         # TODO convert multiple artery log directories into the same nuscenes directory!
-        # TODO specify name of scenes (results_YY) in the nuscenes conversion
+
+        nuscenes_all = convert_to_nuscenes_classes(
+            artery_data=pulled_iterations[0],  # TODO enable this for list[ArteryData]
+            nuscenes_version_dirname=nuscenes_version_dirname,
+        )
 
         nuscenes_dump_dir: str = path.join(NUSCENES_DATAROOT, nuscenes_version_dirname)
         dump_to_nuscenes_dir(nuscenes_all=nuscenes_all, nuscenes_version_dir=nuscenes_dump_dir, force_overwrite=True)
@@ -56,6 +60,7 @@ def convert_to_nuscenes_files(artery_logs_root_dir: str, nuscenes_version_dirnam
 def get_structured_artery_log_dirs(artery_logs_root_dir: str) -> dict[str, list]:
     """returns e.g.
     {
+        "artery_config": ["config_iteration_01", "config_iteration_02"],
         "sim01data": ["results_01", "results_02"],
         "sim02data": ["results_01", "results_02"],
     }

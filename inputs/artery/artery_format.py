@@ -79,6 +79,8 @@ class ArteryData:
     ego_vehicle: List[ArteryObject]
     timestamps: list[int]  # in e-6 seconds
 
+    name: str = ""  # name of the simulation run
+
 
 @dataclass
 class TimeStamps:
