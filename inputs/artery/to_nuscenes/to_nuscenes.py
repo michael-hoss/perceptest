@@ -276,7 +276,9 @@ def get_samples_and_scenes(artery_data: ArteryData) -> tuple[list[Sample], list[
 def get_nuscenes_submission(artery_data: ArteryData, samples: list[Sample]) -> TrackingSubmission:
     sample_results: TrackingResults = get_sample_results_over_frames(artery_data=artery_data, samples=samples)
 
-    tracking_submission = TrackingSubmission(meta=ARTERY_CONSTANTS.tracking_submission_meta, results=sample_results)
+    tracking_submission = TrackingSubmission(
+        token=Guid(), meta=ARTERY_CONSTANTS.tracking_submission_meta, results=sample_results
+    )
     return tracking_submission
 
 
