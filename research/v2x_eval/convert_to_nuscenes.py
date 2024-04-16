@@ -3,6 +3,8 @@ import re
 from os import path
 from typing import TYPE_CHECKING
 
+from tqdm import tqdm  # type: ignore
+
 from inputs.artery.artery_format import ArterySimLog
 from inputs.artery.from_logs.main_loader import pull_artery_data
 from inputs.artery.to_nuscenes.to_nuscenes import convert_to_nuscenes_classes, dump_to_nuscenes_dir
@@ -14,30 +16,22 @@ if TYPE_CHECKING:
 
 from research.v2x_eval.constants import NUSCENES_DATAROOT
 
-"""Notes:
 
-Options for organizing different simulation runs in artery:
-- dataset version dirs
-- splits in that dir
-- scenes in one or multiple splits.
+def convert_to_nuscenes_files(artery_logs_root_dir: str, nuscenes_version_dirstem: str) -> None:
+    """
+    - creates a custom dataset version called e.g. "from_artery_v6_simXXdata"
+    - make each individual "results_YY" a separate scene within "from_artery_v6_simXXdata"
+    - create splits
+    - for each results_YY ("results_YY")
+    - for all results_YY ("all")
+    """
 
-The tracking eval command then takes a version and a split as input and computes the metrics for all
-scens in that split.
-
-TODO:
-- create a custom dataset version called e.g. "from_artery_v6_simXXdata"
-- make each individual "results_YY" a separate scene within "from_artery_v6_simXXdata"
-- create splits
-  - for each results_YY ("results_YY")
-  - for all results_YY ("all")
-"""
-
-
-def convert_to_nuscenes_files(artery_logs_root_dir: str, nuscenes_version_dirname: str) -> None:
     artery_log_dirs: dict = get_structured_artery_log_dirs(artery_logs_root_dir)
 
-    for artery_config_name, artery_iteration_names in artery_log_dirs.items():
+    for artery_config_name, artery_iteration_names in tqdm(artery_log_dirs.items()):
         nuscenes_all_list: list[NuScenesAll] = []
+
+        nuscenes_version_dirname = f"{nuscenes_version_dirstem}_{artery_config_name}"
 
         for artery_iteration_name in artery_iteration_names:
             artery_sim_log = ArterySimLog(
