@@ -60,7 +60,6 @@ class ArteryConstants:
         self.log_date_captured = "not applicable"
         self.log_location = "sumo-artery-location"
 
-        self.map_guid = Guid()  # unique guid of the one map we are using so far
         self.map_filename = "white_map.png"
         self.map_category = "semantic_prior"
 

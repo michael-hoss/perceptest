@@ -2,6 +2,7 @@ import itertools
 
 from inputs.nuscenes.nuscenes_format import (
     Guid,
+    Map,
     NuScenesAll,
     NuScenesReference,
     NuScenesWritable,
@@ -28,7 +29,6 @@ def merge_nuscenes_references(nuscenes_references_list: list[NuScenesReference])
     assert_all_elements_equal([ns_ref.attributes for ns_ref in nuscenes_references_list])
     assert_all_elements_equal([ns_ref.calibrated_sensors for ns_ref in nuscenes_references_list])
     assert_all_elements_equal([ns_ref.categories for ns_ref in nuscenes_references_list])
-    assert_all_elements_equal([ns_ref.maps for ns_ref in nuscenes_references_list])
     assert_all_elements_equal([ns_ref.sensors for ns_ref in nuscenes_references_list])
     assert_all_elements_equal([ns_ref.visibility for ns_ref in nuscenes_references_list])
 
@@ -39,7 +39,7 @@ def merge_nuscenes_references(nuscenes_references_list: list[NuScenesReference])
         ego_poses=flatten_list([ns_ref.ego_poses for ns_ref in nuscenes_references_list]),  # type: ignore
         instances=flatten_list([ns_ref.instances for ns_ref in nuscenes_references_list]),  # type: ignore
         logs=flatten_list([ns_ref.logs for ns_ref in nuscenes_references_list]),  # type: ignore
-        maps=nuscenes_references_list[0].maps,
+        maps=merge_nuscenes_maps([ns_ref.maps for ns_ref in nuscenes_references_list]),
         samples=flatten_list([ns_ref.samples for ns_ref in nuscenes_references_list]),  # type: ignore
         sample_annotations=flatten_list([ns_ref.sample_annotations for ns_ref in nuscenes_references_list]),  # type: ignore
         sample_data_list=flatten_list([ns_ref.sample_data_list for ns_ref in nuscenes_references_list]),  # type: ignore
@@ -49,10 +49,49 @@ def merge_nuscenes_references(nuscenes_references_list: list[NuScenesReference])
     )
 
 
+def merge_nuscenes_maps(list_of_lists: list[list[Map]]) -> list[Map]:
+    """Merges equal maps with incomplete log tokens into a single map containing all log tokens.
+    Operates on lists of all of this because nuScenes expects this."""
+
+    flattened_maps: list[Map] = flatten_list(list_of_lists)  # type: ignore
+
+    if len(flattened_maps) == 0:
+        return []
+
+    # Expect each incoming NuScenesReference to have exactly one map
+    assert len(flattened_maps) == len(list_of_lists)
+
+    assert_all_elements_equal([map.category for map in flattened_maps])
+    assert_all_elements_equal([map.filename for map in flattened_maps])
+
+    all_log_tokens = []
+    for map in flattened_maps:
+        all_log_tokens.extend(map.log_tokens)
+
+    merged_map: Map = Map(
+        token=Guid(),
+        category=flattened_maps[0].category,
+        filename=flattened_maps[0].filename,
+        log_tokens=all_log_tokens,
+    )
+    return [merged_map]
+
+
 def merge_nuscenes_splits(splits_list: list[list[Split]]) -> list[Split]:
     flattened_splits = list(itertools.chain.from_iterable(splits_list))
-    assert len(flattened_splits) == len(set(flattened_splits))  # Assert no duplicate split names
-    return flattened_splits
+
+    # Merge the "all" splits
+    tidied_splits = [split for split in flattened_splits if split.name != "all"]
+    merged_scene_names = list(itertools.chain.from_iterable([split.scene_names for split in tidied_splits]))
+    merged_all_split = Split(name="all", scene_names=merged_scene_names)
+    tidied_splits.append(merged_all_split)
+
+    # Assert no duplicate splits and split names
+    all_split_names: list[str] = [split.name for split in tidied_splits]
+    assert len(tidied_splits) == len(set(tidied_splits))
+    assert len(all_split_names) == len(set(all_split_names))
+
+    return tidied_splits
 
 
 def merge_nuscenes_all(nuscenes_all_list: list[NuScenesAll]) -> NuScenesAll:

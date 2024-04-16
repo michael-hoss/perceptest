@@ -111,7 +111,7 @@ def get_log(logfile_name: str) -> Log:
 
 def get_map(nuscenes_version_dirname: str, log_tokens: list[Guid]) -> Map:
     return Map(
-        token=ARTERY_CONSTANTS.map_guid,
+        token=Guid(),
         category=ARTERY_CONSTANTS.map_category,
         filename=os.path.join(nuscenes_version_dirname, ARTERY_CONSTANTS.map_filename),
         log_tokens=log_tokens,

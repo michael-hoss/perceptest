@@ -308,6 +308,17 @@ class Split:
 
     json_filename: str = field(default="splits.json")
 
+    # Make class hashable to be able to easily detect duplicates
+    def __eq__(self, other):
+        return (
+            isinstance(other, Split)
+            and self.name == other.name
+            and sorted(self.scene_names) == sorted(other.scene_names)
+        )
+
+    def __hash__(self):
+        return hash((self.name, tuple(n for n in sorted(self.scene_names))))
+
 
 def get_splits_dict(splits: list[Split]) -> dict[str, list[str]]:
     return {split.name: split.scene_names for split in splits}
