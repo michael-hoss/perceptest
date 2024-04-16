@@ -4,7 +4,6 @@ from inputs.nuscenes.nuscenes_format import (
     CalibratedSensor,
     Category,
     Guid,
-    Log,
     Sensor,
     TrackingSubmissionMeta,
     Visibility,
@@ -57,14 +56,11 @@ class ArteryConstants:
             "If it is primarily designed to haul cargo use vehicle.truck. ",
         )
 
-        self.log: Log = Log(
-            token=Guid(),
-            logfile="not applicable in artery",
-            vehicle="simulated artery vehicle",
-            date_captured="not applicable",
-            location="simulated location",
-        )
+        self.log_vehicle = "simulated artery vehicle"
+        self.log_date_captured = "not applicable"
+        self.log_location = "sumo-artery-location"
 
+        self.map_guid = Guid()  # unique guid of the one map we are using so far
         self.map_filename = "white_map.png"
         self.map_category = "semantic_prior"
 

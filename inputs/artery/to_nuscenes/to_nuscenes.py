@@ -13,6 +13,7 @@ from inputs.nuscenes.nuscenes_format import (
     EgoPose,
     Guid,
     Instance,
+    Log,
     Map,
     NuScenesAll,
     NuScenesReference,
@@ -55,13 +56,15 @@ def get_nuscenes_splits(nuscenes_reference: NuScenesReference) -> list[Split]:
 
 
 def get_nuscenes_reference(artery_data: ArteryData, nuscenes_version_dirname: str) -> NuScenesReference:
+    artery_log = get_log(logfile_name=artery_data.name)
+    artery_map = get_map(nuscenes_version_dirname=nuscenes_version_dirname, log_tokens=[artery_log.token])
+
     ego_poses = get_ego_poses(artery_data=artery_data)
-    samples, scenes = get_samples_and_scenes(artery_data=artery_data)
+    samples, scenes = get_samples_and_scenes(artery_data=artery_data, log_token=artery_log.token)
 
     sample_annotations, sample_data_list, instances = get_objects_and_frames(
         artery_data=artery_data, samples=samples, ego_poses=ego_poses
     )
-    artery_map = get_map(nuscenes_version_dirname=nuscenes_version_dirname)
 
     nuscenes_reference = NuScenesReference(
         attributes=ARTERY_CONSTANTS.attributes,
@@ -69,7 +72,7 @@ def get_nuscenes_reference(artery_data: ArteryData, nuscenes_version_dirname: st
         categories=[ARTERY_CONSTANTS.category_car],
         ego_poses=ego_poses,
         instances=instances,
-        logs=[ARTERY_CONSTANTS.log],  # TODO get actual log with artery root dir
+        logs=[artery_log],
         maps=[artery_map],
         samples=samples,
         sample_annotations=sample_annotations,
@@ -96,12 +99,22 @@ def get_ego_poses(artery_data: ArteryData) -> list[EgoPose]:
     return ego_poses
 
 
-def get_map(nuscenes_version_dirname: str) -> Map:
-    return Map(
+def get_log(logfile_name: str) -> Log:
+    return Log(
         token=Guid(),
+        logfile=logfile_name,
+        vehicle=ARTERY_CONSTANTS.log_vehicle,
+        date_captured=ARTERY_CONSTANTS.log_date_captured,
+        location=ARTERY_CONSTANTS.log_location,
+    )
+
+
+def get_map(nuscenes_version_dirname: str, log_tokens: list[Guid]) -> Map:
+    return Map(
+        token=ARTERY_CONSTANTS.map_guid,
         category=ARTERY_CONSTANTS.map_category,
         filename=os.path.join(nuscenes_version_dirname, ARTERY_CONSTANTS.map_filename),
-        log_tokens=[ARTERY_CONSTANTS.log.token],
+        log_tokens=log_tokens,
     )
 
 
@@ -238,7 +251,7 @@ def get_objects_and_frames(
     return sample_annotations, sample_data_list, instances
 
 
-def get_samples_and_scenes(artery_data: ArteryData) -> tuple[list[Sample], list[Scene]]:
+def get_samples_and_scenes(artery_data: ArteryData, log_token: Guid) -> tuple[list[Sample], list[Scene]]:
     scene_token = Guid()  # same scene for all samples
 
     samples: list[Sample] = []
@@ -262,7 +275,7 @@ def get_samples_and_scenes(artery_data: ArteryData) -> tuple[list[Sample], list[
     scenes = [
         Scene(
             token=scene_token,
-            log_token=ARTERY_CONSTANTS.log.token,
+            log_token=log_token,
             nbr_samples=len(artery_data.timestamps),
             first_sample_token=samples[0].token,
             last_sample_token=samples[-1].token,

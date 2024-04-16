@@ -25,12 +25,10 @@ def merge_nuscenes_submissions(tracking_submissions_list: list[TrackingSubmissio
 
 def merge_nuscenes_references(nuscenes_references_list: list[NuScenesReference]) -> NuScenesReference:
     # For simplicity, these fields are assumed to be equal anyway.
-    assert_all_elements_equal(
-        [ns_ref.attributes for ns_ref in nuscenes_references_list]
-    )  # TODO do they really have the same guids?
+    assert_all_elements_equal([ns_ref.attributes for ns_ref in nuscenes_references_list])
     assert_all_elements_equal([ns_ref.calibrated_sensors for ns_ref in nuscenes_references_list])
     assert_all_elements_equal([ns_ref.categories for ns_ref in nuscenes_references_list])
-    assert_all_elements_equal([ns_ref.maps for ns_ref in nuscenes_references_list])  # TODO make map the very same
+    assert_all_elements_equal([ns_ref.maps for ns_ref in nuscenes_references_list])
     assert_all_elements_equal([ns_ref.sensors for ns_ref in nuscenes_references_list])
     assert_all_elements_equal([ns_ref.visibility for ns_ref in nuscenes_references_list])
 
