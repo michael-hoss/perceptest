@@ -33,6 +33,8 @@ class Guid(str):
 class NuScenesWritable:
     """Base class for all nuScenes classes that correspond to a json file"""
 
+    token: Guid
+
     @property
     def json_filename(self) -> str:
         raise NotImplementedError("This field must be implemented by the subclass.")
@@ -45,7 +47,6 @@ class NuScenesWritable:
 class Attribute(NuScenesWritable):
     """Properties for different types of objects/road users"""
 
-    token: Guid
     name: str = "vehicle.moving"
     description: str = "Vehicle is moving."
 
@@ -61,7 +62,6 @@ class Attribute(NuScenesWritable):
 class CalibratedSensor(NuScenesWritable):
     """Mounting position and potentially intrinsic calibration of one sensor"""
 
-    token: Guid
     sensor_token: Guid
     translation: Vector3 = field(default_factory=Vector3)
     rotation: Quaternion = field(default_factory=Quaternion)
@@ -83,7 +83,6 @@ class CalibratedSensor(NuScenesWritable):
 class Category(NuScenesWritable):
     """Object classification"""
 
-    token: Guid
     name: str = "vehicle.car"
     description: str = (
         "Vehicle designed primarily for personal use, e.g. sedans, hatch-backs, wagons, vans, mini-vans, "
@@ -103,7 +102,6 @@ class Category(NuScenesWritable):
 class EgoPose(NuScenesWritable):
     """Ego vehicle position at one time stamp in the global frame"""
 
-    token: Guid
     timestamp: int  # in e-6 seconds
     rotation: Quaternion = field(default_factory=Quaternion)
     translation: Vector3 = field(default_factory=Vector3)
@@ -123,7 +121,6 @@ class EgoPose(NuScenesWritable):
 class Instance(NuScenesWritable):
     """One object track over time"""
 
-    token: Guid
     category_token: Guid
     nbr_annotations: int
     first_annotation_token: Guid  # foreign key to SampleAnnotation
@@ -141,7 +138,6 @@ class Instance(NuScenesWritable):
 class Log(NuScenesWritable):
     """Metadata of one recording session file"""
 
-    token: Guid
     logfile: str  #  "n015-2018-07-24-11-22-45+0800"
     vehicle: str  # "n015"
     date_captured: str  # "2018-07-24"
@@ -160,7 +156,7 @@ class Map(NuScenesWritable):
     """Metadata of one map file"""
 
     category: str  #  "semantic_prior"
-    token: Guid
+
     filename: str  # "maps/53992ee3023e5494b90c316c183be829.png"
     log_tokens: list[Guid] = field(default_factory=list)  # Logs that got recorded in this map
 
@@ -178,7 +174,6 @@ class Sample(NuScenesWritable):
     From docs: A sample is an annotated keyframe at 2 Hz.
     The data is collected at (approximately) the same timestamp as part of a single LIDAR sweep."""
 
-    token: Guid
     timestamp: int
     prev: Guid
     next: Guid
@@ -197,7 +192,6 @@ class SampleAnnotation(NuScenesWritable):
     """The reference annotation for one object in one frame.
     All location data is given with respect to the global coordinate system."""
 
-    token: Guid
     sample_token: Guid
     instance_token: Guid
     visibility_token: str
@@ -234,7 +228,6 @@ class SampleData(NuScenesWritable):
     """This is additional information to one frame in time (Sample),
     especially links to raw data like camera images or lidar point clouds"""
 
-    token: Guid
     sample_token: Guid
     ego_pose_token: Guid
     calibrated_sensor_token: Guid
@@ -259,7 +252,6 @@ class SampleData(NuScenesWritable):
 class Scene(NuScenesWritable):
     """A scene is one recorded snippet, and consists of several samples/frames"""
 
-    token: Guid
     log_token: Guid
     nbr_samples: int  # number frames in scene
     first_sample_token: Guid
@@ -279,7 +271,6 @@ class Scene(NuScenesWritable):
 class Sensor(NuScenesWritable):
     """Metadata of one sensor"""
 
-    token: Guid
     channel: str  # CAM_FRONT, CAM_FRONT_RIGHT, ...
     modality: str  # camera, lidar, radar, ...
 
@@ -296,7 +287,6 @@ class Visibility(NuScenesWritable):
     """Bin for an object visibility percentage range"""
 
     description: str  # "visibility of whole object is between 0 and 40%"
-    token: str  # "1"
     level: str  # "v0-40"
 
     json_filename: str = field(default="visibility.json")
@@ -317,6 +307,17 @@ class Split:
     scene_names: list[str]
 
     json_filename: str = field(default="splits.json")
+
+    # Make class hashable to be able to easily detect duplicates
+    def __eq__(self, other):
+        return (
+            isinstance(other, Split)
+            and self.name == other.name
+            and sorted(self.scene_names) == sorted(other.scene_names)
+        )
+
+    def __hash__(self):
+        return hash((self.name, tuple(n for n in sorted(self.scene_names))))
 
 
 def get_splits_dict(splits: list[Split]) -> dict[str, list[str]]:

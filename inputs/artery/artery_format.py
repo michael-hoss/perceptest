@@ -57,7 +57,7 @@ class ArteryObject(TypedDict):
 
 
 @dataclass
-class FilePaths:
+class ArterySimLog:
     # Root directory of the files below
     root_dir: str
 
@@ -78,6 +78,8 @@ class ArteryData:
     objects_res: ObjectsArtery
     ego_vehicle: List[ArteryObject]
     timestamps: list[int]  # in e-6 seconds
+
+    name: str = ""  # name of the simulation run
 
 
 @dataclass

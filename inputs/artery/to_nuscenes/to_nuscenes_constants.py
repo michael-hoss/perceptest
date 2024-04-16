@@ -4,7 +4,6 @@ from inputs.nuscenes.nuscenes_format import (
     CalibratedSensor,
     Category,
     Guid,
-    Log,
     Sensor,
     TrackingSubmissionMeta,
     Visibility,
@@ -57,19 +56,17 @@ class ArteryConstants:
             "If it is primarily designed to haul cargo use vehicle.truck. ",
         )
 
-        self.log: Log = Log(
-            token=Guid(),
-            logfile="not applicable in artery",
-            vehicle="simulated artery vehicle",
-            date_captured="not applicable",
-            location="simulated location",
-        )
+        self.log_vehicle = "simulated artery vehicle"
+        self.log_date_captured = "not applicable"
+        self.log_location = "sumo-artery-location"
 
         self.map_filename = "white_map.png"
         self.map_category = "semantic_prior"
 
-        self.visibility_full = Visibility(token="1", description="fully visible (100%)", level="v100")
-        self.visibility_rest = Visibility(token="2", description="not fully visible (0% to 99%)", level="v0-99")
+        self.visibility_full = Visibility(token=Guid("1" * 32), description="fully visible (100%)", level="v100")
+        self.visibility_rest = Visibility(
+            token=Guid("2" * 32), description="not fully visible (0% to 99%)", level="v0-99"
+        )
         self.visibility = [self.visibility_full, self.visibility_rest]
 
         default_vehicle_length = 4.5

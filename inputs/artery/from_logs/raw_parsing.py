@@ -3,7 +3,7 @@ import os
 import re
 from typing import Literal
 
-from inputs.artery.artery_format import ArteryData, ArteryObject, FilePaths, ObjectType
+from inputs.artery.artery_format import ArteryData, ArteryObject, ArterySimLog, ObjectType
 
 
 class LineIsListError(json.JSONDecodeError):
@@ -93,7 +93,11 @@ def load_ego_data(file_path: str) -> list[ArteryObject]:
     return ego_data
 
 
-def load_from_artery_logs(file_paths: FilePaths) -> ArteryData:
+def get_name_of_sim_log(file_paths: ArterySimLog) -> str:
+    return os.path.basename(file_paths.root_dir)
+
+
+def load_from_artery_logs(file_paths: ArterySimLog) -> ArteryData:
     # Time stamps are not yet aligned here.
     # Locations are still in WGS84.
 
@@ -105,5 +109,10 @@ def load_from_artery_logs(file_paths: FilePaths) -> ArteryData:
     )
     ego_info = load_ego_data(file_path=os.path.join(file_paths.root_dir, file_paths.ego_file))
 
-    # timestamps are not yet aligned and are therefore still empty
-    return ArteryData(objects_out=out_list, objects_res=res_list, ego_vehicle=ego_info, timestamps=[])
+    return ArteryData(
+        objects_out=out_list,
+        objects_res=res_list,
+        ego_vehicle=ego_info,
+        timestamps=[],  # timestamps are not yet aligned and are therefore still empty
+        name=get_name_of_sim_log(file_paths=file_paths),
+    )

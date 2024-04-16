@@ -1,6 +1,9 @@
 py_library(
     name = "nuscenes_format",
-    srcs = ["nuscenes_format.py"],
+    srcs = [
+        "nuscenes_format.py",
+        "nuscenes_format_utils.py",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         "//base/geometry",

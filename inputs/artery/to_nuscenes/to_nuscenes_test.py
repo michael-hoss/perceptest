@@ -4,16 +4,16 @@ from tempfile import gettempdir
 
 import pytest
 
-from inputs.artery.artery_format import ArteryData, FilePaths
+from inputs.artery.artery_format import ArteryData, ArterySimLog
 from inputs.artery.from_logs.main_loader import pull_artery_data
 from inputs.artery.to_nuscenes.to_nuscenes import convert_to_nuscenes_classes, dump_to_nuscenes_dir
 from inputs.nuscenes.data_insights import get_reference_track_lenghts, get_submitted_track_lenghts
 from inputs.nuscenes.nuscenes_format import NuScenesAll
 
 
-def test_convert_to_nuscenes(test_case_paths: FilePaths) -> None:
+def test_convert_to_nuscenes(test_case_paths: ArterySimLog) -> None:
     # Preparations: pull artery data into classes from logs
-    artery_data: ArteryData = pull_artery_data(file_paths=test_case_paths)
+    artery_data: ArteryData = pull_artery_data(artery_sim_log=test_case_paths)
 
     # Function under test
     nuscenes_version_dirname: str = "artery_to_nuscenes_test"
