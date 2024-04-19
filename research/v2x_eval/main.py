@@ -1,6 +1,6 @@
 from conftest import use_debugpy
-from research.v2x_eval.compute_tracking_metrics import obtain_metrics_for_nuscenes_version_dirs
 from research.v2x_eval.convert_to_nuscenes import obtain_nuscenes_version_dirs
+from research.v2x_eval.obtain_tracking_metrics import obtain_metrics_for_nuscenes_version_dirs
 
 
 def convert_and_evaluate() -> None:
