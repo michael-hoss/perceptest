@@ -6,9 +6,6 @@ py_binary(
     data = [
         "//inputs/artery/to_nuscenes:artery_config_for_nuscenes.json",
     ],
-    env = {
-        "NUSCENES": "/data/sets/nuscenes",
-    },
     deps = [
         ":v2x_eval_lib",
         "//:conftest",
