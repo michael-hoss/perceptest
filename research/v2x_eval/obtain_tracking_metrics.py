@@ -30,9 +30,9 @@ def obtain_metrics_for_nuscenes_version_dirs(
         "simYYdata": metrics_of_all_splits_of_simYYdata,  # etc.
     }
     """
-    pattern = path.join(NUSCENES_DATAROOT, nuscenes_version_dirstem)
+    pattern = path.join(NUSCENES_DATAROOT, nuscenes_version_dirstem + "_*/")
     matching_dirs = glob.glob(pattern)
-    matching_dirs = [dir for dir in matching_dirs if path.isdir(dir)]
+    matching_dirs = [dir for dir in sorted(matching_dirs) if path.isdir(dir)]
 
     metrics_of_configs: dict[str, Any] = {}
     for matching_dir in matching_dirs:
@@ -74,7 +74,7 @@ def obtain_metrics_for_split(
         output_dir=path.join(nuscenes_dump_dir, NUSCENES_METRICS_OUTPUT_DIR, eval_split),
         eval_set=eval_split,  # see python-sdk/nuscenes/utils/splits.py
         nusc_dataroot=NUSCENES_DATAROOT,
-        nusc_version=nuscenes_dump_dir,
+        nusc_version=path.basename(path.normpath(nuscenes_dump_dir)),
     )
 
     if not force_regenerate and metrics_files_present_on_disk(tracking_eval_params):
