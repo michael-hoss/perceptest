@@ -4,6 +4,8 @@ from os import path
 from re import findall
 from typing import Any
 
+from rich.progress import Progress  # type: ignore
+
 from base.cli.suppress_stdout import suppress_output
 from inputs.nuscenes.evaluate_tracking import (
     MetricsSummary,
@@ -36,14 +38,18 @@ def obtain_metrics_for_nuscenes_version_dirs(
     matching_dirs = [dir for dir in sorted(matching_dirs) if path.isdir(dir)]
 
     metrics_of_configs: dict[str, Any] = {}
-    for matching_dir in matching_dirs:
-        config_name = findall(r"sim\d{2}data", matching_dir)[0]
 
-        metrics_of_splits: dict[str, Any] = obtain_metrics_for_all_splits(
-            nuscenes_dump_dir=matching_dir, force_regenerate=force_regenerate
-        )
-        metrics_of_configs[config_name] = metrics_of_splits
-    return metrics_of_configs
+    with Progress(refresh_per_second=2) as progress:
+        dir_task = progress.add_task("[blue]Computing metrics for nuScenes dirs...", total=len(matching_dirs))
+        for matching_dir in matching_dirs:
+            config_name = findall(r"sim\d{2}data", matching_dir)[0]
+
+            metrics_of_splits: dict[str, Any] = obtain_metrics_for_all_splits(
+                nuscenes_dump_dir=matching_dir, force_regenerate=force_regenerate
+            )
+            metrics_of_configs[config_name] = metrics_of_splits
+            progress.update(dir_task, advance=1)
+        return metrics_of_configs
 
 
 def obtain_metrics_for_all_splits(nuscenes_dump_dir: str, force_regenerate: bool = False) -> dict[str, Any]:
