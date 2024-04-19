@@ -25,5 +25,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
 
+  "python.analysis.ignore": ["bazel-*/**"],
+  "python.analysis.exclude": ["bazel-*/**"],
+
   "mypy.configFile": "./pyproject.toml"
 }
