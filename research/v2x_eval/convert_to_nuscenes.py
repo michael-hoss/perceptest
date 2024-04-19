@@ -3,7 +3,7 @@ import re
 from os import path
 from typing import TYPE_CHECKING
 
-from rich.progress import Progress  # type: ignore
+from rich.progress import Progress, TaskID  # type: ignore
 
 from inputs.artery.artery_format import ArterySimLog
 from inputs.artery.from_logs.main_loader import pull_artery_data
@@ -17,7 +17,9 @@ if TYPE_CHECKING:
 from research.v2x_eval.constants import NUSCENES_DATAROOT
 
 
-def convert_to_nuscenes_files(artery_logs_root_dir: str, nuscenes_version_dirstem: str) -> None:
+def convert_to_nuscenes_files(
+    artery_logs_root_dir: str, nuscenes_version_dirstem: str, force_regenerate: bool = False
+) -> None:
     """
     - creates a custom nuscenes dataset version called e.g. "from_artery_v6_simXXdata"
     - makes each individual "results_YY" a separate scene within "from_artery_v6_simXXdata"
@@ -25,39 +27,65 @@ def convert_to_nuscenes_files(artery_logs_root_dir: str, nuscenes_version_dirste
         - for each individual results_YY ("results_YY")
         - for all results_YY combined ("all")
     """
-    with Progress() as progress:
+    with Progress(refresh_per_second=1) as progress:
         artery_log_dirs: dict = get_structured_artery_log_dirs(artery_logs_root_dir)
         configs_task = progress.add_task("[blue]Converting artery logs to nuScenes...", total=len(artery_log_dirs))
         for artery_config_name, artery_iteration_names in artery_log_dirs.items():
-            nuscenes_all_list: list[NuScenesAll] = []
             nuscenes_version_dirname = f"{nuscenes_version_dirstem}_{artery_config_name}"
 
-            iterations_task = progress.add_task("", total=len(artery_iteration_names))
-            for artery_iteration_name in artery_iteration_names:
-                progress.update(
-                    iterations_task, description=f"[green]Converting {artery_config_name}: {artery_iteration_name}..."
-                )
-                nuscenes_all_of_iteration = get_nuscenes_all(
-                    artery_logs_root_dir=artery_logs_root_dir,
-                    artery_config_name=artery_config_name,
-                    artery_iteration_name=artery_iteration_name,
-                    nuscenes_version_dirname=nuscenes_version_dirname,
-                )
-                nuscenes_all_list.append(nuscenes_all_of_iteration)
-                progress.update(iterations_task, advance=1)
+            # Potentially skip if the nuscenes version directory already exists
+            if not force_regenerate and path.exists(path.join(NUSCENES_DATAROOT, nuscenes_version_dirname)):
+                progress.update(configs_task, advance=1)
+                continue
 
-            progress.update(configs_task, advance=0.5)
-
-            nuscenes_all_combined = merge_nuscenes_all(nuscenes_all_list)
-            dump_to_nuscenes_dir(
-                nuscenes_all=nuscenes_all_combined,
-                nuscenes_version_dir=path.join(NUSCENES_DATAROOT, nuscenes_version_dirname),
-                force_overwrite=True,
+            convert_artery_config_logs_to_nuscenes_dir(
+                artery_logs_root_dir=artery_logs_root_dir,
+                progress=progress,
+                configs_task=configs_task,
+                artery_config_name=artery_config_name,
+                artery_iteration_names=artery_iteration_names,
+                nuscenes_version_dirname=nuscenes_version_dirname,
             )
-            progress.update(configs_task, advance=0.5)
 
 
-def get_structured_artery_log_dirs(artery_logs_root_dir: str) -> dict[str, list]:
+def convert_artery_config_logs_to_nuscenes_dir(
+    artery_logs_root_dir: str,
+    progress: Progress,
+    configs_task: TaskID,
+    artery_config_name: str,
+    artery_iteration_names: list[str],
+    nuscenes_version_dirname: str,
+):
+    iterations_task = progress.add_task("", total=len(artery_iteration_names))
+    nuscenes_all_list: list[NuScenesAll] = []
+
+    # Convert each artery config iteration to a NuScenesAll instance
+    for artery_iteration_name in artery_iteration_names:
+        progress.update(
+            iterations_task, description=f"[green]Converting {artery_config_name}: {artery_iteration_name}..."
+        )
+        nuscenes_all_of_iteration = get_nuscenes_all(
+            artery_logs_root_dir=artery_logs_root_dir,
+            artery_config_name=artery_config_name,
+            artery_iteration_name=artery_iteration_name,
+            nuscenes_version_dirname=nuscenes_version_dirname,
+        )
+        nuscenes_all_list.append(nuscenes_all_of_iteration)
+        progress.update(iterations_task, advance=1)
+
+    progress.update(configs_task, advance=0.5)
+
+    # Merge the NuScenesAll instances and dump the combined data to the directory
+    nuscenes_all_combined = merge_nuscenes_all(nuscenes_all_list)
+    dump_to_nuscenes_dir(
+        nuscenes_all=nuscenes_all_combined,
+        nuscenes_version_dir=path.join(NUSCENES_DATAROOT, nuscenes_version_dirname),
+        force_overwrite=True,
+    )
+    progress.update(configs_task, advance=0.5)
+
+
+def get_structured_artery_log_dirs(artery_logs_root_dir: str) -> dict[str, list[str]]:
     """returns e.g.
     {
         "artery_config": ["config_iteration_01", "config_iteration_02"],
