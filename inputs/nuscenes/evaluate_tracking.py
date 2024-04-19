@@ -1,10 +1,10 @@
 import json
 import os
-from typing import Any, Optional
+from typing import Optional
 
 from nuscenes.eval.tracking.evaluate import TrackingConfig, TrackingEval, config_factory
 
-from inputs.nuscenes.nuscenes_format import TrackingEvalParams
+from inputs.nuscenes.nuscenes_format import MetricsSummary, TrackingEvalParams
 
 """This is a wrapper around the nuscenes devkit tracking eval function.
 Like this, I can call my own function and don't have to use their interface in the rest of my code."""
@@ -32,7 +32,7 @@ def get_official_tracking_config() -> TrackingConfig:
 
 def nuscenes_devkit_tracking_eval(
     params: TrackingEvalParams, config: Optional[TrackingConfig] = None
-) -> dict[str, Any]:
+) -> MetricsSummary:
     config = config or get_official_tracking_config()
 
     tracking_eval_object = TrackingEval(
@@ -46,5 +46,5 @@ def nuscenes_devkit_tracking_eval(
         render_classes=params.render_classes,  # type: ignore
     )
     # If we don't want the file io, we can also just call .evaluate() on the tracking_eval_object
-    metrics_summary: dict[str, Any] = tracking_eval_object.main()
+    metrics_summary: MetricsSummary = tracking_eval_object.main()
     return metrics_summary

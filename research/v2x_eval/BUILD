@@ -18,15 +18,16 @@ py_binary(
 py_library(
     name = "v2x_eval_lib",
     srcs = [
-        "compute_tracking_metrics.py",
         "constants.py",
         "convert_to_nuscenes.py",
+        "obtain_tracking_metrics.py",
     ],
     data = [
         "//inputs/artery/to_nuscenes:artery_config_for_nuscenes.json",
     ],
     deps = [
         "//:conftest",
+        "//base/cli:suppress_stdout",
         "//inputs/artery:artery_lib",
         "//inputs/artery:conftest",
         "//inputs/artery/to_nuscenes",
