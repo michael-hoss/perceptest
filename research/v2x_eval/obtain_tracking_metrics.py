@@ -4,6 +4,7 @@ from os import path
 from re import findall
 from typing import Any
 
+from base.cli.suppress_stdout import suppress_output
 from inputs.nuscenes.evaluate_tracking import (
     MetricsSummary,
     TrackingConfig,
@@ -81,7 +82,8 @@ def obtain_metrics_for_split(
         return read_metrics_from_disk(tracking_eval_params)
 
     config: TrackingConfig = get_nuscenes_tracking_config_from_own_file(config_path=NUSCENES_EVAL_CONFIG_PATH)
-    metrics_summary: MetricsSummary = nuscenes_devkit_tracking_eval(params=tracking_eval_params, config=config)
+    with suppress_output():
+        metrics_summary: MetricsSummary = nuscenes_devkit_tracking_eval(params=tracking_eval_params, config=config)
     return metrics_summary
 
 

@@ -27,6 +27,7 @@ py_library(
     ],
     deps = [
         "//:conftest",
+        "//base/cli:suppress_stdout",
         "//inputs/artery:artery_lib",
         "//inputs/artery:conftest",
         "//inputs/artery/to_nuscenes",
