@@ -40,19 +40,21 @@ def obtain_metrics_for_nuscenes_version_dirs(
     metrics_of_configs: dict[str, Any] = {}
 
     with Progress(refresh_per_second=2) as progress:
-        dir_task = progress.add_task("[blue]Computing metrics for nuScenes dirs...", total=len(matching_dirs))
+        dir_task = progress.add_task("[blue]Obtaining nuScenes metrics...", total=len(matching_dirs))
         for matching_dir in matching_dirs:
             config_name = findall(r"sim\d{2}data", matching_dir)[0]
 
             metrics_of_splits: dict[str, Any] = obtain_metrics_for_all_splits(
-                nuscenes_dump_dir=matching_dir, force_regenerate=force_regenerate
+                nuscenes_dump_dir=matching_dir, progress=progress, force_regenerate=force_regenerate
             )
             metrics_of_configs[config_name] = metrics_of_splits
             progress.update(dir_task, advance=1)
         return metrics_of_configs
 
 
-def obtain_metrics_for_all_splits(nuscenes_dump_dir: str, force_regenerate: bool = False) -> dict[str, Any]:
+def obtain_metrics_for_all_splits(
+    nuscenes_dump_dir: str, progress: Progress, force_regenerate: bool = False
+) -> dict[str, Any]:
     """Returns a dict mapping split names to metrics summary dicts, e.g.
     {
         "all": metrics_summary_dict_on_all_results_YY,
@@ -65,11 +67,15 @@ def obtain_metrics_for_all_splits(nuscenes_dump_dir: str, force_regenerate: bool
     with open(custom_splits_path, "r") as file:
         splits_data = json.load(file)
 
+    nuscenes_version = path.basename(path.normpath(nuscenes_dump_dir))
+
     metrics_of_splits: dict[str, Any] = {}
+    splits_task = progress.add_task(f"[green]Obtaining metrics in {nuscenes_version}...", total=len(splits_data))
     for split_name in splits_data.keys():
         metrics_of_splits[split_name] = obtain_metrics_for_split(
             nuscenes_dump_dir, eval_split=split_name, force_regenerate=force_regenerate
         )
+        progress.update(splits_task, advance=1)
     return metrics_of_splits
 
 

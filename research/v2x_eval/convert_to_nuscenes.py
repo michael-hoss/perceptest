@@ -29,7 +29,9 @@ def obtain_nuscenes_version_dirs(
     """
     with Progress(refresh_per_second=1) as progress:
         artery_log_dirs: dict = get_structured_artery_log_dirs(artery_logs_root_dir)
-        configs_task = progress.add_task("[blue]Converting artery logs to nuScenes...", total=len(artery_log_dirs))
+        configs_task = progress.add_task(
+            "[blue]Obtaining nuScenes files from artery logs...", total=len(artery_log_dirs)
+        )
         for artery_config_name, artery_iteration_names in artery_log_dirs.items():
             nuscenes_version_dirname = f"{nuscenes_version_dirstem}_{artery_config_name}"
 
