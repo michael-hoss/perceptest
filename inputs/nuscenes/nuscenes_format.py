@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass, field
-from typing import Dict, List, Optional, TypeAlias
+from typing import Any, Dict, List, Optional, TypeAlias
 from uuid import uuid4
 
 from base.geometry.vectors import Quaternion, Vector2, Vector3
@@ -383,6 +383,7 @@ class TrackingSubmissionMeta:
 
 
 TrackingResults: TypeAlias = Dict[Guid, List[SampleResult]]
+MetricsSummary: TypeAlias = Dict[str, Any]
 
 
 def tracking_results_to_dict(results: TrackingResults) -> dict:

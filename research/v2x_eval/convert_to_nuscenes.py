@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 from research.v2x_eval.constants import NUSCENES_DATAROOT
 
 
-def convert_to_nuscenes_files(
+def obtain_nuscenes_version_dirs(
     artery_logs_root_dir: str, nuscenes_version_dirstem: str, force_regenerate: bool = False
 ) -> None:
     """
