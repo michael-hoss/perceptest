@@ -1,7 +1,6 @@
 import glob
 import json
 from os import path
-from re import findall
 from typing import Any
 
 from rich.progress import Progress  # type: ignore
@@ -14,17 +13,10 @@ from inputs.nuscenes.evaluate_tracking import (
     nuscenes_devkit_tracking_eval,
 )
 from inputs.nuscenes.nuscenes_format import TrackingEvalParams
-from research.v2x_eval.constants import (
-    NUSCENES_DIRNAME,
-    NUSCENES_EVAL_CONFIG_PATH,
-    NUSCENES_METRICS_OUTPUT_DIR,
-    NUSCENES_OUT_RESULTS_FILE,
-)
+from research.v2x_eval.constants import ConversionConfig
 
 
-def obtain_metrics_for_nuscenes_version_dirs(
-    artery_logs_root_dir: str, nuscenes_version_dirstem: str, force_regenerate: bool = False
-) -> dict[str, Any]:
+def obtain_metrics_for_nuscenes_version_dirs(conversion_config: ConversionConfig) -> dict[str, Any]:
     """Compute object tracking metrics for all directories under artery_logs_root_dir/NUSCENES_DIRNAME
     that have the given dirstem.
 
@@ -34,7 +26,7 @@ def obtain_metrics_for_nuscenes_version_dirs(
         "simYYdata": metrics_of_all_splits_of_simYYdata,  # etc.
     }
     """
-    pattern = path.join(artery_logs_root_dir, NUSCENES_DIRNAME, nuscenes_version_dirstem + "_*/")
+    pattern = path.join(conversion_config.nuscenes_root_dir, "sim??data")
     matching_dirs = glob.glob(pattern)
     matching_dirs = [dir for dir in sorted(matching_dirs) if path.isdir(dir)]
 
@@ -42,19 +34,21 @@ def obtain_metrics_for_nuscenes_version_dirs(
 
     with Progress(refresh_per_second=2) as progress:
         dir_task = progress.add_task("[blue]Obtaining nuScenes metrics...", total=len(matching_dirs))
-        for matching_dir in matching_dirs:
-            config_name = findall(r"sim\d{2}data", matching_dir)[0]
-
+        for artery_config in matching_dirs:
             metrics_of_splits: dict[str, Any] = obtain_metrics_for_all_splits(
-                nuscenes_dump_dir=matching_dir, progress=progress, force_regenerate=force_regenerate
+                artery_config=artery_config,
+                conversion_config=conversion_config,
+                progress=progress,
             )
-            metrics_of_configs[config_name] = metrics_of_splits
+            metrics_of_configs[artery_config] = metrics_of_splits
             progress.update(dir_task, advance=1)
         return metrics_of_configs
 
 
 def obtain_metrics_for_all_splits(
-    nuscenes_dump_dir: str, progress: Progress, force_regenerate: bool = False
+    artery_config: str,
+    conversion_config: ConversionConfig,
+    progress: Progress,
 ) -> dict[str, Any]:
     """Returns a dict mapping split names to metrics summary dicts, e.g.
     {
@@ -64,37 +58,37 @@ def obtain_metrics_for_all_splits(
     }
     """
     splits_data: dict = {}
-    custom_splits_path = path.join(nuscenes_dump_dir, "splits.json")
+    custom_splits_path = conversion_config.get_splits_filename(artery_config)
     with open(custom_splits_path, "r") as file:
         splits_data = json.load(file)
 
-    nuscenes_version = path.basename(path.normpath(nuscenes_dump_dir))
-
     metrics_of_splits: dict[str, Any] = {}
-    splits_task = progress.add_task(f"[green]Obtaining metrics in {nuscenes_version}...", total=len(splits_data))
+    splits_task = progress.add_task(f"[green]Obtaining metrics in {artery_config}...", total=len(splits_data))
     for split_name in splits_data.keys():
         metrics_of_splits[split_name] = obtain_metrics_for_split(
-            nuscenes_dump_dir, eval_split=split_name, force_regenerate=force_regenerate
+            artery_config, conversion_config=conversion_config, eval_split=split_name
         )
         progress.update(splits_task, advance=1)
     return metrics_of_splits
 
 
 def obtain_metrics_for_split(
-    nuscenes_dump_dir: str, eval_split: str = "all", force_regenerate: bool = False
+    artery_config: str, conversion_config: ConversionConfig, eval_split: str = "all"
 ) -> MetricsSummary:
     tracking_eval_params = TrackingEvalParams(
-        result_path=path.join(nuscenes_dump_dir, NUSCENES_OUT_RESULTS_FILE),
-        output_dir=path.join(nuscenes_dump_dir, NUSCENES_METRICS_OUTPUT_DIR, eval_split),
+        result_path=conversion_config.get_tracking_result_path(artery_config=artery_config),
+        output_dir=conversion_config.get_metrics_output_dir(artery_config, eval_split),
         eval_set=eval_split,  # see python-sdk/nuscenes/utils/splits.py
-        nusc_dataroot=path.dirname(path.normpath(nuscenes_dump_dir)),
-        nusc_version=path.basename(path.normpath(nuscenes_dump_dir)),
+        nusc_dataroot=conversion_config.nuscenes_root_dir,
+        nusc_version=artery_config,
     )
 
-    if not force_regenerate and metrics_files_present_on_disk(tracking_eval_params):
+    if not conversion_config.force_regenerate and metrics_files_present_on_disk(tracking_eval_params):
         return read_metrics_from_disk(tracking_eval_params)
 
-    config: TrackingConfig = get_nuscenes_tracking_config_from_own_file(config_path=NUSCENES_EVAL_CONFIG_PATH)
+    config: TrackingConfig = get_nuscenes_tracking_config_from_own_file(
+        config_path=conversion_config.nuscenes_eval_config_path
+    )
     with suppress_output():
         metrics_summary: MetricsSummary = nuscenes_devkit_tracking_eval(params=tracking_eval_params, config=config)
     return metrics_summary

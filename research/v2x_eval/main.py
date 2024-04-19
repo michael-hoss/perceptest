@@ -1,35 +1,22 @@
 import argparse
 
 from conftest import use_debugpy
+from research.v2x_eval.constants import ConversionConfig
 from research.v2x_eval.convert_to_nuscenes import obtain_nuscenes_version_dirs
 from research.v2x_eval.obtain_tracking_metrics import obtain_metrics_for_nuscenes_version_dirs
 
 
-def convert_and_evaluate(cli_args) -> dict:
-    obtain_nuscenes_version_dirs(
-        artery_logs_root_dir=cli_args.artery_logs_root_dir,
-        nuscenes_version_dirstem=cli_args.nuscenes_version_dirstem,
-        force_regenerate=cli_args.force_regenerate,
-    )
-    metrics_of_configs = obtain_metrics_for_nuscenes_version_dirs(
-        artery_logs_root_dir=cli_args.artery_logs_root_dir,
-        nuscenes_version_dirstem=cli_args.nuscenes_version_dirstem,
-        force_regenerate=cli_args.force_regenerate,
-    )
-    return metrics_of_configs
+def convert_and_evaluate(conversion_config: ConversionConfig) -> dict:
+    obtain_nuscenes_version_dirs(conversion_config=conversion_config)
+    metrics_on_artery_data = obtain_metrics_for_nuscenes_version_dirs(conversion_config=conversion_config)
+    return metrics_on_artery_data
 
 
-def parse_cli():
+def parse_cli() -> ConversionConfig:
     parser = argparse.ArgumentParser(
         description="Wrap entire data processing for the paper, from the raw artery logs to the final tables and plots."
     )
 
-    parser.add_argument(
-        "--nuscenes_version_dirstem",
-        type=str,
-        help="Prefix of the nuscenes version dir to which the artery data will be converted",
-        default="from_artery_v6",
-    )
     parser.add_argument(
         "--artery_logs_root_dir",
         type=str,
@@ -44,10 +31,13 @@ def parse_cli():
     )
 
     args = parser.parse_args()
-    return args
+    conversion_config = ConversionConfig(
+        artery_logs_root_dir=args.artery_logs_root_dir, force_regenerate=args.force_regenerate
+    )
+    return conversion_config
 
 
 if __name__ == "__main__":
     use_debugpy()
-    cli_args = parse_cli()
-    convert_and_evaluate(cli_args)
+    config: ConversionConfig = parse_cli()
+    convert_and_evaluate(config)

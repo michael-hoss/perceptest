@@ -10,16 +10,13 @@ from inputs.artery.from_logs.main_loader import pull_artery_data
 from inputs.artery.to_nuscenes.to_nuscenes import convert_to_nuscenes_classes, dump_to_nuscenes_dir
 from inputs.nuscenes.nuscenes_format import NuScenesAll
 from inputs.nuscenes.nuscenes_format_utils import merge_nuscenes_all
+from research.v2x_eval.constants import ConversionConfig
 
 if TYPE_CHECKING:
     from inputs.artery.artery_format import ArteryData
 
-from research.v2x_eval.constants import NUSCENES_DIRNAME
 
-
-def obtain_nuscenes_version_dirs(
-    artery_logs_root_dir: str, nuscenes_version_dirstem: str, force_regenerate: bool = False
-) -> None:
+def obtain_nuscenes_version_dirs(conversion_config: ConversionConfig) -> None:
     """
     - creates a custom nuscenes dataset version called e.g. "from_artery_v6_simXXdata"
     - makes each individual "results_YY" a separate scene within "from_artery_v6_simXXdata"
@@ -28,37 +25,33 @@ def obtain_nuscenes_version_dirs(
         - for all results_YY combined ("all")
     """
     with Progress(refresh_per_second=1) as progress:
-        artery_log_dirs: dict = get_structured_artery_log_dirs(artery_logs_root_dir)
+        artery_log_dirs: dict = get_structured_artery_log_dirs(conversion_config.artery_logs_root_dir)
         configs_task = progress.add_task(
             "[blue]Obtaining nuScenes files from artery logs...", total=len(artery_log_dirs)
         )
         for artery_config_name, artery_iteration_names in artery_log_dirs.items():
-            nuscenes_version_dirname = f"{nuscenes_version_dirstem}_{artery_config_name}"
-
             # Potentially skip if the nuscenes version directory already exists
-            if not force_regenerate and path.exists(
-                path.join(artery_logs_root_dir, NUSCENES_DIRNAME, nuscenes_version_dirname)
+            if not conversion_config.force_regenerate and path.exists(
+                conversion_config.get_nuscenes_version_dir(artery_config_name)
             ):
                 progress.update(configs_task, advance=1)
                 continue
 
             convert_artery_config_logs_to_nuscenes_dir(
-                artery_logs_root_dir=artery_logs_root_dir,
+                conversion_config=conversion_config,
                 progress=progress,
                 configs_task=configs_task,
                 artery_config_name=artery_config_name,
                 artery_iteration_names=artery_iteration_names,
-                nuscenes_version_dirname=nuscenes_version_dirname,
             )
 
 
 def convert_artery_config_logs_to_nuscenes_dir(
-    artery_logs_root_dir: str,
+    conversion_config: ConversionConfig,
     progress: Progress,
     configs_task: TaskID,
     artery_config_name: str,
     artery_iteration_names: list[str],
-    nuscenes_version_dirname: str,
 ):
     iterations_task = progress.add_task("", total=len(artery_iteration_names))
     nuscenes_all_list: list[NuScenesAll] = []
@@ -69,10 +62,9 @@ def convert_artery_config_logs_to_nuscenes_dir(
             iterations_task, description=f"[green]Converting {artery_config_name}: {artery_iteration_name}..."
         )
         nuscenes_all_of_iteration = get_nuscenes_all(
-            artery_logs_root_dir=artery_logs_root_dir,
+            conversion_config=conversion_config,
             artery_config_name=artery_config_name,
             artery_iteration_name=artery_iteration_name,
-            nuscenes_version_dirname=nuscenes_version_dirname,
         )
         nuscenes_all_list.append(nuscenes_all_of_iteration)
         progress.update(iterations_task, advance=1)
@@ -83,7 +75,7 @@ def convert_artery_config_logs_to_nuscenes_dir(
     nuscenes_all_combined = merge_nuscenes_all(nuscenes_all_list)
     dump_to_nuscenes_dir(
         nuscenes_all=nuscenes_all_combined,
-        nuscenes_version_dir=path.join(artery_logs_root_dir, NUSCENES_DIRNAME, nuscenes_version_dirname),
+        nuscenes_version_dir=conversion_config.get_nuscenes_version_dir(artery_config_name),
         force_overwrite=True,
     )
     progress.update(configs_task, advance=0.5)
@@ -135,11 +127,13 @@ def get_nuscenes_scene_name(artery_log_dir: str) -> str:
 
 
 def get_nuscenes_all(
-    artery_logs_root_dir: str, artery_config_name: str, artery_iteration_name: str, nuscenes_version_dirname: str
+    conversion_config: ConversionConfig,
+    artery_config_name: str,
+    artery_iteration_name: str,
 ) -> NuScenesAll:
     """Converts one artery sim log to a NuScenesAll instance"""
     artery_sim_log = ArterySimLog(
-        root_dir=path.join(artery_logs_root_dir, artery_config_name, artery_iteration_name),
+        root_dir=path.join(conversion_config.artery_logs_root_dir, artery_config_name, artery_iteration_name),
         res_file="localperceptionGT-vehicle_0.out",
         out_file="localperception-vehicle_0.out",
         ego_file="monitor_car-vehicle_0.out",
@@ -148,6 +142,6 @@ def get_nuscenes_all(
 
     nuscenes_all: NuScenesAll = convert_to_nuscenes_classes(
         artery_data=pulled_sim_log,
-        nuscenes_version_dirname=nuscenes_version_dirname,
+        nuscenes_version_dirname=artery_config_name,
     )
     return nuscenes_all
