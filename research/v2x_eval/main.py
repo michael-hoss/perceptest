@@ -12,7 +12,9 @@ def convert_and_evaluate(cli_args) -> dict:
         force_regenerate=cli_args.force_regenerate,
     )
     metrics_of_configs = obtain_metrics_for_nuscenes_version_dirs(
-        nuscenes_version_dirstem=cli_args.nuscenes_version_dirstem, force_regenerate=cli_args.force_regenerate
+        artery_logs_root_dir=cli_args.artery_logs_root_dir,
+        nuscenes_version_dirstem=cli_args.nuscenes_version_dirstem,
+        force_regenerate=cli_args.force_regenerate,
     )
     return metrics_of_configs
 

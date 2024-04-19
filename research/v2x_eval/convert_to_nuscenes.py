@@ -14,7 +14,7 @@ from inputs.nuscenes.nuscenes_format_utils import merge_nuscenes_all
 if TYPE_CHECKING:
     from inputs.artery.artery_format import ArteryData
 
-from research.v2x_eval.constants import NUSCENES_DATAROOT
+from research.v2x_eval.constants import NUSCENES_DIRNAME
 
 
 def obtain_nuscenes_version_dirs(
@@ -36,7 +36,9 @@ def obtain_nuscenes_version_dirs(
             nuscenes_version_dirname = f"{nuscenes_version_dirstem}_{artery_config_name}"
 
             # Potentially skip if the nuscenes version directory already exists
-            if not force_regenerate and path.exists(path.join(NUSCENES_DATAROOT, nuscenes_version_dirname)):
+            if not force_regenerate and path.exists(
+                path.join(artery_logs_root_dir, NUSCENES_DIRNAME, nuscenes_version_dirname)
+            ):
                 progress.update(configs_task, advance=1)
                 continue
 
@@ -81,7 +83,7 @@ def convert_artery_config_logs_to_nuscenes_dir(
     nuscenes_all_combined = merge_nuscenes_all(nuscenes_all_list)
     dump_to_nuscenes_dir(
         nuscenes_all=nuscenes_all_combined,
-        nuscenes_version_dir=path.join(NUSCENES_DATAROOT, nuscenes_version_dirname),
+        nuscenes_version_dir=path.join(artery_logs_root_dir, NUSCENES_DIRNAME, nuscenes_version_dirname),
         force_overwrite=True,
     )
     progress.update(configs_task, advance=0.5)

@@ -15,7 +15,7 @@ from inputs.nuscenes.evaluate_tracking import (
 )
 from inputs.nuscenes.nuscenes_format import TrackingEvalParams
 from research.v2x_eval.constants import (
-    NUSCENES_DATAROOT,
+    NUSCENES_DIRNAME,
     NUSCENES_EVAL_CONFIG_PATH,
     NUSCENES_METRICS_OUTPUT_DIR,
     NUSCENES_OUT_RESULTS_FILE,
@@ -23,9 +23,10 @@ from research.v2x_eval.constants import (
 
 
 def obtain_metrics_for_nuscenes_version_dirs(
-    nuscenes_version_dirstem: str, force_regenerate: bool = False
+    artery_logs_root_dir: str, nuscenes_version_dirstem: str, force_regenerate: bool = False
 ) -> dict[str, Any]:
-    """Compute object tracking metrics for all directories under NUSCENES_DATAROOT that have the given dirstem.
+    """Compute object tracking metrics for all directories under artery_logs_root_dir/NUSCENES_DIRNAME
+    that have the given dirstem.
 
     Returns a dict
     {
@@ -33,7 +34,7 @@ def obtain_metrics_for_nuscenes_version_dirs(
         "simYYdata": metrics_of_all_splits_of_simYYdata,  # etc.
     }
     """
-    pattern = path.join(NUSCENES_DATAROOT, nuscenes_version_dirstem + "_*/")
+    pattern = path.join(artery_logs_root_dir, NUSCENES_DIRNAME, nuscenes_version_dirstem + "_*/")
     matching_dirs = glob.glob(pattern)
     matching_dirs = [dir for dir in sorted(matching_dirs) if path.isdir(dir)]
 
@@ -86,7 +87,7 @@ def obtain_metrics_for_split(
         result_path=path.join(nuscenes_dump_dir, NUSCENES_OUT_RESULTS_FILE),
         output_dir=path.join(nuscenes_dump_dir, NUSCENES_METRICS_OUTPUT_DIR, eval_split),
         eval_set=eval_split,  # see python-sdk/nuscenes/utils/splits.py
-        nusc_dataroot=NUSCENES_DATAROOT,
+        nusc_dataroot=path.dirname(path.normpath(nuscenes_dump_dir)),
         nusc_version=path.basename(path.normpath(nuscenes_dump_dir)),
     )
 
