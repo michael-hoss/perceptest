@@ -137,6 +137,7 @@ def get_nuscenes_all(
         res_file="localperceptionGT-vehicle_0.out",
         out_file="localperception-vehicle_0.out",
         ego_file="monitor_car-vehicle_0.out",
+        map_file="../../sumo_map.png",
     )
     pulled_sim_log: ArterySimLog = pull_artery_sim_log(artery_sim_log_dump=artery_sim_log)
 
