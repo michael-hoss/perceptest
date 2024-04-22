@@ -60,7 +60,7 @@ class ArteryConstants:
         self.log_date_captured = "not applicable"
         self.log_location = "sumo-artery-location"
 
-        self.map_filename = "white_map.png"
+        self.map_filename = "artery_map.png"
         self.map_category = "semantic_prior"
 
         self.visibility_full = Visibility(token=Guid("1" * 32), description="fully visible (100%)", level="v100")

@@ -57,7 +57,9 @@ def get_nuscenes_splits(nuscenes_reference: NuScenesReference) -> list[Split]:
 
 def get_nuscenes_reference(artery_sim_log: ArterySimLog, nuscenes_version_dirname: str) -> NuScenesReference:
     artery_log = get_log(logfile_name=artery_sim_log.name)
-    artery_map = get_map(nuscenes_version_dirname=nuscenes_version_dirname, log_tokens=[artery_log.token])
+    artery_map = get_map(
+        nuscenes_version_dirname=nuscenes_version_dirname, log_tokens=[artery_log.token], png_bytes=artery_sim_log.map
+    )
 
     ego_poses = get_ego_poses(artery_sim_log=artery_sim_log)
     samples, scenes = get_samples_and_scenes(artery_sim_log=artery_sim_log, log_token=artery_log.token)
@@ -109,10 +111,11 @@ def get_log(logfile_name: str) -> Log:
     )
 
 
-def get_map(nuscenes_version_dirname: str, log_tokens: list[Guid]) -> Map:
+def get_map(nuscenes_version_dirname: str, log_tokens: list[Guid], png_bytes: bytes) -> Map:
     return Map(
         token=Guid(),
         category=ARTERY_CONSTANTS.map_category,
+        png_bytes=png_bytes,
         filename=os.path.join(nuscenes_version_dirname, ARTERY_CONSTANTS.map_filename),
         log_tokens=log_tokens,
     )
@@ -375,5 +378,9 @@ def dump_to_nuscenes_dir(nuscenes_all: NuScenesAll, nuscenes_version_dir: str, f
         json.dump(nuscenes_all.submission.to_dict(), json_file, indent=common_indent)
 
     # Dump map file
-    map_path = os.path.join(nuscenes_version_dir, ARTERY_CONSTANTS.map_filename)
-    dump_white_map_mask_png(file_path=map_path)
+    # map_path = os.path.join(nuscenes_version_dir, ARTERY_CONSTANTS.map_filename)
+    for map in nuscenes_all.reference.maps:
+        # avoid ns  version dir twice in the path
+        png_path = os.path.normpath(os.path.join(nuscenes_version_dir, "..", map.filename))
+        with open(png_path, "wb") as f:
+            f.write(map.png_bytes)
