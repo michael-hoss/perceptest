@@ -342,7 +342,7 @@ def dump_to_nuscenes_dir(nuscenes_all: NuScenesAll, nuscenes_version_dir: str, f
                 raise ValueError(
                     f"Directory {nuscenes_version_dir} already exists. Set force_overwrite=True to clear it."
                 )
-    os.mkdir(nuscenes_version_dir)
+    os.makedirs(nuscenes_version_dir, exist_ok=False)
 
     # Dump reference data
     def _dump_to_json_file(dataclass_objects: Sequence[NuScenesWritable], custom_filename: Optional[str] = None):
