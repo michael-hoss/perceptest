@@ -7,7 +7,7 @@ from typing import Optional, Sequence
 from PIL import Image
 
 from base.geometry.vectors import Quaternion, Vector2, Vector3
-from inputs.artery.artery_format import ArteryData, ArteryObject
+from inputs.artery.artery_format import ArteryObject, ArterySimLog
 from inputs.artery.to_nuscenes.to_nuscenes_constants import ArteryConstants
 from inputs.nuscenes.nuscenes_format import (
     EgoPose,
@@ -32,12 +32,12 @@ from inputs.nuscenes.nuscenes_format import (
 ARTERY_CONSTANTS = ArteryConstants()
 
 
-def convert_to_nuscenes_classes(artery_data: ArteryData, nuscenes_version_dirname: str) -> NuScenesAll:
+def convert_to_nuscenes_classes(artery_sim_log: ArterySimLog, nuscenes_version_dirname: str) -> NuScenesAll:
     nuscenes_reference: NuScenesReference = get_nuscenes_reference(
-        artery_data=artery_data, nuscenes_version_dirname=nuscenes_version_dirname
+        artery_sim_log=artery_sim_log, nuscenes_version_dirname=nuscenes_version_dirname
     )
     nuscenes_submission: TrackingSubmission = get_nuscenes_submission(
-        artery_data=artery_data, samples=nuscenes_reference.samples
+        artery_sim_log=artery_sim_log, samples=nuscenes_reference.samples
     )
     nuscenes_splits: list[Split] = get_nuscenes_splits(nuscenes_reference=nuscenes_reference)
 
@@ -55,15 +55,15 @@ def get_nuscenes_splits(nuscenes_reference: NuScenesReference) -> list[Split]:
     return splits
 
 
-def get_nuscenes_reference(artery_data: ArteryData, nuscenes_version_dirname: str) -> NuScenesReference:
-    artery_log = get_log(logfile_name=artery_data.name)
+def get_nuscenes_reference(artery_sim_log: ArterySimLog, nuscenes_version_dirname: str) -> NuScenesReference:
+    artery_log = get_log(logfile_name=artery_sim_log.name)
     artery_map = get_map(nuscenes_version_dirname=nuscenes_version_dirname, log_tokens=[artery_log.token])
 
-    ego_poses = get_ego_poses(artery_data=artery_data)
-    samples, scenes = get_samples_and_scenes(artery_data=artery_data, log_token=artery_log.token)
+    ego_poses = get_ego_poses(artery_sim_log=artery_sim_log)
+    samples, scenes = get_samples_and_scenes(artery_sim_log=artery_sim_log, log_token=artery_log.token)
 
     sample_annotations, sample_data_list, instances = get_objects_and_frames(
-        artery_data=artery_data, samples=samples, ego_poses=ego_poses
+        artery_sim_log=artery_sim_log, samples=samples, ego_poses=ego_poses
     )
 
     nuscenes_reference = NuScenesReference(
@@ -84,10 +84,10 @@ def get_nuscenes_reference(artery_data: ArteryData, nuscenes_version_dirname: st
     return nuscenes_reference
 
 
-def get_ego_poses(artery_data: ArteryData) -> list[EgoPose]:
+def get_ego_poses(artery_sim_log: ArterySimLog) -> list[EgoPose]:
     ego_poses: list[EgoPose] = []
 
-    for ego_frame in artery_data.ego_vehicle:
+    for ego_frame in artery_sim_log.ego_vehicle:
         ego_pose = EgoPose(
             token=Guid(),
             timestamp=ego_frame["origin"]["timestamp"],
@@ -183,7 +183,7 @@ def dump_white_map_mask_png(file_path: str):
 
 
 def get_objects_and_frames(
-    artery_data: ArteryData, samples: list[Sample], ego_poses: list[EgoPose]
+    artery_sim_log: ArterySimLog, samples: list[Sample], ego_poses: list[EgoPose]
 ) -> tuple[list[SampleAnnotation], list[SampleData], list[Instance]]:
     """Get data of dynamic reference objects and frames all in one function because they
     are interdependent"""
@@ -192,7 +192,7 @@ def get_objects_and_frames(
     sample_annotations: list[SampleAnnotation] = []
     instances: list[Instance] = []
 
-    for artery_trajectory in artery_data.objects_res.values():
+    for artery_trajectory in artery_sim_log.objects_res.values():
         if len(artery_trajectory) == 0:
             continue
 
@@ -251,15 +251,15 @@ def get_objects_and_frames(
     return sample_annotations, sample_data_list, instances
 
 
-def get_samples_and_scenes(artery_data: ArteryData, log_token: Guid) -> tuple[list[Sample], list[Scene]]:
+def get_samples_and_scenes(artery_sim_log: ArterySimLog, log_token: Guid) -> tuple[list[Sample], list[Scene]]:
     scene_token = Guid()  # same scene for all samples
 
     samples: list[Sample] = []
 
     timestamp_counter: int = 0
-    for timestamp in artery_data.timestamps:
+    for timestamp in artery_sim_log.timestamps:
         first_stamp = timestamp_counter == 0
-        last_stamp = timestamp_counter == (len(artery_data.timestamps) - 1)
+        last_stamp = timestamp_counter == (len(artery_sim_log.timestamps) - 1)
 
         sample = Sample(
             token=Guid() if first_stamp else samples[-1].next,
@@ -276,18 +276,18 @@ def get_samples_and_scenes(artery_data: ArteryData, log_token: Guid) -> tuple[li
         Scene(
             token=scene_token,
             log_token=log_token,
-            nbr_samples=len(artery_data.timestamps),
+            nbr_samples=len(artery_sim_log.timestamps),
             first_sample_token=samples[0].token,
             last_sample_token=samples[-1].token,
-            name=artery_data.name,
+            name=artery_sim_log.name,
             description="Converted scene from an artery simulation log",
         )
     ]
     return samples, scenes
 
 
-def get_nuscenes_submission(artery_data: ArteryData, samples: list[Sample]) -> TrackingSubmission:
-    sample_results: TrackingResults = get_sample_results_over_frames(artery_data=artery_data, samples=samples)
+def get_nuscenes_submission(artery_sim_log: ArterySimLog, samples: list[Sample]) -> TrackingSubmission:
+    sample_results: TrackingResults = get_sample_results_over_frames(artery_sim_log=artery_sim_log, samples=samples)
 
     tracking_submission = TrackingSubmission(
         token=Guid(), meta=ARTERY_CONSTANTS.tracking_submission_meta, results=sample_results
@@ -295,11 +295,11 @@ def get_nuscenes_submission(artery_data: ArteryData, samples: list[Sample]) -> T
     return tracking_submission
 
 
-def get_sample_results_over_frames(artery_data: ArteryData, samples: list[Sample]) -> TrackingResults:
+def get_sample_results_over_frames(artery_sim_log: ArterySimLog, samples: list[Sample]) -> TrackingResults:
     """TrackingResults maps each sample_token (frame) to a list of sample_results (perceived objects)."""
     sample_results: TrackingResults = {}
 
-    for artery_object_id, artery_trajectory in artery_data.objects_out.items():
+    for artery_object_id, artery_trajectory in artery_sim_log.objects_out.items():
         if len(artery_trajectory) == 0:
             continue
 

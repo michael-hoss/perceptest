@@ -5,15 +5,15 @@ from typing import TYPE_CHECKING
 
 from rich.progress import Progress, TaskID  # type: ignore
 
-from inputs.artery.artery_format import ArterySimLog
-from inputs.artery.from_logs.main_loader import pull_artery_data
+from inputs.artery.artery_format import ArterySimLogDump
+from inputs.artery.from_logs.main_loader import pull_artery_sim_log
 from inputs.artery.to_nuscenes.to_nuscenes import convert_to_nuscenes_classes, dump_to_nuscenes_dir
 from inputs.nuscenes.nuscenes_format import NuScenesAll
 from inputs.nuscenes.nuscenes_format_utils import merge_nuscenes_all
 from research.v2x_eval.constants import ConversionConfig
 
 if TYPE_CHECKING:
-    from inputs.artery.artery_format import ArteryData
+    from inputs.artery.artery_format import ArterySimLog
 
 
 def obtain_nuscenes_version_dirs(conversion_config: ConversionConfig) -> None:
@@ -132,16 +132,16 @@ def get_nuscenes_all(
     artery_iteration_name: str,
 ) -> NuScenesAll:
     """Converts one artery sim log to a NuScenesAll instance"""
-    artery_sim_log = ArterySimLog(
+    artery_sim_log = ArterySimLogDump(
         root_dir=path.join(conversion_config.artery_logs_root_dir, artery_config_name, artery_iteration_name),
         res_file="localperceptionGT-vehicle_0.out",
         out_file="localperception-vehicle_0.out",
         ego_file="monitor_car-vehicle_0.out",
     )
-    pulled_sim_log: ArteryData = pull_artery_data(artery_sim_log=artery_sim_log)
+    pulled_sim_log: ArterySimLog = pull_artery_sim_log(artery_sim_log_dump=artery_sim_log)
 
     nuscenes_all: NuScenesAll = convert_to_nuscenes_classes(
-        artery_data=pulled_sim_log,
+        artery_sim_log=pulled_sim_log,
         nuscenes_version_dirname=artery_config_name,
     )
     return nuscenes_all
