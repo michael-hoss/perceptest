@@ -63,7 +63,9 @@ def obtain_metrics_for_all_splits(
         splits_data = json.load(file)
 
     metrics_of_splits: dict[str, Any] = {}
-    splits_task = progress.add_task(f"[green]Obtaining metrics in {artery_config}...", total=len(splits_data))
+    splits_task = progress.add_task(
+        f"[green]Obtaining metrics in {path.basename(artery_config)}...", total=len(splits_data)
+    )
     for split_name in splits_data.keys():
         metrics_of_splits[split_name] = obtain_metrics_for_split(
             artery_config, conversion_config=conversion_config, eval_split=split_name
