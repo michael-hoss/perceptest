@@ -18,13 +18,13 @@ def parse_cli() -> ConversionConfig:
     )
 
     parser.add_argument(
-        "--artery_logs_root_dir",
+        "--artery-logs-root-dir",
         type=str,
         help="Root directory of the artery logs (input data)",
         default="/data/sets/KIT_V2X/v6/dataset_last",
     )
     parser.add_argument(
-        "--force_regenerate",
+        "--force-regenerate",
         action="store_true",
         default=False,
         help="If True, regenerates all data from scratch",
