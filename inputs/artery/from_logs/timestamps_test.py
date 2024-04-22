@@ -3,7 +3,7 @@ from typing import Optional
 
 import pytest
 
-from inputs.artery.artery_format import ArteryData, ArteryObject
+from inputs.artery.artery_format import ArteryObject, ArterySimLog
 from inputs.artery.from_logs.timestamps import (
     _find_index_of_fuzzy_value,
     _get_timestamps,
@@ -117,15 +117,17 @@ def test_map_to_common_timestamps_ego_in_middle() -> None:
         2: _get_dummy_trajectory([1, 3]),
     }
     ego_vehicle = _get_dummy_trajectory([3])
-    artery_data = ArteryData(objects_out=objects_out, objects_res=objects_res, ego_vehicle=ego_vehicle, timestamps=[])
+    artery_sim_log = ArterySimLog(
+        objects_out=objects_out, objects_res=objects_res, ego_vehicle=ego_vehicle, timestamps=[]
+    )
 
     # Function under test
-    tidy_up_timestamps(artery_data=artery_data)
+    tidy_up_timestamps(artery_sim_log=artery_sim_log)
 
     # Assertions
-    assert artery_data.timestamps == [3]
-    assert _get_timestamps(artery_data.objects_out[1]) == [3]
-    assert _get_timestamps(artery_data.objects_res[2]) == [3]
+    assert artery_sim_log.timestamps == [3]
+    assert _get_timestamps(artery_sim_log.objects_out[1]) == [3]
+    assert _get_timestamps(artery_sim_log.objects_res[2]) == [3]
 
 
 def test_map_to_common_timestamps_no_overlap() -> None:
@@ -137,11 +139,13 @@ def test_map_to_common_timestamps_no_overlap() -> None:
         2: _get_dummy_trajectory([1, 3]),
     }
     ego_vehicle = _get_dummy_trajectory([7, 9])
-    artery_data = ArteryData(objects_out=objects_out, objects_res=objects_res, ego_vehicle=ego_vehicle, timestamps=[])
+    artery_sim_log = ArterySimLog(
+        objects_out=objects_out, objects_res=objects_res, ego_vehicle=ego_vehicle, timestamps=[]
+    )
 
     # Function under test
     with pytest.raises(ValueError, match="No common time range found."):
-        tidy_up_timestamps(artery_data=artery_data)
+        tidy_up_timestamps(artery_sim_log=artery_sim_log)
 
 
 def test_map_to_common_timestamps_fuzzy() -> None:
@@ -153,17 +157,19 @@ def test_map_to_common_timestamps_fuzzy() -> None:
         2: _get_dummy_trajectory([2, 4, 6, 8]),
     }
     ego_vehicle = _get_dummy_trajectory([1, 3, 5])
-    artery_data = ArteryData(objects_out=objects_out, objects_res=objects_res, ego_vehicle=ego_vehicle, timestamps=[])
+    artery_sim_log = ArterySimLog(
+        objects_out=objects_out, objects_res=objects_res, ego_vehicle=ego_vehicle, timestamps=[]
+    )
 
     # Function under test
-    tidy_up_timestamps(artery_data=artery_data, expect_no_shift=False)
+    tidy_up_timestamps(artery_sim_log=artery_sim_log, expect_no_shift=False)
 
     # Assertions
     # Expect cutoff of OuT and ReS data at beginning and end, and shift onto subsequent ego stamps.
-    assert artery_data.timestamps == [3, 5]
-    assert _get_timestamps(artery_data.objects_out[1]) == [3, 5]
-    assert _get_timestamps(artery_data.objects_res[2]) == [3, 5]
-    assert _get_timestamps(artery_data.ego_vehicle) == [3, 5]
+    assert artery_sim_log.timestamps == [3, 5]
+    assert _get_timestamps(artery_sim_log.objects_out[1]) == [3, 5]
+    assert _get_timestamps(artery_sim_log.objects_res[2]) == [3, 5]
+    assert _get_timestamps(artery_sim_log.ego_vehicle) == [3, 5]
 
 
 if __name__ == "__main__":

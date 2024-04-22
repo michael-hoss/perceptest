@@ -4,7 +4,7 @@ from typing import Sequence
 import pytest
 
 from base.geometry.aa_bounding_box import AABoundingBox
-from inputs.artery.artery_format import ArteryData, ArteryObject
+from inputs.artery.artery_format import ArteryObject, ArterySimLog
 from inputs.artery.from_logs.transform_coordinates import transform_to_local_metric_coords
 
 
@@ -21,30 +21,30 @@ def get_outer_hull_of_all_locations(
     return actual_bounds
 
 
-def test_transform_to_meters_pass(artery_data: ArteryData) -> None:
+def test_transform_to_meters_pass(artery_sim_log: ArterySimLog) -> None:
     """This test rather tests the data than the code."""
 
     # Function under test
-    artery_data = transform_to_local_metric_coords(artery_data=artery_data)
+    artery_sim_log = transform_to_local_metric_coords(artery_sim_log=artery_sim_log)
 
     # Assertions
-    assert isinstance(artery_data, ArteryData)
+    assert isinstance(artery_sim_log, ArterySimLog)
 
     # Get the bounds of the ReS coordinates
     actual_bounds_res_objects = AABoundingBox()
-    for res_object_traj in artery_data.objects_res.values():
+    for res_object_traj in artery_sim_log.objects_res.values():
         current_bounds: AABoundingBox = get_outer_hull_of_all_locations(artery_object_traj=res_object_traj)
         actual_bounds_res_objects.include_aa_bounding_box(other=current_bounds)
 
     # Get the bounds of the OuT coordinates
     actual_bounds_out_objects = AABoundingBox()
-    for out_object_traj in artery_data.objects_out.values():
+    for out_object_traj in artery_sim_log.objects_out.values():
         current_bounds = get_outer_hull_of_all_locations(artery_object_traj=out_object_traj)
         actual_bounds_out_objects.include_aa_bounding_box(other=current_bounds)
 
     # Get the bounds of the ego vehicle coordinates
     actual_bounds_ego_vehicle: AABoundingBox = get_outer_hull_of_all_locations(
-        artery_object_traj=artery_data.ego_vehicle
+        artery_object_traj=artery_sim_log.ego_vehicle
     )
 
     # Lenghts in meters. The numbers are from the sumo description of the coordinates.

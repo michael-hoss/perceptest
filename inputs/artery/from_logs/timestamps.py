@@ -3,45 +3,45 @@ from typing import Optional, Sequence
 
 from matplotlib import pyplot
 
-from inputs.artery.artery_format import ArteryData, ArteryObject, TimeStamps
+from inputs.artery.artery_format import ArteryObject, ArterySimLog, TimeStamps
 
 
-def tidy_up_timestamps(artery_data: ArteryData, expect_no_shift: bool = True) -> ArteryData:
+def tidy_up_timestamps(artery_sim_log: ArterySimLog, expect_no_shift: bool = True) -> ArterySimLog:
     """After loading the raw artery logs, the time stamps might be untidy.
     This function tidies them up."""
 
-    common_begin, common_end = _determine_common_time_range(artery_data=artery_data)
-    remove_overhanging_time_frames(artery_data=artery_data, begin=common_begin, end=common_end)
+    common_begin, common_end = _determine_common_time_range(artery_sim_log=artery_sim_log)
+    remove_overhanging_time_frames(artery_sim_log=artery_sim_log, begin=common_begin, end=common_end)
 
     # Use ego time stamps as common time stamps because they (should) have no gaps in them
-    artery_data.timestamps = _get_timestamps(artery_data.ego_vehicle)
+    artery_sim_log.timestamps = _get_timestamps(artery_sim_log.ego_vehicle)
 
-    artery_data = _shift_to_nearby_common_stamps(artery_data=artery_data, expect_no_shift=expect_no_shift)
-    return artery_data
+    artery_sim_log = _shift_to_nearby_common_stamps(artery_sim_log=artery_sim_log, expect_no_shift=expect_no_shift)
+    return artery_sim_log
 
 
-def remove_overhanging_time_frames(artery_data: ArteryData, begin: int, end: int) -> None:
-    """Remove frames of artery_data outside of beginning and end time stamps."""
+def remove_overhanging_time_frames(artery_sim_log: ArterySimLog, begin: int, end: int) -> None:
+    """Remove frames of artery_sim_log outside of beginning and end time stamps."""
 
-    for id, res_object_traj in artery_data.objects_res.items():
-        artery_data.objects_res[id] = _trim_to_time_range(trajectory=res_object_traj, begin=begin, end=end)
+    for id, res_object_traj in artery_sim_log.objects_res.items():
+        artery_sim_log.objects_res[id] = _trim_to_time_range(trajectory=res_object_traj, begin=begin, end=end)
 
-    for id, out_object_traj in artery_data.objects_out.items():
-        artery_data.objects_out[id] = _trim_to_time_range(trajectory=out_object_traj, begin=begin, end=end)
+    for id, out_object_traj in artery_sim_log.objects_out.items():
+        artery_sim_log.objects_out[id] = _trim_to_time_range(trajectory=out_object_traj, begin=begin, end=end)
 
-    artery_data.ego_vehicle = _trim_to_time_range(trajectory=artery_data.ego_vehicle, begin=begin, end=end)
+    artery_sim_log.ego_vehicle = _trim_to_time_range(trajectory=artery_sim_log.ego_vehicle, begin=begin, end=end)
 
     # Remove trajectories that are empty after trimming
-    artery_data.objects_res = {key: value for key, value in artery_data.objects_res.items() if value != []}
-    artery_data.objects_out = {key: value for key, value in artery_data.objects_out.items() if value != []}
-    assert artery_data.ego_vehicle != []  # Ego vehicle trajectory should never be empty
+    artery_sim_log.objects_res = {key: value for key, value in artery_sim_log.objects_res.items() if value != []}
+    artery_sim_log.objects_out = {key: value for key, value in artery_sim_log.objects_out.items() if value != []}
+    assert artery_sim_log.ego_vehicle != []  # Ego vehicle trajectory should never be empty
 
 
-def _determine_common_time_range(artery_data: ArteryData) -> tuple[int, int]:
+def _determine_common_time_range(artery_sim_log: ArterySimLog) -> tuple[int, int]:
     """Dermine the time range, where all of OuT, ReS, and ego data are present.
     In case of no overlap, common_begin can be after common_end."""
 
-    time_stamps: TimeStamps = extract_time_stamps(artery_data=artery_data)
+    time_stamps: TimeStamps = extract_time_stamps(artery_sim_log=artery_sim_log)
 
     out_begin: int = min([out_traj[0] for out_traj in time_stamps.out.values()])
     res_begin: int = min([res_traj[0] for res_traj in time_stamps.res.values()])
@@ -55,17 +55,17 @@ def _determine_common_time_range(artery_data: ArteryData) -> tuple[int, int]:
     return common_begin, common_end
 
 
-def extract_time_stamps(artery_data: ArteryData) -> TimeStamps:
+def extract_time_stamps(artery_sim_log: ArterySimLog) -> TimeStamps:
     # Extract timestamps from the artery data
     timestamps_out: dict[int, list[int]] = {}
     timestamps_res: dict[int, list[int]] = {}
     timestamps_ego: list[int] = []
 
-    for res_id, res_object_traj in artery_data.objects_res.items():
+    for res_id, res_object_traj in artery_sim_log.objects_res.items():
         timestamps_res[res_id] = _get_timestamps(res_object_traj)
-    for out_id, out_object_traj in artery_data.objects_out.items():
+    for out_id, out_object_traj in artery_sim_log.objects_out.items():
         timestamps_out[out_id] = _get_timestamps(out_object_traj)
-    timestamps_ego = _get_timestamps(artery_data.ego_vehicle)
+    timestamps_ego = _get_timestamps(artery_sim_log.ego_vehicle)
 
     return TimeStamps(out=timestamps_out, res=timestamps_res, ego=timestamps_ego)
 
@@ -110,24 +110,26 @@ def _find_index_of_fuzzy_value(list: list[int], value: int, use_smaller: bool) -
         return len(list) - 1
 
 
-def _shift_to_nearby_common_stamps(artery_data: ArteryData, expect_no_shift: bool = True) -> ArteryData:
+def _shift_to_nearby_common_stamps(artery_sim_log: ArterySimLog, expect_no_shift: bool = True) -> ArterySimLog:
     """From artery data v5 onwards, the timestamps of OuT, ReS, and ego already lie
     on the same common equidistant points in time. Thus, we expect no shift."""
 
     if expect_no_shift:
-        initial_artery_data = deepcopy(artery_data)
+        initial_artery_data = deepcopy(artery_sim_log)
 
-    for trajectory_res in artery_data.objects_res.values():
-        _shift_trajectory_to_common_stamps(trajectory=trajectory_res, common_timestamps=artery_data.timestamps)
+    for trajectory_res in artery_sim_log.objects_res.values():
+        _shift_trajectory_to_common_stamps(trajectory=trajectory_res, common_timestamps=artery_sim_log.timestamps)
 
-    for trajectory_out in artery_data.objects_out.values():
-        _shift_trajectory_to_common_stamps(trajectory=trajectory_out, common_timestamps=artery_data.timestamps)
+    for trajectory_out in artery_sim_log.objects_out.values():
+        _shift_trajectory_to_common_stamps(trajectory=trajectory_out, common_timestamps=artery_sim_log.timestamps)
 
-    _shift_trajectory_to_common_stamps(trajectory=artery_data.ego_vehicle, common_timestamps=artery_data.timestamps)
+    _shift_trajectory_to_common_stamps(
+        trajectory=artery_sim_log.ego_vehicle, common_timestamps=artery_sim_log.timestamps
+    )
 
     if expect_no_shift:
-        assert initial_artery_data == artery_data
-    return artery_data
+        assert initial_artery_data == artery_sim_log
+    return artery_sim_log
 
 
 def _shift_trajectory_to_common_stamps(trajectory: Sequence[ArteryObject], common_timestamps: list[int]) -> None:

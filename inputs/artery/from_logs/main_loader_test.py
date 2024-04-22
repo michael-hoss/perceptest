@@ -2,13 +2,13 @@ import sys
 
 import pytest
 
-from inputs.artery.artery_format import ArteryData, ArterySimLog
-from inputs.artery.from_logs.main_loader import pull_artery_data
+from inputs.artery.artery_format import ArterySimLog, ArterySimLogDump
+from inputs.artery.from_logs.main_loader import pull_artery_sim_log
 
 
-def test_main_loader(test_case_paths: ArterySimLog) -> None:
-    artery_data = pull_artery_data(artery_sim_log=test_case_paths)
-    assert isinstance(artery_data, ArteryData)
+def test_main_loader(test_case_dump: ArterySimLogDump) -> None:
+    artery_sim_log = pull_artery_sim_log(artery_sim_log_dump=test_case_dump)
+    assert isinstance(artery_sim_log, ArterySimLog)
     # More specific tests in individual test files
 
 

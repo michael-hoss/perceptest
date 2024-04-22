@@ -2,24 +2,24 @@ from math import pi
 from typing import Optional, Sequence
 
 from base.geo_coordinates.geo_coordinates import WGS84Transformer
-from inputs.artery.artery_format import ArteryData, ArteryObject
+from inputs.artery.artery_format import ArteryObject, ArterySimLog
 
 
 def transform_to_local_metric_coords(
-    artery_data: ArteryData, origin_lat: Optional[float] = None, origin_lon: Optional[float] = None
-) -> ArteryData:
+    artery_sim_log: ArterySimLog, origin_lat: Optional[float] = None, origin_lon: Optional[float] = None
+) -> ArterySimLog:
     # Use one transformer so the same UTM zone is used for all transformations
     transformer = WGS84Transformer(origin_lat=origin_lat, origin_lon=origin_lon)
 
     # Transform locations from WGS84 to local metric coordinates (using UTM)
-    for out_object_traj in artery_data.objects_out.values():
+    for out_object_traj in artery_sim_log.objects_out.values():
         transform_object_traj_to_local_metric_coords(object_traj=out_object_traj, transformer=transformer)
-    for res_object_traj in artery_data.objects_res.values():
+    for res_object_traj in artery_sim_log.objects_res.values():
         transform_object_traj_to_local_metric_coords(object_traj=res_object_traj, transformer=transformer)
-    artery_data.ego_vehicle = transform_object_traj_to_local_metric_coords(  # type: ignore
-        object_traj=artery_data.ego_vehicle, transformer=transformer
+    artery_sim_log.ego_vehicle = transform_object_traj_to_local_metric_coords(  # type: ignore
+        object_traj=artery_sim_log.ego_vehicle, transformer=transformer
     )
-    return artery_data
+    return artery_sim_log
 
 
 def transform_object_traj_to_local_metric_coords(

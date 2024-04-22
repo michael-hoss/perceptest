@@ -57,7 +57,7 @@ class ArteryObject(TypedDict):
 
 
 @dataclass
-class ArterySimLog:
+class ArterySimLogDump:
     # Root directory of the files below
     root_dir: str
 
@@ -72,7 +72,7 @@ ObjectsArtery: TypeAlias = Dict[int, List[ArteryObject]]
 
 
 @dataclass
-class ArteryData:
+class ArterySimLog:
     # Lists are values over time
     objects_out: ObjectsArtery
     objects_res: ObjectsArtery
