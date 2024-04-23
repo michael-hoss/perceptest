@@ -48,7 +48,7 @@ def test_convert_to_nuscenes(test_case_dump: ArterySimLogDump) -> None:
 
     # custom data
     assert os.path.exists(os.path.join(nuscenes_dir, "splits.json"))
-    assert os.path.exists(os.path.join(nuscenes_dir, "white_map.png"))
+    assert os.path.exists(os.path.join(nuscenes_dir, "artery_map.png"))
 
     # submission data
     assert os.path.exists(os.path.join(nuscenes_dir, "tracking_results.json"))

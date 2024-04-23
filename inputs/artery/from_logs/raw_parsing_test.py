@@ -2,7 +2,6 @@ import sys
 
 import pytest
 
-from conftest import use_debugpy
 from inputs.artery.artery_format import ArterySimLog, ArterySimLogDump
 from inputs.artery.from_logs.raw_parsing import load_from_artery_logs
 from inputs.artery.from_logs.timestamps import tidy_up_timestamps
@@ -16,6 +15,8 @@ def test_load_example_log_files_pass(test_case_dump: ArterySimLogDump) -> None:
 
     # Assertions
     assert isinstance(artery_sim_log, ArterySimLog)
+    assert isinstance(artery_sim_log.map, bytes)
+    assert artery_sim_log.map != b""
 
 
 def test_map_to_common_time_stamps_pass(artery_sim_log: ArterySimLog) -> None:
@@ -47,5 +48,4 @@ def test_map_to_common_time_stamps_pass(artery_sim_log: ArterySimLog) -> None:
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    use_debugpy()
     sys.exit(pytest.main([__file__, "-vv"] + args))

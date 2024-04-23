@@ -160,10 +160,14 @@ class Map(NuScenesWritable):
     filename: str  # "maps/53992ee3023e5494b90c316c183be829.png"
     log_tokens: list[Guid] = field(default_factory=list)  # Logs that got recorded in this map
 
+    # The png bytes won't be saved to the json file, but rather to an actual png file
+    png_bytes: bytes = b""  # 2D map of the road network as png file
+
     json_filename: str = field(default="map.json")
 
     def to_dict(self):
         dict_representation = asdict(self)
+        dict_representation.pop("png_bytes")
         dict_representation.pop("json_filename")
         return dict_representation
 

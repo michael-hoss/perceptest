@@ -63,6 +63,7 @@ def merge_nuscenes_maps(list_of_lists: list[list[Map]]) -> list[Map]:
 
     assert_all_elements_equal([map.category for map in flattened_maps])
     assert_all_elements_equal([map.filename for map in flattened_maps])
+    assert_all_elements_equal([map.png_bytes for map in flattened_maps])
 
     all_log_tokens = []
     for map in flattened_maps:
@@ -72,6 +73,7 @@ def merge_nuscenes_maps(list_of_lists: list[list[Map]]) -> list[Map]:
         token=Guid(),
         category=flattened_maps[0].category,
         filename=flattened_maps[0].filename,
+        png_bytes=flattened_maps[0].png_bytes,
         log_tokens=all_log_tokens,
     )
     return [merged_map]

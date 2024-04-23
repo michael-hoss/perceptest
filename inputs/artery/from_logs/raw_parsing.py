@@ -93,6 +93,13 @@ def load_ego_data(file_path: str) -> list[ArteryObject]:
     return ego_data
 
 
+def load_map_file(sim_log_dump: ArterySimLogDump) -> bytes:
+    map_file_path: str = os.path.join(sim_log_dump.root_dir, sim_log_dump.map_file)
+    with open(map_file_path, "rb") as map_file:
+        map_bytes = map_file.read()
+    return map_bytes
+
+
 def get_name_of_sim_log(sim_log_dump: ArterySimLogDump) -> str:
     return os.path.basename(sim_log_dump.root_dir)
 
@@ -114,5 +121,6 @@ def load_from_artery_logs(sim_log_dump: ArterySimLogDump) -> ArterySimLog:
         objects_res=res_list,
         ego_vehicle=ego_info,
         timestamps=[],  # timestamps are not yet aligned and are therefore still empty
+        map=load_map_file(sim_log_dump=sim_log_dump),
         name=get_name_of_sim_log(sim_log_dump=sim_log_dump),
     )

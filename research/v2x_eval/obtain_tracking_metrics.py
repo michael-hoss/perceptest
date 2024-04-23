@@ -70,7 +70,7 @@ def obtain_metrics_for_all_splits(
         metrics_of_splits[split_name] = obtain_metrics_for_split(
             artery_config, conversion_config=conversion_config, eval_split=split_name
         )
-        progress.update(splits_task, advance=1)
+        progress.update(splits_task, advance=1, refresh=True)
     return metrics_of_splits
 
 

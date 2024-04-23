@@ -12,6 +12,7 @@ def get_test_case_dump() -> ArterySimLogDump:
         res_file="localperceptionGT-vehicle_0.out",
         out_file="localperception-vehicle_0.out",
         ego_file="monitor_car-vehicle_0.out",
+        map_file="../../sumo_map.png",
     )
     return dump_v6_sim15_01
 

@@ -66,6 +66,8 @@ class ArterySimLogDump:
     out_file: str  # OuT = object under test
     ego_file: str  # ego vehicle
 
+    map_file: str  # png map. Filename may contain "../""
+
 
 # This dict maps object ID to object frames over time
 ObjectsArtery: TypeAlias = Dict[int, List[ArteryObject]]
@@ -78,6 +80,8 @@ class ArterySimLog:
     objects_res: ObjectsArtery
     ego_vehicle: List[ArteryObject]
     timestamps: list[int]  # in e-6 seconds
+
+    map: bytes = b""  # 2D map of the road network as png file
 
     name: str = ""  # name of the simulation run
 
