@@ -18,6 +18,7 @@ py_library(
         "constants.py",
         "convert_to_nuscenes.py",
         "obtain_tracking_metrics.py",
+        "parse_cli.py",
     ],
     data = [
         "//inputs/artery/to_nuscenes:artery_config_for_nuscenes.json",
