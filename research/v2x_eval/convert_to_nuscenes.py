@@ -7,9 +7,9 @@ from rich.progress import Progress, TaskID  # type: ignore
 
 from inputs.artery.artery_format import ArterySimLogDump
 from inputs.artery.from_logs.main_loader import pull_artery_sim_log
-from inputs.artery.to_nuscenes.to_nuscenes import convert_to_nuscenes_classes, dump_to_nuscenes_dir
+from inputs.artery.to_nuscenes.to_nuscenes import convert_to_nuscenes_classes
 from inputs.nuscenes.nuscenes_format import NuScenesAll
-from inputs.nuscenes.nuscenes_format_utils import merge_nuscenes_all
+from inputs.nuscenes.nuscenes_format_utils import dump_to_nuscenes_dir, merge_nuscenes_all
 from research.v2x_eval.constants import ConversionConfig
 
 if TYPE_CHECKING:

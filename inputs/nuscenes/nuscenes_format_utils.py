@@ -1,4 +1,8 @@
 import itertools
+import json
+import os
+import shutil
+from typing import Optional, Sequence
 
 from inputs.nuscenes.nuscenes_format import (
     Guid,
@@ -9,6 +13,7 @@ from inputs.nuscenes.nuscenes_format import (
     Split,
     TrackingResults,
     TrackingSubmission,
+    get_splits_dict,
 )
 
 
@@ -133,3 +138,60 @@ def flatten_list(list_of_lists: list[list[NuScenesWritable]]) -> list:
 def assert_unique_tokens(my_list: list[NuScenesWritable]) -> None:
     tokens = [item.token for item in my_list]
     assert len(tokens) == len(set(tokens)), f"Tokens are not unique: {tokens}"
+
+
+def dump_to_nuscenes_dir(nuscenes_all: NuScenesAll, nuscenes_version_dir: str, force_overwrite: bool = False) -> None:
+    """Dump all data to json files in the nuscenes version directory."""
+    common_indent: int = 2
+
+    # Prepare empty output directory
+    if os.path.isdir(nuscenes_version_dir):
+        if os.listdir(nuscenes_version_dir) != []:  # directory is not empty
+            if force_overwrite:
+                shutil.rmtree(nuscenes_version_dir)  # also deletes nuscenes_dir itself
+            else:
+                raise ValueError(
+                    f"Directory {nuscenes_version_dir} already exists. Set force_overwrite=True to clear it."
+                )
+    os.makedirs(nuscenes_version_dir, exist_ok=False)
+
+    # Dump reference data
+    def _dump_to_json_file(dataclass_objects: Sequence[NuScenesWritable], custom_filename: Optional[str] = None):
+        list_of_dicts = [dataclass_object.to_dict() for dataclass_object in dataclass_objects]
+
+        filename = custom_filename or dataclass_objects[0].json_filename
+        json_path = os.path.join(nuscenes_version_dir, filename)
+        with open(json_path, "w") as json_file:
+            json.dump(list_of_dicts, json_file, indent=common_indent)
+
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.attributes)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.calibrated_sensors)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.categories)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.ego_poses)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.instances)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.logs)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.maps)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.samples)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.sample_annotations)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.sample_data_list)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.scenes)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.sensors)
+    _dump_to_json_file(dataclass_objects=nuscenes_all.reference.visibility)
+
+    # Dump splits
+    splits_json_path = os.path.join(nuscenes_version_dir, Split.json_filename)
+    with open(splits_json_path, "w") as json_file:
+        json.dump(get_splits_dict(nuscenes_all.splits), json_file, indent=common_indent)
+
+    # Dump submission data
+    submission_json_path = os.path.join(nuscenes_version_dir, nuscenes_all.submission.json_filename)
+    with open(submission_json_path, "w") as json_file:
+        json.dump(nuscenes_all.submission.to_dict(), json_file, indent=common_indent)
+
+    # Dump map file
+    # map_path = os.path.join(nuscenes_version_dir, ARTERY_CONSTANTS.map_filename)
+    for map in nuscenes_all.reference.maps:
+        # avoid ns  version dir twice in the path
+        png_path = os.path.normpath(os.path.join(nuscenes_version_dir, "..", map.filename))
+        with open(png_path, "wb") as f:
+            f.write(map.png_bytes)
