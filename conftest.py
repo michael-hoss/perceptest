@@ -5,7 +5,7 @@ import pytest
 
 
 def use_debugpy():
-    """Also define this as a non-fixture function to use it files that are not pytest tests."""
+    """Also define this as a non-fixture function to use it in files that are not pytest tests."""
 
     # See also https://code.visualstudio.com/docs/python/debugging
     # To set this env var in bazel test, use --test_env=DEBUG=1

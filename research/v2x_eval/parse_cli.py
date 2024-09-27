@@ -18,7 +18,7 @@ def parse_cli() -> ConversionConfig:
         "--force-regenerate",
         action="store_true",
         default=False,
-        help="If True, regenerates all data from scratch",
+        help="If flag is set, regenerates all data from scratch",
     )
 
     args = parser.parse_args()
