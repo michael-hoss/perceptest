@@ -1,3 +1,4 @@
+import argparse
 from os import path
 
 from nuscenes.eval.tracking.tooling.nuscenes_format import TrackingSubmission
@@ -53,3 +54,45 @@ class CustomDataEvalConfig:
 
     def get_nuscenes_version_dir(self, data_config: str) -> str:
         return path.join(self.nuscenes_format_root_dir, data_config)
+
+    @staticmethod
+    def from_cli() -> "CustomDataEvalConfig":
+        parser = argparse.ArgumentParser(
+            description="Wrap entire data processing for the paper, from the raw artery logs to the final tables and plots."
+        )
+
+        parser.add_argument(
+            "--data-root",
+            type=str,
+            help="Root directory to the custom data (input data)",
+            default="/data/sets/KIT_V2X/v6/dataset_last",
+        )
+        parser.add_argument(
+            "--force-regenerate",
+            action="store_true",
+            default=False,
+            help="If flag is set, regenerates all data from scratch",
+        )
+
+        parser.add_argument(
+            "--subdir-pattern",
+            type=str,
+            default="sim??data",
+            help="Name pattern for individual subdirectories to be converted to nuscenes and evaluated",
+        )
+
+        parser.add_argument(
+            "--nuscenes-eval-config-path",
+            type=str,
+            help="Path to the config file for the nuscenes tracking evaluation",
+            default="inputs/artery/to_nuscenes/artery_config_for_nuscenes.json",
+        )
+
+        args = parser.parse_args()
+        conversion_config = CustomDataEvalConfig(
+            data_root=args.data_root,
+            subdir_pattern=args.subdir_pattern,
+            force_regenerate=args.force_regenerate,
+            nuscenes_eval_config_path=args.nuscenes_eval_config_path,
+        )
+        return conversion_config
