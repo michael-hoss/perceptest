@@ -3,6 +3,7 @@ import re
 from os import path
 from typing import TYPE_CHECKING
 
+from nuscenes.eval.tracking.tooling.custom_data_eval_config import CustomDataEvalConfig
 from nuscenes.eval.tracking.tooling.nuscenes_format import NuScenesAll
 from nuscenes.eval.tracking.tooling.nuscenes_format_utils import dump_to_nuscenes_dir, merge_nuscenes_all
 from rich.progress import Progress, TaskID  # type: ignore
@@ -10,13 +11,12 @@ from rich.progress import Progress, TaskID  # type: ignore
 from inputs.artery.artery_format import ArterySimLogDump
 from inputs.artery.from_logs.main_loader import pull_artery_sim_log
 from inputs.artery.to_nuscenes.to_nuscenes import convert_to_nuscenes_classes
-from research.v2x_eval.custom_data_eval_config import CustomDataEvalConfig
 
 if TYPE_CHECKING:
     from inputs.artery.artery_format import ArterySimLog
 
 
-def obtain_nuscenes_version_dirs(eval_config: CustomDataEvalConfig) -> None:
+def convert_to_nuscenes_version_dirs(eval_config: CustomDataEvalConfig) -> None:
     """
     - creates a custom nuscenes dataset version called e.g. "from_artery_v6_simXXdata"
     - makes each individual "results_YY" a separate scene within "from_artery_v6_simXXdata"
