@@ -1,10 +1,10 @@
 import argparse
 
 from inputs.artery.to_nuscenes.to_nuscenes_constants import ArteryConstants
-from research.v2x_eval.constants import ConversionConfig
+from research.v2x_eval.custom_data_eval_config import CustomDataEvalConfig
 
 
-def parse_cli() -> ConversionConfig:
+def parse_cli() -> CustomDataEvalConfig:
     parser = argparse.ArgumentParser(
         description="Wrap entire data processing for the paper, from the raw artery logs to the final tables and plots."
     )
@@ -30,9 +30,9 @@ def parse_cli() -> ConversionConfig:
     )
 
     args = parser.parse_args()
-    conversion_config = ConversionConfig(
-        custom_data_root=args.artery_logs_root_dir,
-        custom_data_subdir_pattern="sim??data",
+    conversion_config = CustomDataEvalConfig(
+        data_root=args.artery_logs_root_dir,
+        subdir_pattern="sim??data",
         force_regenerate=args.force_regenerate,
         nuscenes_eval_config_path=args.nuscenes_eval_config_path,
     )

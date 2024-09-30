@@ -13,20 +13,19 @@ from nuscenes.eval.tracking.tooling.nuscenes_format import TrackingEvalParams
 from rich.progress import Progress  # type: ignore
 
 from base.cli.suppress_stdout import suppress_output
-from research.v2x_eval.constants import ConversionConfig
+from research.v2x_eval.custom_data_eval_config import CustomDataEvalConfig
 
 
-def obtain_metrics_for_nuscenes_version_dirs(conversion_config: ConversionConfig) -> dict[str, Any]:
-    """Compute object tracking metrics for all directories under artery_logs_root_dir/NUSCENES_DIRNAME
-    that have the given dirstem.
+def obtain_metrics_for_nuscenes_version_dirs(custom_data_eval_config: CustomDataEvalConfig) -> dict[str, Any]:
+    """Compute object tracking metrics for all splits in all subdirs of the custom data root.
 
     Returns a dict
     {
-        "simXXdata": metrics_of_all_splits_of_simXXdata,
-        "simYYdata": metrics_of_all_splits_of_simYYdata,  # etc.
+        "data_subdir_1": metrics_of_all_splits_of_subdir_1,
+        "data_subdir_2": metrics_of_all_splits_of_subdir_2,  # etc.
     }
     """
-    pattern = path.join(conversion_config.nuscenes_root_dir, conversion_config.custom_data_subdir_pattern)
+    pattern = path.join(custom_data_eval_config.nuscenes_format_root_dir, custom_data_eval_config.subdir_pattern)
     matching_dirs = glob.glob(pattern)
     matching_dirs = [dir for dir in sorted(matching_dirs) if path.isdir(dir)]
 
@@ -36,8 +35,8 @@ def obtain_metrics_for_nuscenes_version_dirs(conversion_config: ConversionConfig
         dir_task = progress.add_task("[blue]Obtaining nuScenes metrics...", total=len(matching_dirs))
         for artery_config in matching_dirs:
             metrics_of_splits: dict[str, Any] = obtain_metrics_for_all_splits(
-                artery_config=artery_config,
-                conversion_config=conversion_config,
+                subdir_name=artery_config,
+                conversion_config=custom_data_eval_config,
                 progress=progress,
             )
             metrics_of_configs[artery_config] = metrics_of_splits
@@ -46,43 +45,43 @@ def obtain_metrics_for_nuscenes_version_dirs(conversion_config: ConversionConfig
 
 
 def obtain_metrics_for_all_splits(
-    artery_config: str,
-    conversion_config: ConversionConfig,
+    subdir_name: str,
+    conversion_config: CustomDataEvalConfig,
     progress: Progress,
 ) -> dict[str, Any]:
     """Returns a dict mapping split names to metrics summary dicts, e.g.
     {
-        "all": metrics_summary_dict_on_all_results_YY,
-        "results_01": metrics_summary_dict_on_results_01,
-        "results_02": metrics_summary_dict_on_results_01,  # etc
+        "all": metrics_summary_dict_on_all_custom_scenes,
+        "custom_scene_01": metrics_summary_dict_on_custom_scene_01,
+        "custom_scene_02": metrics_summary_dict_on_custom_scene_02,  # etc
     }
     """
     splits_data: dict = {}
-    custom_splits_path = conversion_config.get_splits_filename(artery_config)
+    custom_splits_path = conversion_config.get_splits_filename(subdir_name)
     with open(custom_splits_path, "r") as file:
         splits_data = json.load(file)
 
     metrics_of_splits: dict[str, Any] = {}
     splits_task = progress.add_task(
-        f"[green]Obtaining metrics in {path.basename(artery_config)}...", total=len(splits_data)
+        f"[green]Obtaining metrics in {path.basename(subdir_name)}...", total=len(splits_data)
     )
     for split_name in splits_data.keys():
         metrics_of_splits[split_name] = obtain_metrics_for_split(
-            artery_config, conversion_config=conversion_config, eval_split=split_name
+            subdir_name, conversion_config=conversion_config, eval_split=split_name
         )
         progress.update(splits_task, advance=1, refresh=True)
     return metrics_of_splits
 
 
 def obtain_metrics_for_split(
-    artery_config: str, conversion_config: ConversionConfig, eval_split: str = "all"
+    subdir_name: str, conversion_config: CustomDataEvalConfig, eval_split: str = "all"
 ) -> MetricsSummary:
     tracking_eval_params = TrackingEvalParams(
-        result_path=conversion_config.get_tracking_result_path(data_config=artery_config),
-        output_dir=conversion_config.get_metrics_output_dir(artery_config, eval_split),
+        result_path=conversion_config.get_tracking_result_path(data_config=subdir_name),
+        output_dir=conversion_config.get_metrics_output_dir(subdir_name, eval_split),
         eval_set=eval_split,  # see python-sdk/nuscenes/utils/splits.py
-        nusc_dataroot=conversion_config.nuscenes_root_dir,
-        nusc_version=artery_config,
+        nusc_dataroot=conversion_config.nuscenes_format_root_dir,
+        nusc_version=subdir_name,
     )
 
     if not conversion_config.force_regenerate and metrics_files_present_on_disk(tracking_eval_params):
