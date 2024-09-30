@@ -1,7 +1,8 @@
 from os import path
 
+from nuscenes.eval.tracking.tooling.nuscenes_format import TrackingSubmission
+
 from inputs.artery.to_nuscenes.to_nuscenes_constants import ArteryConstants
-from inputs.nuscenes.nuscenes_format import TrackingSubmission
 
 
 class ConversionConfig:

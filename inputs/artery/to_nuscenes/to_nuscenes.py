@@ -1,12 +1,7 @@
 import os
 from math import cos, fabs, sin
 
-from PIL import Image
-
-from base.geometry.vectors import Quaternion, Vector2, Vector3
-from inputs.artery.artery_format import ArteryObject, ArterySimLog
-from inputs.artery.to_nuscenes.to_nuscenes_constants import ArteryConstants
-from inputs.nuscenes.nuscenes_format import (
+from nuscenes.eval.tracking.tooling.nuscenes_format import (
     EgoPose,
     Guid,
     Instance,
@@ -23,6 +18,11 @@ from inputs.nuscenes.nuscenes_format import (
     TrackingResults,
     TrackingSubmission,
 )
+from nuscenes.utils.geometry.vectors import Quaternion, Vector2, Vector3
+from PIL import Image
+
+from inputs.artery.artery_format import ArteryObject, ArterySimLog
+from inputs.artery.to_nuscenes.to_nuscenes_constants import ArteryConstants
 
 ARTERY_CONSTANTS = ArteryConstants()
 

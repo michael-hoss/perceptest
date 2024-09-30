@@ -3,13 +3,13 @@ import sys
 from tempfile import gettempdir
 
 import pytest
+from nuscenes.eval.tracking.tooling.nuscenes_format import NuScenesAll
+from nuscenes.eval.tracking.tooling.nuscenes_format_utils import dump_to_nuscenes_dir
 
 from inputs.artery.artery_format import ArterySimLog, ArterySimLogDump
 from inputs.artery.from_logs.main_loader import pull_artery_sim_log
 from inputs.artery.to_nuscenes.to_nuscenes import convert_to_nuscenes_classes
 from inputs.nuscenes.data_insights import get_reference_track_lenghts, get_submitted_track_lenghts
-from inputs.nuscenes.nuscenes_format import NuScenesAll
-from inputs.nuscenes.nuscenes_format_utils import dump_to_nuscenes_dir
 
 
 def test_convert_to_nuscenes(test_case_dump: ArterySimLogDump) -> None:

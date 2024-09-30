@@ -29,6 +29,6 @@ py_library(
         "//inputs/artery:artery_lib",
         "//inputs/artery:conftest",
         "//inputs/artery/to_nuscenes",
-        "//inputs/nuscenes:evaluate_tracking",
+        "@nuscenes-devkit//python-sdk/nuscenes/eval/tracking/tooling:evaluate_tracking",
     ],
 )

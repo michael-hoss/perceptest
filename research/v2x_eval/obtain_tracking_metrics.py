@@ -3,16 +3,16 @@ import json
 from os import path
 from typing import Any
 
-from rich.progress import Progress  # type: ignore
-
-from base.cli.suppress_stdout import suppress_output
-from inputs.nuscenes.evaluate_tracking import (
+from nuscenes.eval.tracking.tooling.evaluate_tracking import (
     MetricsSummary,
     TrackingConfig,
     get_nuscenes_tracking_config_from_own_file,
     nuscenes_devkit_tracking_eval,
 )
-from inputs.nuscenes.nuscenes_format import TrackingEvalParams
+from nuscenes.eval.tracking.tooling.nuscenes_format import TrackingEvalParams
+from rich.progress import Progress  # type: ignore
+
+from base.cli.suppress_stdout import suppress_output
 from research.v2x_eval.constants import ConversionConfig
 
 
