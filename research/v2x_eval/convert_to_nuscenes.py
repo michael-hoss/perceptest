@@ -25,7 +25,7 @@ def obtain_nuscenes_version_dirs(conversion_config: ConversionConfig) -> None:
         - for all results_YY combined ("all")
     """
     with Progress(refresh_per_second=1) as progress:
-        artery_log_dirs: dict = get_structured_artery_log_dirs(conversion_config.artery_logs_root_dir)
+        artery_log_dirs: dict = get_structured_artery_log_dirs(conversion_config.custom_data_root)
         configs_task = progress.add_task(
             "[blue]Obtaining nuScenes files from artery logs...", total=len(artery_log_dirs)
         )
@@ -133,7 +133,7 @@ def get_nuscenes_all(
 ) -> NuScenesAll:
     """Converts one artery sim log to a NuScenesAll instance"""
     artery_sim_log = ArterySimLogDump(
-        root_dir=path.join(conversion_config.artery_logs_root_dir, artery_config_name, artery_iteration_name),
+        root_dir=path.join(conversion_config.custom_data_root, artery_config_name, artery_iteration_name),
         res_file="localperceptionGT-vehicle_0.out",
         out_file="localperception-vehicle_0.out",
         ego_file="monitor_car-vehicle_0.out",

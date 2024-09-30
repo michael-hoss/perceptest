@@ -1,5 +1,6 @@
 import argparse
 
+from inputs.artery.to_nuscenes.to_nuscenes_constants import ArteryConstants
 from research.v2x_eval.constants import ConversionConfig
 
 
@@ -21,8 +22,18 @@ def parse_cli() -> ConversionConfig:
         help="If flag is set, regenerates all data from scratch",
     )
 
+    parser.add_argument(
+        "--nuscenes-eval-config-path",
+        type=str,
+        help="Path to the config file for the nuscenes tracking evaluation",
+        default=ArteryConstants().nuscenes_eval_config_path,
+    )
+
     args = parser.parse_args()
     conversion_config = ConversionConfig(
-        artery_logs_root_dir=args.artery_logs_root_dir, force_regenerate=args.force_regenerate
+        custom_data_root=args.artery_logs_root_dir,
+        custom_data_subdir_pattern="sim??data",
+        force_regenerate=args.force_regenerate,
+        nuscenes_eval_config_path=args.nuscenes_eval_config_path,
     )
     return conversion_config

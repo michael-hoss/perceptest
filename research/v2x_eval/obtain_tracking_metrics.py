@@ -26,7 +26,7 @@ def obtain_metrics_for_nuscenes_version_dirs(conversion_config: ConversionConfig
         "simYYdata": metrics_of_all_splits_of_simYYdata,  # etc.
     }
     """
-    pattern = path.join(conversion_config.nuscenes_root_dir, "sim??data")
+    pattern = path.join(conversion_config.nuscenes_root_dir, conversion_config.custom_data_subdir_pattern)
     matching_dirs = glob.glob(pattern)
     matching_dirs = [dir for dir in sorted(matching_dirs) if path.isdir(dir)]
 
@@ -78,7 +78,7 @@ def obtain_metrics_for_split(
     artery_config: str, conversion_config: ConversionConfig, eval_split: str = "all"
 ) -> MetricsSummary:
     tracking_eval_params = TrackingEvalParams(
-        result_path=conversion_config.get_tracking_result_path(artery_config=artery_config),
+        result_path=conversion_config.get_tracking_result_path(data_config=artery_config),
         output_dir=conversion_config.get_metrics_output_dir(artery_config, eval_split),
         eval_set=eval_split,  # see python-sdk/nuscenes/utils/splits.py
         nusc_dataroot=conversion_config.nuscenes_root_dir,
