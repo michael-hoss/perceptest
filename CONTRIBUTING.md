@@ -8,7 +8,7 @@
 
 ## Environment variables
 
-- Source the `scripts/perceptest.sh` file in your `.bashrc` file (see prerequisites there)
+- Copy the `scripts/perceptestrc.sh` script to your python environment activation hook (see instructions there)
 
 ## Pre-commit hooks
 
