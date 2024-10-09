@@ -1,7 +1,7 @@
 # TO COME
 [submodule "third_party/nuscenes-devkit"]
 	path = third_party/nuscenes-devkit
-	url = git@github.com:nutonomy/nuscenes-devkit.git
+	url = git@github.com:michael-hoss/nuscenes-devkit.git
 [submodule "third_party/private-research"]
 	path = third_party/private-research
 	url = git@github.com:michael-hoss/private-research.git
