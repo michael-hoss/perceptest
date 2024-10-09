@@ -11,7 +11,7 @@ py_library(
     ],
     deps = [
         "//inputs/artery:artery_lib",
-        "//inputs/nuscenes:nuscenes_format",
+        "@nuscenes-devkit//python-sdk/nuscenes/eval/tracking/tooling:nuscenes_format",
     ],
 )
 
@@ -20,6 +20,7 @@ py_test(
     srcs = [
         "to_nuscenes_test.py",
     ],
+    imports = ["../../../../nuscenes-devkit/python-sdk"],  # add this to PYTHONPATH, relative to this BUILD file
     tags = [
         "local_only",
     ],
@@ -28,5 +29,6 @@ py_test(
         "//inputs/artery:conftest",
         "//inputs/artery/to_nuscenes",
         "//inputs/nuscenes:data_insights",
+        "@nuscenes-devkit//python-sdk/nuscenes/eval/tracking/tooling:nuscenes_format",
     ],
 )

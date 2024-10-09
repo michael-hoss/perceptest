@@ -2,19 +2,29 @@ import sys
 import tempfile
 
 import pytest
-
-from inputs.nuscenes.evaluate_tracking import (
+from nuscenes.eval.tracking.tooling.evaluate_tracking import (
     TrackingConfig,
     get_nuscenes_tracking_config_from_own_file,
     get_official_tracking_config,
     nuscenes_devkit_tracking_eval,
 )
-from inputs.nuscenes.nuscenes_format import TrackingEvalParams
+from nuscenes.eval.tracking.tooling.nuscenes_format import TrackingEvalParams
 
 
 @pytest.fixture
 def official_config_stripped_path():
     return "inputs/nuscenes/official_config_stripped.json"
+
+
+@pytest.fixture
+def artery_config_path():
+    return "inputs/artery/to_nuscenes/artery_config_for_nuscenes.json"
+
+
+def test_get_nuscenes_tracking_config_from_own_file_pass(artery_config_path: str) -> None:
+    config: TrackingConfig = get_nuscenes_tracking_config_from_own_file(config_path=artery_config_path)
+    assert config is not None
+    assert config.dist_fcn == "center_distance"
 
 
 @pytest.fixture

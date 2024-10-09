@@ -7,18 +7,16 @@ py_binary(
         "//inputs/artery/to_nuscenes:artery_config_for_nuscenes.json",
     ],
     deps = [
-        ":v2x_eval_lib",
+        ":artery_convert_lib",
         "//:conftest",
+        "@nuscenes-devkit//python-sdk/nuscenes/eval/tracking/tooling:custom_data_eval_lib",
     ],
 )
 
 py_library(
-    name = "v2x_eval_lib",
+    name = "artery_convert_lib",
     srcs = [
-        "constants.py",
         "convert_to_nuscenes.py",
-        "obtain_tracking_metrics.py",
-        "parse_cli.py",
     ],
     data = [
         "//inputs/artery/to_nuscenes:artery_config_for_nuscenes.json",
@@ -29,6 +27,5 @@ py_library(
         "//inputs/artery:artery_lib",
         "//inputs/artery:conftest",
         "//inputs/artery/to_nuscenes",
-        "//inputs/nuscenes:evaluate_tracking",
     ],
 )
