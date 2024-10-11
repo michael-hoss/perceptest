@@ -28,5 +28,11 @@
   "python.analysis.ignore": ["bazel-*/**"],
   "python.analysis.exclude": ["bazel-*/**"],
 
-  "mypy.configFile": "./pyproject.toml"
+  // Pylance somehow only considers PYTHONPATH if it is set in the bashrc.
+  // Pylance does not consider PYTHONPATH in the activation hook of my conda env.
+  // Thus, we need to specify additional pythonpaths here.
+  "python.analysis.extraPaths": ["third_party/nuscenes-devkit/python-sdk"],
+
+  "mypy.configFile": "./pyproject.toml",
+  "mypy.runUsingActiveInterpreter": true
 }

@@ -7,7 +7,9 @@ from research.v2x_eval.convert_to_nuscenes import convert_to_nuscenes_version_di
 
 def convert_and_evaluate(custom_data_eval_config: CustomDataEvalConfig) -> dict:
     convert_to_nuscenes_version_dirs(eval_config=custom_data_eval_config)
-    metrics_on_custom_data = obtain_metrics_for_nuscenes_version_dirs(custom_data_eval_config=custom_data_eval_config)
+    metrics_on_custom_data: dict = obtain_metrics_for_nuscenes_version_dirs(
+        custom_data_eval_config=custom_data_eval_config
+    )
     return metrics_on_custom_data
 
 
