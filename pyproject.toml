@@ -92,10 +92,6 @@ docstring-code-line-length = "dynamic"
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 
 python_version = "3.10"
-
-# Add the nuscenes submodule path to the mypy path such that errors caused by
-# nuscenes imports can successfully be ignored by the exclude third_party rule.
-mypy_path = "$MYPY_CONFIG_FILE_DIR/third_party/nuscenes-devkit/python-sdk"
 warn_return_any = true
 warn_unused_configs = true
 exclude = [
@@ -107,11 +103,8 @@ exclude = [
 explicit_package_bases = true  
 
 
-# Don't check errors regarding the following dependencies because they 
+# Don't check errors regarding importing the following dependencies because they 
 # have no typing information.
 [[tool.mypy.overrides]]
-# Need to add "nuscenes.eval.tracking.evaluate" here despite mypy_path and exclude
-# settings because the linter in CI doesn't check out submodules and thus
-# can't get these paths working.
-module = ["utm", "debugpy", "matplotlib", "nuscenes.eval.tracking.evaluate"] 
+module = ["rich", "utm", "debugpy", "matplotlib", "nuscenes.eval.*", "nuscenes.utils.*"] 
 ignore_missing_imports = true

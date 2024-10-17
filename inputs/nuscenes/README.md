@@ -1,19 +1,25 @@
 # nuScenes Dataset as input data
 
 ### Setup of the nuScenes devkit
-This repo uses a local fork of `nuscenes-devkit` instead of the pip version
-- Install its requirements through the top-level `requirements.txt`
-- Add the code of the `nuscenes-devkit` fork under `third_party` to the `PYTHONPATH`, as explained in [the official tutorial](https://github.com/nutonomy/nuscenes-devkit/blob/master/docs/installation.md#setup-pythonpath)
-- Set the environment variable `NUSCENES`
-- :information_source: When I execute nuscenes-devkit code through bazel, bazel takes care of Python path and environment variables.
+This repo uses a local fork of `nuscenes-devkit` instead of the pip version. 
 
-Note: installing the local fork as an editable pip package crashes and is also not mentioned in the official tutorial. However, the solution with setting the Python path works fine.
+This repo's setup instructions also make sure that the nuscenes things work well.
+
+Note: installing the local fork as an editable pip package crashes. Instead, we just 
+have the code here and append its root to the PYTHONPATH (somewhat ugly, but that's what they support).
 
 ### Usage tutorial
 For a tutorial, see
 ```bash
 jupyter notebook third_party/nuscenes_devkit/python_sdk/tutorials/nuscenes_tutorial.ipynb
 ```
+
+### Role of the dataset
+
+The official nuscenes dataset is *not* needed to make use of the devkit's functionality for converted own data.
+
+However, some manual local-only tests use the official dataset and require it to be downloaded to the specified dir `/data/sets/nuscenes`.
+
 
 ### Evaluate nuScenes example data
 

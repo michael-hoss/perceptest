@@ -1,4 +1,4 @@
-from inputs.nuscenes.nuscenes_format import NuScenesAll
+from nuscenes.eval.tracking.tooling.nuscenes_format import NuScenesAll
 
 
 def get_submitted_track_lenghts(nuscenes_all: NuScenesAll) -> dict[str, int]:

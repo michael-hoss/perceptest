@@ -1,5 +1,4 @@
-from base.geometry.vectors import Quaternion, Vector3
-from inputs.nuscenes.nuscenes_format import (
+from nuscenes.eval.tracking.tooling.nuscenes_format import (
     Attribute,
     CalibratedSensor,
     Category,
@@ -8,6 +7,7 @@ from inputs.nuscenes.nuscenes_format import (
     TrackingSubmissionMeta,
     Visibility,
 )
+from nuscenes.utils.geometry.vectors import Quaternion, Vector3
 
 
 class ArteryConstants:
