@@ -15,6 +15,13 @@ from inputs.artery.to_nuscenes.to_nuscenes import convert_to_nuscenes_classes
 if TYPE_CHECKING:
     from inputs.artery.artery_format import ArterySimLog
 
+"""
+This file applies the utils for conversion to the nuscenes json format. 
+These utils live in the nuscenes-devkit submodule and are a fork from the original devkit.
+
+The actual input data is unimportant; it just serves as an example to showcase the conversion.
+"""
+
 
 def convert_to_nuscenes_version_dirs(eval_config: CustomDataEvalConfig) -> None:
     """

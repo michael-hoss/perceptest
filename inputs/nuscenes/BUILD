@@ -3,12 +3,13 @@ py_test(
     size = "enormous",
     srcs = ["evaluate_tracking_baseline_data_test.py"],
     data = [
-        "//inputs/artery/to_nuscenes:artery_config_for_nuscenes.json",
+        "//inputs/nuscenes:example_custom_config.json",
         "//inputs/nuscenes:official_config_stripped.json",
     ],
+    imports = ["../../third_party/nuscenes-devkit/python-sdk"],  # add this to PYTHONPATH, relative to this BUILD file
     tags = [
-        "local_only",
-        "manual",
+        "local_only",  # it requires the downloaded nuscenes dataset, and baseline submissions
+        "manual",  # it takes too long
     ],
     visibility = ["//visibility:public"],
     deps = [
