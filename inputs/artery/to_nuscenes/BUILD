@@ -22,7 +22,7 @@ py_test(
     ],
     imports = ["../../../../nuscenes-devkit/python-sdk"],  # add this to PYTHONPATH, relative to this BUILD file
     tags = [
-        "local_only",
+        "requires_download",
     ],
     deps = [
         "//:conftest",

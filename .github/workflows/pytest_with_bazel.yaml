@@ -64,4 +64,4 @@ jobs:
           bazel build //...
       - name: Test with bazel and pytest
         run: |
-          bazel test //... --test_tag_filters=-local_only --test_output=all
+          bazel test //... --test_output=all
