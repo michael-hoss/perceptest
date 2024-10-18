@@ -24,5 +24,6 @@ py_library(
     visibility = ["//visibility:public"],
     deps = [
         ":artery_lib",
+        "//base/file_utils",
     ],
 )

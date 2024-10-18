@@ -5,3 +5,5 @@
 echo "Setting up perceptest environment"
 export PERCEPTEST_REPO=<path to your perceptest repo>
 source $PERCEPTEST_REPO/inputs/nuscenes/nuscenesrc.sh
+
+source $PERCEPTEST_REPO/inputs/artery/arteryrc.sh
