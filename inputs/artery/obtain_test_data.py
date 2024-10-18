@@ -11,9 +11,10 @@ EXPECTED_TEST_ZIP_HASH = "141eaef417ea1843bfafb30218c17e82a35d79f077051283d52955
 
 
 def get_artery_data_root() -> str:
-    # Bazel test environment is stripped of all host ENV variables, so we need to
-    # specify what we need here. A smoother solution will be appreciated.
-    artery_data_root = "/tmp/artery_data_test"
+    artery_data_root = os.environ.get("ARTERY_DATA_ROOT")
+    if not artery_data_root:
+        raise Exception("Need to specify ARTERY_DATA_ROOT")
+
     os.makedirs(artery_data_root, exist_ok=True)
     return artery_data_root
 
