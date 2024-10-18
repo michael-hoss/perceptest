@@ -8,7 +8,8 @@
 
 ## Environment variables
 
-- Copy the `scripts/perceptestrc.sh` script to your python environment activation hook (see instructions there)
+- Copy the `perceptestrc.sh` script to your python environment activation hook (see instructions there)
+- Copy the `.env_bazel_test_default` to the git-ignored `.env` to specify how bazel tests will operate locally.
 
 ## Pre-commit hooks
 
