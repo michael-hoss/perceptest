@@ -65,5 +65,6 @@ jobs:
       - name: Test with bazel and pytest
         run: |
           # for safety, download all required data already before the fixtures would do it
+          cp .env_bazel_test_default .env
           bazel run //inputs/artery:obtain_test_data
           bazel test //... --test_output=all
