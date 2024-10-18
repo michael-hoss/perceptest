@@ -10,5 +10,8 @@ pre-commit==3.7.0
 # Library stubs for type checking
 types-Pillow==10.2.0.20240331
 
+# Requirements only needed to run tests
+requests==2.32.3
+
 # Requirements for running the code
 -r ./requirements.txt
