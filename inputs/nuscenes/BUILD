@@ -8,7 +8,7 @@ py_test(
     ],
     imports = ["../../third_party/nuscenes-devkit/python-sdk"],  # add this to PYTHONPATH, relative to this BUILD file
     tags = [
-        # it requires the downloaded nuscenes dataset, and baseline submissions, and take too long
+        # it requires the downloaded nuscenes dataset, and downloaded baseline submissions, and takes too long
         "manual",
     ],
     visibility = ["//visibility:public"],

@@ -1,4 +1,5 @@
 # This script initializes things so that the perceptest repo runs well.
+# Note: for bazel tests, use `.env`!
 
 # If you want different paths on your local system, create an own perceptestrc.sh 
 # file and set these variables as you wish.
@@ -11,9 +12,6 @@ echo "Setting up perceptest environment"
 
 # Path to the perceptest repo
 export PERCEPTEST_REPO="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-
-# Path of this very script that sets the environment variables
-export PERCEPTESTRC_SCRIPT="$(realpath "${BASH_SOURCE[0]}")"
 
 # Paths to local datasets.
 # If these paths are not set or data is missing there, some functionality might not work.
