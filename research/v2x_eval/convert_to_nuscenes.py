@@ -17,7 +17,9 @@ if TYPE_CHECKING:
 
 """
 This file applies the utils for conversion to the nuscenes json format. 
-These utils live in the nuscenes-devkit submodule and are a fork from the original devkit.
+
+The code under `inputs/artery/to_nuscenes` converts *one* ArterySimLog to the nuScenes classes.
+In contrast, the code here handles conversion of *many* ArterySimLog using custom splits.
 
 The actual input data is unimportant; it just serves as an example to showcase the conversion.
 """

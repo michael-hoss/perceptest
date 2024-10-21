@@ -2,8 +2,6 @@
 
 #### Preparations
 
-- TODO: make this just a tutorial for nuscenes custom data evaluation, no longer about artery or v2x
-
 - Do the set ups from this repo's main `README.md` and potentially also from `CONTRIBUTING.md`.
 - Activate your Python environment with all dependencies installed and ENV variables set.
 
