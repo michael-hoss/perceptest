@@ -14,15 +14,19 @@ def convert_and_evaluate(custom_data_eval_config: CustomDataEvalConfig) -> dict:
     return metrics_on_custom_data
 
 
-if __name__ == "__main__":
-    use_debugpy()
-
+def main() -> dict:
     example_data_dir: str = obtain_test_cases()
 
     config = CustomDataEvalConfig(
         data_root=example_data_dir,
-        force_regenerate=True,
+        force_regenerate=False,
         subdir_pattern="sim??data",
         nuscenes_eval_config_path="inputs/artery/to_nuscenes/artery_config_for_nuscenes.json",
     )
-    convert_and_evaluate(config)
+    metrics_on_example_data = convert_and_evaluate(config)
+    return metrics_on_example_data
+
+
+if __name__ == "__main__":
+    use_debugpy()
+    main()

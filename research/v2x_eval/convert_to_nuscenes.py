@@ -27,8 +27,8 @@ The actual input data is unimportant; it just serves as an example to showcase t
 
 def convert_to_nuscenes_version_dirs(eval_config: CustomDataEvalConfig) -> None:
     """
-    - creates a custom nuscenes dataset version called e.g. "from_artery_v6_simXXdata"
-    - makes each individual "results_YY" a separate scene within "from_artery_v6_simXXdata"
+    - creates custom nuscenes dataset versions for each match of eval_config.subdir_pattern (e.g. simXXdata)
+    - makes each individual sub-subdir ("results_YY") a separate scene within "simXXdata"
     - creates custom splits
         - for each individual results_YY ("results_YY")
         - for all results_YY combined ("all")

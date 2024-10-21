@@ -26,3 +26,21 @@ py_library(
         "//inputs/artery/to_nuscenes",
     ],
 )
+
+py_test(
+    name = "main_test",
+    size = "medium",
+    srcs = [
+        "main_test.py",
+    ],
+    data = [
+        "//inputs/artery/to_nuscenes:artery_config_for_nuscenes.json",
+    ],
+    tags = [
+        "requires_download",
+    ],
+    deps = [
+        ":main",
+        "//:conftest",
+    ],
+)

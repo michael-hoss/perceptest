@@ -16,7 +16,7 @@ export PERCEPTEST_REPO="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 # Paths to local datasets.
 # If these paths are not set or data is missing there, some functionality might not work.
 export NUSCENES="/data/sets/nuscenes"  # need to download it there manually
-export ARTERY_DATA_ROOT="/data/sets/artery"  # code will download data there
+export ARTERY_DATA_ROOT="/tmp/artery_data/run"  # code will download data there
 
 # Set PYTHONPATH for dependencies that need that
 nuscenes_devkit_path="$PERCEPTEST_REPO/third_party/nuscenes-devkit/python-sdk"
