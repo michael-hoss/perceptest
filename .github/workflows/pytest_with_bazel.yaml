@@ -59,12 +59,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
-      - name: Bazel build
+      - name: Do perceptest-specific preparations
         run: |
           cp .env_bazel_test_default .env
+      - name: Bazel build
+        run: |
           bazel build //...
       - name: Test with bazel and pytest
         run: |
           # for safety, download all required data already before the fixtures would do it
-          bazel run //inputs/artery:obtain_test_data
+          # bazel run //inputs/artery:obtain_test_data
           bazel test //... --test_output=all

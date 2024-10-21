@@ -3,7 +3,13 @@ import time
 
 import requests  # type: ignore
 
-from base.file_utils.file_utils import compute_file_hash, silent_remove_dir, silent_remove_file, unzip_file
+from base.file_utils.file_utils import (
+    compute_file_hash,
+    lock_file_manager,
+    silent_remove_dir,
+    silent_remove_file,
+    unzip_file,
+)
 
 # Keep those up-to-date!
 TEST_ZIP_DOWNLOAD_URL = "https://rwth-aachen.sciebo.de/s/X8WzHWqTwUsEsUz/download"
@@ -68,8 +74,9 @@ def obtain_test_cases() -> str:
     zip_file_path = os.path.join(data_root, "artery_data.zip")
     unzipped_dir = os.path.join(data_root, "example-artery-data")
 
-    obtain_test_cases_zip(zip_file_path=zip_file_path, unzipped_dir=unzipped_dir)
-    obtain_test_cases_dir_from_zip(zip_file_path=zip_file_path, unzipped_dir=unzipped_dir)
+    with lock_file_manager(lock_file=os.path.join(data_root, "download_in_progress.lock")):
+        obtain_test_cases_zip(zip_file_path=zip_file_path, unzipped_dir=unzipped_dir)
+        obtain_test_cases_dir_from_zip(zip_file_path=zip_file_path, unzipped_dir=unzipped_dir)
 
     return unzipped_dir
 
