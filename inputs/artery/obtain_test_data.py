@@ -5,11 +5,11 @@ import requests  # type: ignore
 
 from base.file_utils.file_utils import (
     compute_file_hash,
-    lock_file_manager,
     silent_remove_dir,
     silent_remove_file,
     unzip_file,
 )
+from base.file_utils.lock_file import lock_file_manager
 
 # Keep those up-to-date!
 TEST_ZIP_DOWNLOAD_URL = "https://rwth-aachen.sciebo.de/s/X8WzHWqTwUsEsUz/download"
