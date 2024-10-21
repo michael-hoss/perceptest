@@ -16,6 +16,8 @@ permissions:
 jobs:
   pre-commit_linting:
     runs-on: ubuntu-latest
+    # Skip if got triggered by a PR that is still in draft
+    if: github.event.pull_request.draft == false  
 
     steps:
       - name: Checkout code
@@ -44,6 +46,8 @@ jobs:
 
   functional_testing:
     runs-on: ubuntu-latest
+    # Skip if got triggered by a PR that is still in draft
+    if: github.event.pull_request.draft == false  
     steps:
       - uses: actions/checkout@v4
         with:
