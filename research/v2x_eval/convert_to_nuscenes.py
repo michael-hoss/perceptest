@@ -17,7 +17,9 @@ if TYPE_CHECKING:
 
 """
 This file applies the utils for conversion to the nuscenes json format. 
-These utils live in the nuscenes-devkit submodule and are a fork from the original devkit.
+
+The code under `inputs/artery/to_nuscenes` converts *one* ArterySimLog to the nuScenes classes.
+In contrast, the code here handles conversion of *many* ArterySimLog using custom splits.
 
 The actual input data is unimportant; it just serves as an example to showcase the conversion.
 """
@@ -25,8 +27,8 @@ The actual input data is unimportant; it just serves as an example to showcase t
 
 def convert_to_nuscenes_version_dirs(eval_config: CustomDataEvalConfig) -> None:
     """
-    - creates a custom nuscenes dataset version called e.g. "from_artery_v6_simXXdata"
-    - makes each individual "results_YY" a separate scene within "from_artery_v6_simXXdata"
+    - creates custom nuscenes dataset versions for each match of eval_config.subdir_pattern (e.g. simXXdata)
+    - makes each individual sub-subdir ("results_YY") a separate scene within "simXXdata"
     - creates custom splits
         - for each individual results_YY ("results_YY")
         - for all results_YY combined ("all")

@@ -3,5 +3,8 @@ py_library(
     srcs = [
         "conftest.py",
     ],
+    data = [
+        ".env",
+    ],
     visibility = ["//visibility:public"],
 )

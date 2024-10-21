@@ -30,7 +30,7 @@ py_test(
         "main_loader_test.py",
     ],
     tags = [
-        "local_only",
+        "requires_download",
     ],
     deps = [
         ":from_logs",
@@ -45,7 +45,7 @@ py_test(
         "transform_coordinates_test.py",
     ],
     tags = [
-        "local_only",
+        "requires_download",
     ],
     deps = [
         ":from_logs",
@@ -61,7 +61,7 @@ py_test(
         "raw_parsing_test.py",
     ],
     tags = [
-        "local_only",
+        "requires_download",
     ],
     deps = [
         "//:conftest",
