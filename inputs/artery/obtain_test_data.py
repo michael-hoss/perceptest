@@ -78,7 +78,8 @@ def obtain_test_cases() -> str:
         obtain_test_cases_zip(zip_file_path=zip_file_path, unzipped_dir=unzipped_dir)
         obtain_test_cases_dir_from_zip(zip_file_path=zip_file_path, unzipped_dir=unzipped_dir)
 
-    return unzipped_dir
+    current_test_cases_dir = os.path.join(unzipped_dir, "v6")
+    return current_test_cases_dir
 
 
 if __name__ == "__main__":

@@ -11,10 +11,10 @@ def obtain_test_case_dump() -> ArterySimLogDump:
     """Enable calling this directly for manual tests (analysis files) that are not pytest tests,
     but rather just bazel py_binary files for easier debugging."""
 
-    unzipped_dir: str = obtain_test_cases()
+    test_cases_dir: str = obtain_test_cases()
 
     dump_v6_sim15_01 = ArterySimLogDump(
-        root_dir=os.path.join(unzipped_dir, "v6/sim15data/results_01"),
+        root_dir=os.path.join(test_cases_dir, "sim15data/results_01"),
         res_file="localperceptionGT-vehicle_0.out",
         out_file="localperception-vehicle_0.out",
         ego_file="monitor_car-vehicle_0.out",

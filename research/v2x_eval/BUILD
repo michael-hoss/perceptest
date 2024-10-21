@@ -18,9 +18,6 @@ py_library(
     srcs = [
         "convert_to_nuscenes.py",
     ],
-    data = [
-        "//inputs/artery/to_nuscenes:artery_config_for_nuscenes.json",
-    ],
     deps = [
         "//:conftest",
         "//base/cli:suppress_stdout",
