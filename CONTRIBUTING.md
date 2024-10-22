@@ -8,11 +8,19 @@
 
 ## Environment variables
 
-- Copy the `perceptestrc.sh` script to your python environment activation hook (see instructions there)
-- Copy the `.env_bazel_test_default` to the git-ignored `.env` to specify how bazel tests will operate locally.
+- Copy the `perceptestrc.sh` script to your python environment activation hook (for `bazel run`)
+- Copy the `.env_bazel_test_default` to the git-ignored `.env` (for `bazel test`)
+- If necessary, adapt the paths in these files to locally valid paths on your machine
 
 ## Pre-commit hooks
 
 - Install the pre-commit hooks: `pre-commit install`
   - This will use `.pre-commit-config.yaml`
 - To run these hooks manually, use `pre-commit run --all-files`
+
+## Get active
+
+- Run all tests: `bazel test //...`
+- Debug an individual test: `bazel test //path/to:test_target --test_env=DEBUG=1 --test_timeout=3600`
+  - Attach to the debugger after some seconds with "Python: Attach" in VSCode
+  

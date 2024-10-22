@@ -9,7 +9,7 @@ def set_perceptest_environment_variables() -> None:
     """Since py_test targets in bazel don't inherit the ENV variables of their caller,
     we need to set the needed ENV variables here.
 
-    This function imitates `perceptestrc.sh`.
+    This function does what `source perceptestrc.sh` does for `bazel run`.
     """
 
     load_dotenv(dotenv_path=".env", verbose=True)

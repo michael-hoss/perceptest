@@ -29,7 +29,6 @@ py_library(
 
 py_test(
     name = "main_test",
-    size = "medium",
     srcs = [
         "main_test.py",
     ],

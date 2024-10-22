@@ -1,5 +1,5 @@
-# This script initializes things so that the perceptest repo runs well.
-# Note: for bazel tests, use `.env`!
+# This script initializes ENV variables so that `bazel run` commands work well.
+# Note: for `bazel test`, use `.env`!
 
 # If you want different paths on your local system, create an own perceptestrc.sh 
 # file and set these variables as you wish.

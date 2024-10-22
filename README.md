@@ -11,7 +11,7 @@ Test the object-based environment perception of automated driving systems.
     - `artery`: read logs from the Artery simulator; convert to nuScenes format
     - `nuscenes`: helpers for the nuScenes 3D object tracking evaluation
 - `research`: code for specific academic publications
-    - `v2x_eval`: Evaluate collaborative object perception simulated in artery on the nuscenes tracking metrics
+    - `v2x_eval`: Evaluate own object tracking data on nuscenes tracking metrics
     - `delta_crit`: (TBD) Compare criticality metrics between reference and tested object lists to infer perception safety
     - `metric_bench`: (TBD) Analyze how well certain metrics can make statements about the perception quality
 - `third_party`: third-party software as git submodules
