@@ -24,5 +24,17 @@ py_library(
     visibility = ["//visibility:public"],
     deps = [
         ":artery_lib",
+        ":obtain_test_data",
+    ],
+)
+
+py_binary(
+    name = "obtain_test_data",
+    srcs = [
+        "obtain_test_data.py",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//base/file_utils",
     ],
 )

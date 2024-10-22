@@ -17,7 +17,9 @@ if TYPE_CHECKING:
 
 """
 This file applies the utils for conversion to the nuscenes json format. 
-These utils live in the nuscenes-devkit submodule and are a fork from the original devkit.
+
+The code under `inputs/artery/to_nuscenes` converts *one* ArterySimLog to the nuScenes classes.
+In contrast, the code here handles conversion of *many* ArterySimLog using custom splits.
 
 The actual input data is unimportant; it just serves as an example to showcase the conversion.
 """
@@ -25,14 +27,14 @@ The actual input data is unimportant; it just serves as an example to showcase t
 
 def convert_to_nuscenes_version_dirs(eval_config: CustomDataEvalConfig) -> None:
     """
-    - creates a custom nuscenes dataset version called e.g. "from_artery_v6_simXXdata"
-    - makes each individual "results_YY" a separate scene within "from_artery_v6_simXXdata"
+    - creates custom nuscenes dataset versions for each match of eval_config.subdir_pattern (e.g. simXXdata)
+    - makes each individual sub-subdir ("results_YY") a separate scene within "simXXdata"
     - creates custom splits
         - for each individual results_YY ("results_YY")
         - for all results_YY combined ("all")
     """
     with Progress(refresh_per_second=1) as progress:
-        artery_log_dirs: dict = get_structured_artery_log_dirs(eval_config.data_root)
+        artery_log_dirs: dict = get_structured_artery_log_dirs(eval_config)
         configs_task = progress.add_task(
             "[blue]Obtaining nuScenes files from artery logs...", total=len(artery_log_dirs)
         )
@@ -88,7 +90,7 @@ def convert_artery_config_logs_to_nuscenes_dir(
     progress.update(configs_task, advance=0.5)
 
 
-def get_structured_artery_log_dirs(artery_logs_root_dir: str) -> dict[str, list[str]]:
+def get_structured_artery_log_dirs(eval_config: CustomDataEvalConfig) -> dict[str, list[str]]:
     """returns e.g.
     {
         "artery_config": ["config_iteration_01", "config_iteration_02"],
@@ -96,7 +98,7 @@ def get_structured_artery_log_dirs(artery_logs_root_dir: str) -> dict[str, list[
         "sim02data": ["results_01", "results_02"],
     }
     """
-    pattern = path.join(artery_logs_root_dir, "sim??data/results_??/")
+    pattern = path.join(eval_config.data_root, eval_config.subdir_pattern, "results_??/")
     matching_dirs = glob.glob(pattern)
     matching_dirs = [dir for dir in matching_dirs if path.isdir(dir)]
 

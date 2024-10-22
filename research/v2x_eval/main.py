@@ -2,6 +2,7 @@ from nuscenes.eval.tracking.tooling.custom_data_eval_config import CustomDataEva
 from nuscenes.eval.tracking.tooling.obtain_tracking_metrics import obtain_metrics_for_nuscenes_version_dirs
 
 from conftest import use_debugpy
+from inputs.artery.obtain_test_data import obtain_test_cases
 from research.v2x_eval.convert_to_nuscenes import convert_to_nuscenes_version_dirs
 
 
@@ -13,7 +14,19 @@ def convert_and_evaluate(custom_data_eval_config: CustomDataEvalConfig) -> dict:
     return metrics_on_custom_data
 
 
+def main() -> dict:
+    example_data_dir: str = obtain_test_cases()
+
+    config = CustomDataEvalConfig(
+        data_root=example_data_dir,
+        force_regenerate=False,
+        subdir_pattern="sim??data",
+        nuscenes_eval_config_path="inputs/artery/to_nuscenes/artery_config_for_nuscenes.json",
+    )
+    metrics_on_example_data = convert_and_evaluate(config)
+    return metrics_on_example_data
+
+
 if __name__ == "__main__":
     use_debugpy()
-    config = CustomDataEvalConfig.from_cli()
-    convert_and_evaluate(config)
+    main()

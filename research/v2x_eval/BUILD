@@ -18,14 +18,29 @@ py_library(
     srcs = [
         "convert_to_nuscenes.py",
     ],
-    data = [
-        "//inputs/artery/to_nuscenes:artery_config_for_nuscenes.json",
-    ],
     deps = [
         "//:conftest",
         "//base/cli:suppress_stdout",
         "//inputs/artery:artery_lib",
         "//inputs/artery:conftest",
         "//inputs/artery/to_nuscenes",
+    ],
+)
+
+py_test(
+    name = "main_test",
+    srcs = [
+        "main_test.py",
+    ],
+    data = [
+        "//inputs/artery/to_nuscenes:artery_config_for_nuscenes.json",
+    ],
+    tags = [
+        "requires_download",
+    ],
+    deps = [
+        ":main",
+        "//:conftest",
+        "//base/testing:assertions",
     ],
 )

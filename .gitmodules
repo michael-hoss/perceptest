@@ -1,4 +1,3 @@
-# TO COME
 [submodule "third_party/nuscenes-devkit"]
 	path = third_party/nuscenes-devkit
 	url = git@github.com:michael-hoss/nuscenes-devkit.git
