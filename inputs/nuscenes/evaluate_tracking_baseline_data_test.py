@@ -4,7 +4,7 @@ import tempfile
 import pytest
 from nuscenes.eval.tracking.tooling.evaluate_tracking import (
     TrackingConfig,
-    get_nuscenes_tracking_config_from_own_file,
+    get_nuscenes_tracking_config,
     get_official_tracking_config,
     nuscenes_devkit_tracking_eval,
 )
@@ -39,7 +39,7 @@ def baseline_eval_params():
 
 
 def test_get_nuscenes_tracking_config_from_own_file_pass(custom_config_path: str) -> None:
-    config: TrackingConfig = get_nuscenes_tracking_config_from_own_file(config_path=custom_config_path)
+    config: TrackingConfig = get_nuscenes_tracking_config(config_path=custom_config_path)
     assert config is not None
     assert config.dist_fcn == "center_distance"
 
@@ -48,7 +48,7 @@ def test_nuscenes_devkit_tracking_eval_baseline_stripped_pass(
     baseline_eval_params: TrackingEvalParams, official_config_stripped_path: str
 ) -> None:
     """This only works if the lidarseg directory is also present in the nuscenes root dir!"""
-    config = get_nuscenes_tracking_config_from_own_file(config_path=official_config_stripped_path)
+    config = get_nuscenes_tracking_config(config_path=official_config_stripped_path)
     metrics_summary = nuscenes_devkit_tracking_eval(params=baseline_eval_params, config=config)
     assert isinstance(metrics_summary, dict)
 
@@ -61,7 +61,7 @@ def test_nuscenes_devkit_tracking_eval_baseline_stripped_custom_split_pass(offic
         nusc_dataroot="/data/sets/nuscenes",
         nusc_version="v1.0-trainval",
     )
-    config = get_nuscenes_tracking_config_from_own_file(config_path=official_config_stripped_path)
+    config = get_nuscenes_tracking_config(config_path=official_config_stripped_path)
     metrics_summary = nuscenes_devkit_tracking_eval(params=custom_split_trainval_eval_params, config=config)
     assert isinstance(metrics_summary, dict)
 
@@ -78,7 +78,7 @@ def test_nuscenes_devkit_tracking_eval_baseline_stripped_custom_split_mini_fail(
         nusc_dataroot="/data/sets/nuscenes",
         nusc_version="v1.0-mini",  # Note that we try to evaluate on mini
     )
-    config = get_nuscenes_tracking_config_from_own_file(config_path=official_config_stripped_path)
+    config = get_nuscenes_tracking_config(config_path=official_config_stripped_path)
     metrics_summary = nuscenes_devkit_tracking_eval(params=custom_split_mini_eval_params, config=config)
     assert isinstance(metrics_summary, dict)
 

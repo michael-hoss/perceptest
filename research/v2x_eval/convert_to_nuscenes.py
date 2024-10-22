@@ -34,7 +34,7 @@ def convert_to_nuscenes_version_dirs(eval_config: CustomDataEvalConfig) -> None:
         - for all results_YY combined ("all")
     """
     with Progress(refresh_per_second=1) as progress:
-        artery_log_dirs: dict = get_structured_artery_log_dirs(eval_config.data_root)
+        artery_log_dirs: dict = get_structured_artery_log_dirs(eval_config)
         configs_task = progress.add_task(
             "[blue]Obtaining nuScenes files from artery logs...", total=len(artery_log_dirs)
         )
@@ -90,7 +90,7 @@ def convert_artery_config_logs_to_nuscenes_dir(
     progress.update(configs_task, advance=0.5)
 
 
-def get_structured_artery_log_dirs(artery_logs_root_dir: str) -> dict[str, list[str]]:
+def get_structured_artery_log_dirs(eval_config: CustomDataEvalConfig) -> dict[str, list[str]]:
     """returns e.g.
     {
         "artery_config": ["config_iteration_01", "config_iteration_02"],
@@ -98,7 +98,7 @@ def get_structured_artery_log_dirs(artery_logs_root_dir: str) -> dict[str, list[
         "sim02data": ["results_01", "results_02"],
     }
     """
-    pattern = path.join(artery_logs_root_dir, "sim??data/results_??/")
+    pattern = path.join(eval_config.data_root, eval_config.subdir_pattern, "results_??/")
     matching_dirs = glob.glob(pattern)
     matching_dirs = [dir for dir in matching_dirs if path.isdir(dir)]
 
