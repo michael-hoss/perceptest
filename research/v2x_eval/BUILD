@@ -42,5 +42,6 @@ py_test(
     deps = [
         ":main",
         "//:conftest",
+        "//base/testing:assertions",
     ],
 )

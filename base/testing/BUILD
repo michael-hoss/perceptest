@@ -3,6 +3,7 @@ py_library(
     srcs = [
         "recursive_assert_equal.py",
     ],
+    visibility = ["//visibility:public"],
 )
 
 py_test(

@@ -1,9 +1,10 @@
+import re
 import sys
 from copy import deepcopy
 
 import pytest
 
-from base.testing.recursive_assert_equal import assert_equal
+from base.testing.recursive_assert_equal import SKIP_TEST_HINT, assert_equal
 
 
 def test_assert_equal_pass():
@@ -35,7 +36,7 @@ def test_assert_equal_fail_float():
         ],
     }
 
-    with pytest.raises(AssertionError, match="Floats not equal"):
+    with pytest.raises(AssertionError, match=re.escape("Floats not equal ['otherkey', 1, 'c', 2]")):
         assert_equal(expected=expected, actual=actual)
 
 
@@ -53,6 +54,22 @@ def test_assert_equal_pass_mutated():
             {"a": 1, "b": 2, "c": [4, 5, 6.6668]},
         ],
         "hey": "yeah",
+    }
+
+    assert_equal(expected=expected, actual=actual)
+
+
+def test_assert_equal_pass_skiptest():
+    expected = {
+        "hey": "yeah",
+        "otherkey": SKIP_TEST_HINT,
+    }
+    actual = {
+        "hey": "yeah",
+        "otherkey": [
+            "string1",
+            {"a": 1, "b": 2, "c": [4, 5, 6.6668]},
+        ],
     }
 
     assert_equal(expected=expected, actual=actual)
