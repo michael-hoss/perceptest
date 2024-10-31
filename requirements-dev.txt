@@ -1,4 +1,10 @@
-# Python requirements for developing in this repo
+# Python requirements for developing in this repo.
+# This file only consists common requirements for code style, testing etc.
+
+# The actual requirements for running the individual `research/` activities are in 
+# separate requirements.txt files. In general they conflict with each other, 
+# so a developer environment for a given research activity needs to be set up
+# manually by installing both this file and the respetive requirements.txt file.
 
 # Development tools
 ruff==0.7.1
@@ -13,6 +19,3 @@ requests==2.32.3
 
 # Library stubs for type checking
 types-Pillow==10.2.0.20240331
-
-# Requirements for running the actual code
--r ./requirements.txt
