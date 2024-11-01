@@ -73,7 +73,7 @@ jobs:
       - name: Test with bazel and pytest
         run: |
           # leave out nuscenes things
-          bazel test //... \
+          bazel test //... -- \
             -//research/v2x_eval/... \
             -//inputs/artery/... \
             -//inputs/nuscenes/... \
@@ -108,4 +108,4 @@ jobs:
       - name: Test with bazel and pytest
         run: |
           # leave out delta_crit things
-          bazel test //... -//research/delta_crit --test_output=all
+          bazel test //... -- -//research/delta_crit --test_output=all
