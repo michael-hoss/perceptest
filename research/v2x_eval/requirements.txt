@@ -1,0 +1,6 @@
+# Own direct requirements
+rich==13.7.1
+
+# Indirect requirements from other parts of this codebase
+-r ../../third_party/nuscenes-devkit/setup/requirements.txt
+-r ../../base/requirements.txt
