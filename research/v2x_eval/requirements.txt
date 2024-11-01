@@ -1,4 +1,4 @@
 pyproj==3.6.1
 utm==0.7.0
 rich==13.7.1
--r third_party/nuscenes-devkit/setup/requirements.txt
+-r ../../third_party/nuscenes-devkit/setup/requirements.txt

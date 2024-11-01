@@ -3,7 +3,8 @@
 ## Installations
 
 - See the [README.md](README.md) for general installation instructions
-- `pip install -r requirements-dev.txt` for developer dependencies
+- `pip install -r requirements-dev.txt` for the common developer dependencies
+- `cd research/subdir_name && pip install -r requirements.txt` for the dependencies of the respective project.
 - Install [buildifier](https://github.com/bazelbuild/buildtools/blob/master/buildifier/README.md) to format bazel files. The most basic way is to download the released binary, place it under `/usr/local/bin/`, and make it executable.
 
 ## Environment variables
@@ -20,7 +21,7 @@
 
 ## Get active
 
-- Run all tests: `bazel test //...`
+- Run tests: `bazel test //...`
 - Debug an individual test: `bazel test //path/to:test_target --test_env=DEBUG=1 --test_timeout=3600`
   - Attach to the debugger after some seconds with "Python: Attach" in VSCode
   
