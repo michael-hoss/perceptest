@@ -25,6 +25,8 @@ from commonroad_crime.measure import (
 scenario_id = "DEU_Gar-1_1_T-1"
 
 # ==== build configuration
+# TODO: INCLUDE commonroad-crime as submodule, build it from source, and then also take the config file
+# from there!
 config = CriMeConfiguration.load(f"../config_files/{scenario_id}.yaml", scenario_id)
 # or use the default one with: config = CriMeConfiguration()
 config.update()
