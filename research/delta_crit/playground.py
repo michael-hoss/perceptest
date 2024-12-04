@@ -1,3 +1,5 @@
+import os
+
 from commonroad_crime.data_structure.configuration import CriMeConfiguration
 from commonroad_crime.data_structure.crime_interface import CriMeInterface
 from commonroad_crime.measure import (
@@ -25,9 +27,12 @@ from commonroad_crime.measure import (
 scenario_id = "DEU_Gar-1_1_T-1"
 
 # ==== build configuration
-# TODO: INCLUDE commonroad-crime as submodule, build it from source, and then also take the config file
-# from there!
-config = CriMeConfiguration.load(f"../config_files/{scenario_id}.yaml", scenario_id)
+PERCEPTEST_ROOT = os.environ.get("PERCEPTEST_REPO")
+assert PERCEPTEST_ROOT
+CRIME_ROOT = os.path.join(PERCEPTEST_ROOT, "third_party/commonroad-crime")
+scenario_yaml = os.path.join(CRIME_ROOT, f"config_files/{scenario_id}.yaml")
+
+config = CriMeConfiguration.load(scenario_yaml, scenario_id)
 # or use the default one with: config = CriMeConfiguration()
 config.update()
 config.print_configuration_summary()
@@ -40,3 +45,4 @@ crime_interface.evaluate_scenario(
 
 # ==== visualize the results for debugging and showcasing
 crime_interface.visualize()
+pass
