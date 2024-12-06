@@ -106,5 +106,5 @@ explicit_package_bases = true
 # Don't check errors regarding importing the following dependencies because they 
 # have no typing information.
 [[tool.mypy.overrides]]
-module = ["rich", "utm", "debugpy", "matplotlib", "nuscenes.eval.*", "nuscenes.utils.*", "commonroad_crime.*"] 
+module = ["rich", "utm", "debugpy", "matplotlib", "nuscenes.eval.*", "nuscenes.utils.*", "commonroad_crime.*, commonroad.*"] 
 ignore_missing_imports = true

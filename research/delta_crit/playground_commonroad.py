@@ -1,15 +1,18 @@
-from commonroad.common.file_reader import CommonRoadFileReader  # type: ignore
-from commonroad.visualization.mp_renderer import MPRenderer  # type: ignore
+from research.delta_crit.crime_utils.crime_utils import (
+    visualize_time_steps,
+)
 
-from research.delta_crit.crime_utils.crime_utils import get_scenario_xml
 
-scenario_id = "DEU_Gar-1_1_T-1"
-scenario_file_path = get_scenario_xml(scenario_id=scenario_id)
+def main():
+    # visualize_statically("DEU_Gar-1_1_T-1")
+    # visualize_time_steps("OSC_CutIn-1_2_T-1", [20, 34, 99])
 
-scenario, planning_problem_set = CommonRoadFileReader(scenario_file_path).open()
+    # visualize_statically("OSC_Overtake-1_1_T-1")
+    visualize_time_steps("OSC_Overtake-1_1_T-1", [0, 10, 20])
+    visualize_time_steps("OSC_Overtake-1_1_T-1", [69, 121, 129])  # needs larger plot limits!
 
-# plot the scenario
-rnd = MPRenderer(figsize=(25, 10))
-scenario.draw(rnd)
-rnd.render(show=True)
-pass
+    pass
+
+
+if __name__ == "__main__":
+    main()

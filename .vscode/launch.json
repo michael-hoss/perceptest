@@ -18,7 +18,7 @@
       "type": "debugpy",
       "request": "launch",
       "program": "${file}",
-      "cwd": "${workspaceFolder}", // "${fileDirname}",
+      "cwd": "${fileDirname}", // "${fileDirname}", "${workspaceFolder}",
       "env": {
         "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
       },

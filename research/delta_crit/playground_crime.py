@@ -1,5 +1,6 @@
 import os
 
+import commonroad_crime.utility.visualization as utils_vis
 from commonroad_crime.data_structure.configuration import CriMeConfiguration
 from commonroad_crime.data_structure.crime_interface import CriMeInterface
 from commonroad_crime.measure import (
@@ -45,4 +46,8 @@ crime_interface.evaluate_scenario(
 
 # ==== visualize the results for debugging and showcasing
 crime_interface.visualize()
+
+utils_vis.visualize_scenario_at_time_steps(
+    config.scenario, plot_limit=config.debug.plot_limits, time_steps=[69, 121, 129]
+)
 pass
