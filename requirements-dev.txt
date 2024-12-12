@@ -8,7 +8,7 @@
 
 # Development tools
 ruff==0.7.1
-debugpy==1.8.1
+debugpy==1.8.9
 pytest==8.1.1
 mypy==1.13.0
 pre-commit==3.7.0
