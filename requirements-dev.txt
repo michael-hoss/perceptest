@@ -8,14 +8,15 @@
 
 # Development tools
 ruff==0.7.1
-debugpy==1.8.1
 pytest==8.3.4
+debugpy==1.8.9
+pytest==8.1.1
 mypy==1.13.0
-pre-commit==3.7.0
+pre-commit==4.0.1
 
 # Requirements for development utilities and tests
 python-dotenv==1.0.1
 requests==2.32.3
 
 # Library stubs for type checking
-types-Pillow==10.2.0.20240331
+types-Pillow==10.2.0.20240822
