@@ -62,9 +62,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
-          cd research/delta_crit
-          pip install -r requirements.txt
-          cd ../..
+          pip install -r research/delta_crit/requirements.txt
       - name: Do perceptest-specific preparations
         run: |
           cp .env_bazel_test_default .env
