@@ -7,3 +7,6 @@
 [submodule "third_party/omega_format"]
 	path = third_party/omega_format
 	url = git@github.com:michael-hoss/omega_format.git
+[submodule "third_party/commonroad-crime"]
+	path = third_party/commonroad-crime
+	url = git@github.com:michael-hoss/commonroad-crime.git
