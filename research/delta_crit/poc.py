@@ -1,20 +1,20 @@
+import os
+
 from commonroad_crime.data_structure.configuration import CriMeConfiguration
 from commonroad_crime.data_structure.crime_interface import CriMeInterface
-from commonroad_crime.measure import TTCStar
+from commonroad_crime.measure import TTC
 
-from .crime_utils.crime_utils import get_scenario_config_yaml
+from research.delta_crit.crime_utils.crime_utils import get_scenario_config
 
-scenario_id = "DEU_Gar-1_1_T-1"
-
-
-scenario_yaml: str = get_scenario_config_yaml(scenario_id=scenario_id)
-config = CriMeConfiguration.load(scenario_yaml, scenario_id)
-config.update()
-config.print_configuration_summary()
+# Note that `CriMeConfiguration.general: GeneralConfiguration` holds all the necessary paths
+# for locating the (scenario) files.
+config: CriMeConfiguration = get_scenario_config("DEU_Gar-1_1_T-1")
+PERCEPTEST_ROOT = os.environ.get("PERCEPTEST_REPO")
 
 crime_interface = CriMeInterface(config)
-crime_interface.evaluate_scene(measures=[TTCStar], time_step=0, vehicle_id=200)
-crime_interface.evaluate_scenario([TTCStar])
+crime_interface.evaluate_scene(measures=[TTC], time_step=0, vehicle_id=200)
+crime_interface.evaluate_scenario([TTC], time_start=0, time_end=20)
+crime_interface.visualize(time_step=19)
+crime_interface.save_to_file(output_dir=PERCEPTEST_ROOT)
 
-crime_interface.visualize()
 pass
