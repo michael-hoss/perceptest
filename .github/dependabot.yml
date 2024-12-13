@@ -12,3 +12,6 @@ updates:
       - "**/*"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "commonroad-crime"
+      - dependency-name: "nuscenes-devkit"
