@@ -12,3 +12,9 @@ pip install -e $PERCEPTEST_REPO/third_party/commonroad-crime
 
 to use the latest referenced version from the submodule. 
 This is on purpose not included in `requirements.txt` because it confuses dependabot.
+
+## Testing
+
+For now, I will do without bazel. Just run
+
+`pytest`
