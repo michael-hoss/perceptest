@@ -26,7 +26,10 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
           submodules: true  # submodules needed, otherwise mypy gets confused about ignoring them
           token: ${{ secrets.CHECKOUT_PRIVATE_RESEARCH_FOR_PERCEPTEST }}
-
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
       - name: Install pre-commit dependencies
         run: |
           # Install buildifier manually because it does not install automatically 
