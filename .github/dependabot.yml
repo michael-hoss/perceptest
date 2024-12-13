@@ -9,9 +9,12 @@ updates:
       interval: "weekly"
   - package-ecosystem: "pip"
     directories:
-      - "**/*"
+      - "/"
+      - "/base/**/*"
+      - "/inputs/**/*"
+      - "/research/**/*"
     schedule:
       interval: "weekly"
     ignore:
-      - dependency-name: "commonroad-crime"
-      - dependency-name: "nuscenes-devkit"
+      - dependency-name: "commonroad-crime"  # only editable installed locally
+      - dependency-name: "nuscenes-devkit"  # not installed, just referred to locally via PYTHONPATH
