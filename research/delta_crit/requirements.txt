@@ -1,7 +1,5 @@
-# This file needs to be called from the root of the perceptest repo such that the paths work.
-
 # Own direct requirements
--e ./third_party/commonroad-crime
+-e ../../third_party/commonroad-crime
 notebook
 
 # Indirect requirements from other parts of this codebase

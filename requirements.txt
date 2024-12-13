@@ -1,8 +1,0 @@
-# All Python dependencies for running the `research/` activities that are still
-# maintained and that can be installed together into one up-to-date python environment.
--r base/requirements.txt
--r research/delta_crit/requirements.txt
-
-# Research activities that have conflicting outdated dependencies, and therefore
-# need their own separate Python environment (commented out)
-# -r research/v2x_eval/requirements.txt
