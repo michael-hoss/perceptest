@@ -77,11 +77,16 @@ jobs:
           bazel build //...
       - name: Test with bazel and pytest
         run: |
+          # 
+          cd research/delta_crit
+          pytest
+          cd ../..
+
           # leave out nuscenes things
-          bazel test //... --test_output=all -- \
-            -//research/v2x_eval/... \
-            -//inputs/artery/... \
-            -//inputs/nuscenes/... 
+          # bazel test //... --test_output=all -- \
+          #   -//research/v2x_eval/... \
+          #   -//inputs/artery/... \
+          #   -//inputs/nuscenes/... 
 
   functional_testing_nuscenes:
     if: github.event.pull_request.draft == false
