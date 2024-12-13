@@ -2,7 +2,7 @@
 # This file only consists common requirements for code style, testing etc.
 
 # The actual requirements for running the individual `research/` activities are in 
-# separate requirements.txt files. In general they conflict with each other, 
+# their respective requirements.txt files. In general they conflict with each other, 
 # so a developer environment for a given research activity needs to be set up
 # manually by installing both this file and the respetive requirements.txt file.
 
