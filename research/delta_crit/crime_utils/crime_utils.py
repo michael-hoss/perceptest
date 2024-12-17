@@ -2,9 +2,14 @@ import os
 
 import commonroad_crime.utility.visualization as utils_vis
 from commonroad.common.file_reader import CommonRoadFileReader  # type: ignore
+from commonroad.common.file_writer import CommonRoadFileWriter  # type: ignore
+from commonroad.planning.planning_problem import PlanningProblemSet  # type: ignore
 from commonroad.scenario.scenario import Scenario  # type: ignore
 from commonroad.visualization.mp_renderer import MPRenderer  # type: ignore
 from commonroad_crime.data_structure.configuration import CriMeConfiguration  # type: ignore
+from omegaconf import DictConfig, OmegaConf
+
+from base.dict_utils.dict_utils import remove_key_recursively
 
 
 def get_local_crime_root() -> str:
@@ -15,7 +20,7 @@ def get_local_crime_root() -> str:
 
 
 def get_scenario_config_yaml(scenario_id: str) -> str:
-    """Get scenario config yaml from the committed ones in the crime submodue"""
+    """Get scenario config yaml from the committed ones in the crime submodule"""
     crime_root: str = get_local_crime_root()
     return os.path.join(crime_root, f"config_files/{scenario_id}.yaml")
 
@@ -28,7 +33,7 @@ def get_scenario_config(scenario_id: str) -> CriMeConfiguration:
 
 
 def get_scenario_xml(scenario_id: str) -> str:
-    """Get scenario description xml from the committed ones in the crime submodue"""
+    """Get scenario description xml from the committed ones in the crime submodule"""
     crime_root: str = get_local_crime_root()
     return os.path.join(crime_root, f"scenarios/{scenario_id}.xml")
 
@@ -53,3 +58,26 @@ def visualize_time_steps(scenario_id: str, time_steps: list[int]) -> None:
     utils_vis.visualize_scenario_at_time_steps(
         config.scenario, plot_limit=config.debug.plot_limits, time_steps=time_steps
     )
+
+
+def write_scenario(scenario: Scenario, filename: str) -> None:
+    dummy_planning_problem_set = PlanningProblemSet()
+    file_writer = CommonRoadFileWriter(scenario=scenario, planning_problem_set=dummy_planning_problem_set)
+    file_writer.write_scenario_to_file(filename=filename)
+
+
+def write_scenario_config(config: CriMeConfiguration, filename: str) -> None:
+    _, file_suffix = os.path.splitext(filename)
+    assert file_suffix == ".yaml", f"File type {file_suffix} is unsupported! Please use .yaml!"
+
+    config_dict_omega: DictConfig = OmegaConf.structured(config)  # encode the object
+
+    config_dict: dict = remove_key_recursively(
+        original_dict=config_dict_omega, key_to_remove="_BaseConfig__initialized", input_type=DictConfig
+    )
+    config_dict_omega = DictConfig(config_dict)
+
+    # TODO potentially tidy up config_dict s.th. it only contains the non-default values
+    # and no private variables of the config dataclass
+
+    OmegaConf.save(config=config_dict_omega, f=filename)
