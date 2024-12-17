@@ -18,7 +18,6 @@ jobs:
   pre-commit_linting:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,6 +49,8 @@ jobs:
   delta_crit:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    env:
+      PERCEPTEST_REPO: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,7 +73,6 @@ jobs:
       - name: Do perceptest-specific preparations
         run: |
           cp .env_bazel_test_default .env
-          export PERCEPTEST_REPO=$PWD
       - name: Bazel build
         run: |
           bazel build //...
@@ -92,6 +92,8 @@ jobs:
   v2x_eval:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    env:
+      PERCEPTEST_REPO: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -113,7 +115,6 @@ jobs:
       - name: Do perceptest-specific preparations
         run: |
           cp .env_bazel_test_default .env
-          export PERCEPTEST_REPO=$PWD
       - name: Bazel build
         run: |
           bazel build //...
