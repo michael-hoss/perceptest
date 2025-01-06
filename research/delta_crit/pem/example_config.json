@@ -1,7 +1,7 @@
 {
-  "start_timestep": 10,
-  "end_timestep": 20,
-  "offset_east": 1,
-  "offset_north": 1,
+  "start_timestep": 5,
+  "end_timestep": 15,
+  "offset_longitudinal": 10,
+  "offset_lateral": 0,
   "object_id": 201
 }

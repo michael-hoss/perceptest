@@ -1,5 +1,9 @@
 import argparse
+import math
 from copy import deepcopy
+
+from commonroad.scenario.obstacle import DynamicObstacle  # type: ignore
+from commonroad.scenario.state import TraceState  # type: ignore
 
 from research.delta_crit.crime_utils.crime_utils import (
     CriMeConfiguration,
@@ -30,10 +34,22 @@ def create_sut_scenario_files(
 def create_sut_scenario(
     original_scenario: Scenario, crime_config: CriMeConfiguration, pem_config: PemConfig
 ) -> tuple[Scenario, CriMeConfiguration]:
-    # Dummy functionality for now: just copy-paste
-    # TODO actually implement the perception error model!
     sut_scenario = deepcopy(original_scenario)
     sut_config = deepcopy(crime_config)
+
+    ego_vehicle: DynamicObstacle = sut_scenario._dynamic_obstacles[crime_config.vehicle.ego_id]
+
+    obstacle: DynamicObstacle = sut_scenario._dynamic_obstacles[pem_config.object_id]
+    for timestep in range(pem_config.start_timestep, pem_config.end_timestep):
+        ego_orientation: float = ego_vehicle.state_at_time(time_step=timestep).orientation
+        offset_long: float = pem_config.offset_longitudinal
+        offset_lat: float = pem_config.offset_lateral
+        offset_east = offset_long * math.cos(ego_orientation) + offset_lat * math.sin(ego_orientation)
+        offset_north = offset_long * math.sin(ego_orientation) + offset_lat * math.cos(ego_orientation)
+
+        obstacle_state: TraceState = obstacle.state_at_time(time_step=timestep)
+        obstacle_state.position[0] += offset_east
+        obstacle_state.position[1] += offset_north
     return sut_scenario, sut_config
 
 

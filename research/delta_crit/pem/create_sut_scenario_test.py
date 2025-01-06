@@ -2,10 +2,14 @@ import os
 import sys
 import tempfile
 
+import commonroad_crime.utility.visualization as utils_vis
+import matplotlib.pyplot as plt
 import pytest
 from commonroad.scenario.scenario import Scenario  # type: ignore
 
-from research.delta_crit.crime_utils.crime_utils import CriMeConfiguration
+from research.delta_crit.crime_utils.crime_utils import (
+    CriMeConfiguration,
+)
 from research.delta_crit.pem.create_sut_scenario import create_sut_scenario, create_sut_scenario_files
 from research.delta_crit.pem.pem_config import PemConfig
 
@@ -15,6 +19,19 @@ def test_create_sut_scenario(
 ) -> None:
     sut_scenario, sut_config = create_sut_scenario(
         original_scenario=example_scenario_garching, crime_config=example_config_garching, pem_config=example_pem_config
+    )
+
+    # Visual Insights
+    utils_vis.visualize_scenario_at_time_steps(
+        example_config_garching.scenario,
+        plot_limit=example_config_garching.debug.plot_limits,
+        time_steps=[example_pem_config.start_timestep - 3, example_pem_config.end_timestep + 2],
+    )
+    plt.show(block=False)
+    utils_vis.visualize_scenario_at_time_steps(
+        sut_scenario,
+        plot_limit=example_config_garching.debug.plot_limits,
+        time_steps=[example_pem_config.start_timestep - 3, example_pem_config.end_timestep + 2],
     )
 
     # Assertions

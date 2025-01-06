@@ -8,11 +8,11 @@ from dataclasses_json import dataclass_json
 class PemConfig:
     """Manipulate object_id from start_timestep to end_timestep with offsets"""
 
-    start_timestep: int
-    end_timestep: int
-    offset_east: float  # in meters
-    offset_north: float  #  in meters
-    object_id: int
+    start_timestep: int  # included
+    end_timestep: int  # excluded
+    offset_longitudinal: float  # in meters
+    offset_lateral: float  #  in meters
+    object_id: int  # CommonRoad obstacle id
 
     @classmethod
     def from_json_file(cls, json_path: str) -> "PemConfig":
