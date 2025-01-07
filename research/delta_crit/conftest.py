@@ -16,5 +16,23 @@ def example_scenario_garching(scenario_id_garching: str) -> Scenario:
 
 
 @pytest.fixture
+def scenario_stripped(example_scenario_garching: Scenario) -> Scenario:
+    scenario = example_scenario_garching
+    obs_to_remove = [
+        scenario.obstacle_by_id(202),
+        scenario.obstacle_by_id(203),
+    ]
+    scenario.remove_obstacle(obs_to_remove)
+    return scenario
+
+
+@pytest.fixture
+def config_stripped(example_config_garching: CriMeConfiguration, scenario_stripped: Scenario) -> CriMeConfiguration:
+    example_config_garching.scenario = scenario_stripped
+    example_config_garching.debug.plot_limits = [-10, 50, -10, 50]
+    return example_config_garching
+
+
+@pytest.fixture
 def example_config_garching(scenario_id_garching: str) -> CriMeConfiguration:
     return get_scenario_config(scenario_id=scenario_id_garching)

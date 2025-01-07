@@ -19,16 +19,16 @@ def get_local_crime_root() -> str:
     return CRIME_ROOT
 
 
-def get_scenario_config_yaml(scenario_id: str) -> str:
+def get_config_yaml(scenario_id: str) -> str:
     """Get scenario config yaml from the committed ones in the crime submodule"""
     crime_root: str = get_local_crime_root()
     return os.path.join(crime_root, f"config_files/{scenario_id}.yaml")
 
 
 def get_scenario_config(scenario_id: str) -> CriMeConfiguration:
-    scenario_yaml_path = get_scenario_config_yaml(scenario_id=scenario_id)
-    config = CriMeConfiguration.load(scenario_yaml_path, scenario_id)
-    config.update()
+    config_yaml_path = get_config_yaml(scenario_id=scenario_id)
+    config = CriMeConfiguration.load(config_yaml_path, scenario_id)
+    config.update()  # Here, we could specify/overwrite the ego_id, too!
     return config
 
 
