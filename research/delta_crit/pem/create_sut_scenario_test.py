@@ -23,9 +23,10 @@ def test_create_sut_scenario(example_pem_config: PemConfig, config_stripped: Cri
     # utils_vis.visualize_scenario_at_time_steps(
     #     sut_scenario,
     #     plot_limit=config_stripped.debug.plot_limits,
-    #     time_steps=[10, 11],
+    #     time_steps=[10],
     #     print_obstacle_ids=True,
     # )
+    pass
 
 
 def test_create_sut_scenario_files(scenario_id_garching: str, example_pem_config_path: str) -> None:

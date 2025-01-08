@@ -13,14 +13,14 @@ from research.delta_crit.crime_utils.crime_utils import (
     write_scenario,
     write_scenario_config,
 )
-from research.delta_crit.pem.pem_config import PemConfig
+from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_from_json
 
 
 def create_sut_scenario_files(
     scenario_id: str, pem_config_path: str, sut_scenario_path: str, sut_crime_config_path: str
 ) -> None:
     crime_config: CriMeConfiguration = get_scenario_config(scenario_id=scenario_id)
-    pem_config: PemConfig = PemConfig.from_json_file(json_path=pem_config_path)
+    pem_config: PemConfig = pem_config_from_json(json_path=pem_config_path)
 
     sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=pem_config)
 
@@ -33,22 +33,24 @@ def create_sut_scenario(crime_config: CriMeConfiguration, pem_config: PemConfig)
     sut_scenario = sut_config.scenario
 
     ego_vehicle: DynamicObstacle = sut_scenario._dynamic_obstacles[crime_config.vehicle.ego_id]
-    obstacle: DynamicObstacle = sut_scenario._dynamic_obstacles[pem_config.object_id]
 
-    for timestep in range(pem_config.start_timestep, pem_config.end_timestep):
-        ego_state: TraceState = ego_vehicle.state_at_time(time_step=timestep)
-        obstacle_state: TraceState = obstacle.state_at_time(time_step=timestep)
-        add_offset_long_lat(ego_state=ego_state, obstacle_state=obstacle_state, pem_config=pem_config)
-        add_offset_range_azimuth(ego_state, obstacle_state=obstacle_state, pem_config=pem_config)
+    for perror in pem_config:
+        obstacle: DynamicObstacle = sut_scenario._dynamic_obstacles[perror.object_id]
+
+        for timestep in range(perror.start_timestep, perror.end_timestep):
+            ego_state: TraceState = ego_vehicle.state_at_time(time_step=timestep)
+            obstacle_state: TraceState = obstacle.state_at_time(time_step=timestep)
+            add_offset_long_lat(ego_state=ego_state, obstacle_state=obstacle_state, perror=perror)
+            add_offset_range_azimuth(ego_state, obstacle_state=obstacle_state, perror=perror)
     return sut_scenario, sut_config
 
 
-def add_offset_long_lat(ego_state: TraceState, obstacle_state: TraceState, pem_config: PemConfig) -> None:
+def add_offset_long_lat(ego_state: TraceState, obstacle_state: TraceState, perror: Perror) -> None:
     """Add offsets along the ego vehicle's longitudinal and lateral directions to the target obstacle's position."""
 
     ego_orientation: float = ego_state.orientation
-    offset_long: float = pem_config.offset_longitudinal
-    offset_lat: float = pem_config.offset_lateral
+    offset_long: float = perror.offset_longitudinal
+    offset_lat: float = perror.offset_lateral
 
     offset_east = offset_long * math.cos(ego_orientation) - offset_lat * math.sin(ego_orientation)
     offset_north = offset_long * math.sin(ego_orientation) + offset_lat * math.cos(ego_orientation)
@@ -57,12 +59,12 @@ def add_offset_long_lat(ego_state: TraceState, obstacle_state: TraceState, pem_c
     obstacle_state.position[1] += offset_north
 
 
-def add_offset_range_azimuth(ego_state: TraceState, obstacle_state: TraceState, pem_config: PemConfig) -> None:
+def add_offset_range_azimuth(ego_state: TraceState, obstacle_state: TraceState, perror: Perror) -> None:
     """Add offsets along the ego vehicle's range and azimuth directions to the target obstacle's position."""
 
     ego_orientation: float = ego_state.orientation
-    offset_range: float = pem_config.offset_range
-    offset_azimuth: float = pem_config.offset_azimuth * math.pi / 180
+    offset_range: float = perror.offset_range
+    offset_azimuth: float = perror.offset_azimuth * math.pi / 180
 
     # Add offset in relative (ego-specific) coordinates
     rel_position = obstacle_state.position - ego_state.position
