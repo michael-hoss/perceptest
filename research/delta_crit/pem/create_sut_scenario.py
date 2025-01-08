@@ -32,10 +32,10 @@ def create_sut_scenario(crime_config: CriMeConfiguration, pem_config: PemConfig)
     sut_config = deepcopy(crime_config)
     sut_scenario = sut_config.scenario
 
-    ego_vehicle: DynamicObstacle = sut_scenario._dynamic_obstacles[crime_config.vehicle.ego_id]
+    ego_vehicle: DynamicObstacle = sut_scenario.obstacle_by_id(crime_config.vehicle.ego_id)
 
     for perror in pem_config:
-        obstacle: DynamicObstacle = sut_scenario._dynamic_obstacles[perror.object_id]
+        obstacle: DynamicObstacle = sut_scenario.obstacle_by_id(perror.object_id)
 
         for timestep in range(perror.start_timestep, perror.end_timestep):
             ego_state: TraceState = ego_vehicle.state_at_time(time_step=timestep)
