@@ -10,7 +10,10 @@ class Perror:
     """Single perception error: Manipulate object_id from start_timestep to end_timestep with offsets.
     The CS in which the offsets are specified is the ego vehicle coordinate system."""
 
+    # Set to 0 to begin from initial time step
     start_timestep: int  # included
+
+    # Set to -1 to apply until the final time step
     end_timestep: int  # excluded
 
     offset_longitudinal: float  # in meters
@@ -18,6 +21,7 @@ class Perror:
     offset_range: float  # in meters to target obstacle
     offset_azimuth: float  # in degrees, from longitudinal axis counterclockwise to target obstacle
 
+    # Set to -1 to apply to all objects
     object_id: int  # CommonRoad obstacle id to which this error applies
 
 

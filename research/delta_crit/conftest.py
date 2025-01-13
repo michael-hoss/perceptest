@@ -23,6 +23,8 @@ def example_config_garching(scenario_id_garching: str) -> CriMeConfiguration:
 
 
 def simplify_scenario(scenario: Scenario, ego_id: int, offset_east: float = 10, offset_north: float = 0) -> Scenario:
+    """Set ego vehicle to 0,0 and all other dynamic obstacles to offset_east, offset_north."""
+
     # Modify ego state
     ego_obstacle: DynamicObstacle = scenario.obstacle_by_id(obstacle_id=ego_id)
     ego_obstacle.initial_state.orientation = 0.0

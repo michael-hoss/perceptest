@@ -35,13 +35,29 @@ def create_sut_scenario(crime_config: CriMeConfiguration, pem_config: PemConfig)
     ego_vehicle: DynamicObstacle = sut_scenario.obstacle_by_id(crime_config.vehicle.ego_id)
 
     for perror in pem_config:
-        obstacle: DynamicObstacle = sut_scenario.obstacle_by_id(perror.object_id)
+        if perror.object_id == -1:
+            obstacles_to_modify = []
+            for dynamic_obstacle in sut_scenario.dynamic_obstacles:
+                if dynamic_obstacle.obstacle_id != ego_vehicle.obstacle_id:
+                    obstacles_to_modify.append(dynamic_obstacle)
+        else:
+            obstacles_to_modify = [sut_scenario.obstacle_by_id(perror.object_id)]
 
-        for timestep in range(perror.start_timestep, perror.end_timestep):
-            ego_state: TraceState = ego_vehicle.state_at_time(time_step=timestep)
-            obstacle_state: TraceState = obstacle.state_at_time(time_step=timestep)
-            add_offset_long_lat(ego_state=ego_state, obstacle_state=obstacle_state, perror=perror)
-            add_offset_range_azimuth(ego_state, obstacle_state=obstacle_state, perror=perror)
+        for obstacle in obstacles_to_modify:
+            # TODO handle -1 timestep for end
+            # function to get final timestep?
+
+            start_timestep = max(perror.start_timestep, obstacle.prediction.trajectory.initial_time_step)
+
+            end_timestep = min(perror.end_timestep, obstacle.prediction.trajectory.final_state.time_step)
+            if perror.end_timestep == -1:
+                end_timestep = obstacle.prediction.trajectory.final_state.time_step
+
+            for timestep in range(start_timestep, end_timestep):
+                ego_state: TraceState = ego_vehicle.state_at_time(time_step=timestep)
+                obstacle_state: TraceState = obstacle.state_at_time(time_step=timestep)
+                add_offset_long_lat(ego_state=ego_state, obstacle_state=obstacle_state, perror=perror)
+                add_offset_range_azimuth(ego_state, obstacle_state=obstacle_state, perror=perror)
     return sut_scenario, sut_config
 
 

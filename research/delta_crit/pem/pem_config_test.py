@@ -5,13 +5,13 @@ import pytest
 from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_from_json
 
 
-def test_load_pem_config_from_list_of_dicts(example_pem_config_list_of_dicts: list[dict]) -> None:
-    pem_config: PemConfig = Perror.schema().load(example_pem_config_list_of_dicts, many=True)  # type: ignore
+def test_load_pem_config_from_list_of_dicts(geometrical_pem_config_list_of_dicts: list[dict]) -> None:
+    pem_config: PemConfig = Perror.schema().load(geometrical_pem_config_list_of_dicts, many=True)  # type: ignore
     assert pem_config[0].object_id == 201
 
 
-def test_load_pem_config_from_file(example_pem_config_path: str) -> None:
-    pem_config: PemConfig = pem_config_from_json(example_pem_config_path)
+def test_load_pem_config_from_file(geometrical_pem_config_path: str) -> None:
+    pem_config: PemConfig = pem_config_from_json(geometrical_pem_config_path)
     assert isinstance(pem_config[0], Perror)
     assert pem_config[0].object_id == 201
 
