@@ -3,7 +3,7 @@ import sys
 import tempfile
 from math import isclose
 
-import commonroad_crime.utility.visualization as utils_vis
+# import commonroad_crime.utility.visualization as utils_vis
 import pytest
 from commonroad.scenario.state import ExtendedPMState, InitialState  # type: ignore
 
@@ -20,27 +20,28 @@ def test_create_sut_scenario_multiple_timesteps(
     crime_config = config_simplified_straight
     sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=temporal_pem_config)
 
+    expected_east_modified: float = 20
+    expected_east_original: float = 10
     for timestep in range(0, 20):
-        sut_scenario.obstacle_by_id(201).state_at_time(timestep).position[0] == 20
+        sut_scenario.obstacle_by_id(201).state_at_time(timestep).position[0] == expected_east_modified
 
         if timestep == 0:
-            sut_scenario.obstacle_by_id(202).state_at_time(timestep).position[0] == 10
-            sut_scenario.obstacle_by_id(203).state_at_time(timestep).position[0] == 10
+            sut_scenario.obstacle_by_id(202).state_at_time(timestep).position[0] == expected_east_original
+            sut_scenario.obstacle_by_id(203).state_at_time(timestep).position[0] == expected_east_original
         else:
-            sut_scenario.obstacle_by_id(202).state_at_time(timestep).position[0] == 20
-            sut_scenario.obstacle_by_id(203).state_at_time(timestep).position[0] == 20
+            sut_scenario.obstacle_by_id(202).state_at_time(timestep).position[0] == expected_east_modified
+            sut_scenario.obstacle_by_id(203).state_at_time(timestep).position[0] == expected_east_modified
 
     assert sut_scenario.obstacle_by_id(203).state_at_time(21) is None
 
     # Visual Insights
-    # TODO debug visuals. Does that make sense??
-    utils_vis.visualize_scenario_at_time_steps(
-        sut_scenario,
-        plot_limit=crime_config.debug.plot_limits,
-        time_steps=[0, 20],
-        print_obstacle_ids=True,
-    )
-    pass
+    # utils_vis.visualize_scenario_at_time_steps(
+    #     sut_scenario,
+    #     plot_limit=crime_config.debug.plot_limits,
+    #     time_steps=[0, 1, 2, 3, 18, 19, 20],
+    #     print_obstacle_ids=True,
+    # )
+    # pass
 
 
 def test_create_sut_scenario_keep_rest_constant(
@@ -49,9 +50,9 @@ def test_create_sut_scenario_keep_rest_constant(
     crime_config = config_simplified_straight
     sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=geometrical_pem_config)
 
-    modified_timestep = 10
-    ego_id = 200
-    abs_tol = 1e-11
+    modified_timestep: int = 10
+    ego_id: int = 200
+    abs_tol: float = 1e-11
     for timestep in range(0, 20):
         for obstacle_id in [200, 201, 202, 203]:
             if obstacle_id == ego_id or timestep != modified_timestep:
@@ -87,13 +88,13 @@ def test_create_sut_scenario_straight_targets(
     assert isclose(sut_scenario.obstacle_by_id(203).state_at_time(modified_timestep).position[1], -25, abs_tol=abs_tol)
 
     # Visual Insights
-    utils_vis.visualize_scenario_at_time_steps(
-        sut_scenario,
-        plot_limit=crime_config.debug.plot_limits,
-        time_steps=[10],
-        print_obstacle_ids=True,
-    )
-    pass
+    # utils_vis.visualize_scenario_at_time_steps(
+    #     sut_scenario,
+    #     plot_limit=crime_config.debug.plot_limits,
+    #     time_steps=[10],
+    #     print_obstacle_ids=True,
+    # )
+    # pass
 
 
 def test_create_sut_scenario_side_targets(
