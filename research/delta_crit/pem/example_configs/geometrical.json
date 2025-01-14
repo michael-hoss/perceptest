@@ -1,0 +1,29 @@
+[
+  {
+    "start_timestep": 10,
+    "end_timestep": 11,
+    "offset_longitudinal": 0,
+    "offset_lateral": 0,
+    "offset_range": 10,
+    "offset_azimuth": 90,
+    "object_id": 201
+  },
+  {
+    "start_timestep": 10,
+    "end_timestep": 11,
+    "offset_longitudinal": 0,
+    "offset_lateral": 0,
+    "offset_range": 20,
+    "offset_azimuth": 180,
+    "object_id": 202
+  },
+  {
+    "start_timestep": 10,
+    "end_timestep": 11,
+    "offset_longitudinal": 0,
+    "offset_lateral": 0,
+    "offset_range": 15,
+    "offset_azimuth": 270,
+    "object_id": 203
+  }
+]

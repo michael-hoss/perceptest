@@ -1,9 +1,0 @@
-{
-  "start_timestep": 10,
-  "end_timestep": 11,
-  "offset_longitudinal": 0,
-  "offset_lateral": 0,
-  "offset_range": 0,
-  "offset_azimuth": 180,
-  "object_id": 201
-}
