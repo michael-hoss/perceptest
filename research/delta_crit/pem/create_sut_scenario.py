@@ -44,9 +44,6 @@ def create_sut_scenario(crime_config: CriMeConfiguration, pem_config: PemConfig)
             obstacles_to_modify = [sut_scenario.obstacle_by_id(perror.object_id)]
 
         for obstacle in obstacles_to_modify:
-            # TODO handle -1 timestep for end
-            # function to get final timestep?
-
             start_timestep = max(perror.start_timestep, obstacle.prediction.trajectory.initial_time_step)
 
             end_timestep = min(perror.end_timestep, obstacle.prediction.trajectory.final_state.time_step)
