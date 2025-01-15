@@ -45,3 +45,16 @@ def temporal_pem_config_path() -> str:
 @pytest.fixture
 def temporal_pem_config(temporal_pem_config_path: str) -> PemConfig:
     return pem_config_from_json(temporal_pem_config_path)
+
+
+@pytest.fixture
+def all_objects_pem_config_path() -> str:
+    PERCEPTEST_ROOT = os.environ.get("PERCEPTEST_REPO")
+    assert PERCEPTEST_ROOT
+    file_path: str = os.path.join(PERCEPTEST_ROOT, "research/delta_crit/pem/example_configs/all_objects.json")
+    return file_path
+
+
+@pytest.fixture
+def all_objects_pem_config(all_objects_pem_config_path: str) -> PemConfig:
+    return pem_config_from_json(all_objects_pem_config_path)

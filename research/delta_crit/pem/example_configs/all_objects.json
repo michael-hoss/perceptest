@@ -1,0 +1,20 @@
+[
+  {
+    "start_timestep": 0,
+    "end_timestep": -1,
+    "offset_longitudinal": 0,
+    "offset_lateral": 0,
+    "offset_range": 10,
+    "offset_azimuth": 0,
+    "object_id": -1
+  },
+  {
+    "start_timestep": 0,
+    "end_timestep": -1,
+    "offset_longitudinal": 0,
+    "offset_lateral": 0,
+    "offset_range": 0,
+    "offset_azimuth": 180,
+    "object_id": -1
+  }
+]
