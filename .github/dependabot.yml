@@ -6,7 +6,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
   - package-ecosystem: "pip"
     directories:
       - "/"
@@ -14,7 +14,7 @@ updates:
       - "/inputs/**/*"
       - "/research/**/*"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     ignore:
       - dependency-name: "commonroad-crime"  # only editable installed locally
       - dependency-name: "nuscenes-devkit"  # not installed, just referred to locally via PYTHONPATH
