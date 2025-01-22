@@ -15,21 +15,33 @@ from commonroad.scenario.state import InitialState, SignalState, TraceState  # t
 
 
 def refresh_dynamic_obstacles(scenario: Scenario) -> Scenario:
-    """Call this function after modifying objects' positions or orientations.
-    It makes sure the scenario properties stay consistent."""
+    """Call this function after modifying obstacles' positions, orientations, and/or shape.
+    It makes sure the scenario properties stay consistent. Especially:
+    - assignments lanelet <-> obstacle
+    - occupancy
+    """
 
-    obstacle_ids: list[int] = [obs.obstacle_id for obs in scenario.dynamic_obstacles]
-
+    assert_predictions_are_trajectories(scenario=scenario)
     clear_dynamic_obstacles_from_lanelets(lanelet_network=scenario.lanelet_network)
 
-    for obstacle_id in obstacle_ids:
-        old_obstacle: DynamicObstacle = scenario.obstacle_by_id(obstacle_id)
+    for old_obstacle in scenario.dynamic_obstacles:
         new_obstacle = deepcopy(old_obstacle)
-        scenario.remove_obstacle(old_obstacle)
-        refresh_dynamic_obstacle(obstacle=old_obstacle, lanelet_network=scenario.lanelet_network)
-        scenario.add_objects(new_obstacle)
 
+        # This also removes the obstacle from its lanelets
+        scenario.remove_obstacle(old_obstacle)
+
+        recompute_lanelet_assignments(obstacle=new_obstacle, lanelet_network=scenario.lanelet_network)
+
+        # This also adds the obstacle to its lanelets
+        scenario.add_objects(new_obstacle)
+        recompute_occupancy_set(new_obstacle.prediction)
     return scenario
+
+
+def assert_predictions_are_trajectories(scenario: Scenario) -> None:
+    for obstacle in scenario.dynamic_obstacles:
+        if not isinstance(obstacle.prediction, TrajectoryPrediction):
+            raise ValueError("Can only refresh TrajectoryPrediction")
 
 
 def clear_dynamic_obstacles_from_lanelets(lanelet_network: LaneletNetwork) -> LaneletNetwork:
@@ -76,8 +88,6 @@ def recompute_lanelet_assignments(obstacle: DynamicObstacle, lanelet_network: La
     - obstacle.initial_state,
     recompute which lanelets their shapes and centers are on.
 
-    Adds the new obstacle information to the lanelets, but does not delete the old one.
-
     See also https://github.com/CommonRoad/commonroad-io/blob/95511a554a9ed97fb9e3a88b6c1d1101839e2d49/commonroad/common/reader/file_reader_xml.py#L1254"""
 
     recompute_initial_lanelet_assignment(obstacle=obstacle, lanelet_network=lanelet_network)
@@ -86,21 +96,25 @@ def recompute_lanelet_assignments(obstacle: DynamicObstacle, lanelet_network: La
 
 
 def recompute_initial_lanelet_assignment(obstacle: DynamicObstacle, lanelet_network: LaneletNetwork) -> DynamicObstacle:
-    initial_state: InitialState = obstacle.initial_state
+    # We first need to recompute lanelet ids in the initial state,
+    # and only then add the initial state to the lanelet network.
+    recompute_lanelet_ids_in_initial_state(obstacle=obstacle, lanelet_network=lanelet_network)
+    add_initial_state_to_lanelet_network(obstacle=obstacle, lanelet_network=lanelet_network)
+    return obstacle
 
-    # Recompute initial lanelet ids
-    # TODO: this might be buggy, take care.
+
+def recompute_lanelet_ids_in_initial_state(
+    obstacle: DynamicObstacle, lanelet_network: LaneletNetwork
+) -> DynamicObstacle:
+    """Based on `initial_state` and `obstacle_shape`, recompute `initial_{shape|center}_lanelet_ids`."""
+
+    initial_state: InitialState = obstacle.initial_state
     rotated_shape = obstacle.obstacle_shape.rotate_translate_local(initial_state.position, initial_state.orientation)
     obstacle.initial_shape_lanelet_ids = set(lanelet_network.find_lanelet_by_shape(rotated_shape))
     obstacle.initial_center_lanelet_ids = set(lanelet_network.find_lanelet_by_position([initial_state.position])[0])
 
-    # Add initial state to these newly-computed lanelet ids
-    add_initial_state_to_its_lanelets(obstacle=obstacle, lanelet_network=lanelet_network)
-    return obstacle
 
-
-def add_initial_state_to_its_lanelets(obstacle: DynamicObstacle, lanelet_network: LaneletNetwork) -> LaneletNetwork:
-    """Adds, but does not delete any existing states from the lanelets."""
+def add_initial_state_to_lanelet_network(obstacle: DynamicObstacle, lanelet_network: LaneletNetwork) -> LaneletNetwork:
     for l_id in obstacle.initial_shape_lanelet_ids:
         lanelet_network.find_lanelet_by_id(l_id).add_dynamic_obstacle_to_lanelet(
             obstacle_id=obstacle.obstacle_id, time_step=obstacle.initial_state.time_step
@@ -111,6 +125,8 @@ def add_initial_state_to_its_lanelets(obstacle: DynamicObstacle, lanelet_network
 def recompute_prediction_lanelet_assignment(
     obstacle: DynamicObstacle, lanelet_network: LaneletNetwork
 ) -> DynamicObstacle:
+    """Based on `obstacle.prediction`, recompute `obstacle.prediction.{shape|center}_lanelet_assignment`."""
+
     # Input checks and syntactic sugar
     if not isinstance(obstacle.prediction, TrajectoryPrediction):
         raise ValueError("Can only recompute lanelet assignment for TrajectoryPrediction")
@@ -124,4 +140,5 @@ def recompute_prediction_lanelet_assignment(
     prediction.center_lanelet_assignment = DynamicObstacleFactory.find_obstacle_center_lanelets(
         initial_state, prediction.trajectory.state_list, lanelet_network
     )
+
     return obstacle
