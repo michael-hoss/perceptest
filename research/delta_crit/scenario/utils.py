@@ -1,6 +1,5 @@
 # import numpy as np
 from copy import deepcopy
-from typing import Optional
 
 from commonroad.common.reader.file_reader_xml import DynamicObstacleFactory  #  type: ignore
 
@@ -9,7 +8,7 @@ from commonroad.prediction.prediction import TrajectoryPrediction  # type: ignor
 from commonroad.scenario.lanelet import LaneletNetwork  # type: ignore
 from commonroad.scenario.obstacle import DynamicObstacle  # type: ignore
 from commonroad.scenario.scenario import Scenario  # type: ignore
-from commonroad.scenario.state import InitialState, SignalState, TraceState  # type: ignore
+from commonroad.scenario.state import InitialState  # type: ignore
 
 # from commonroad.scenario.trajectory import Trajectory  # type: ignore
 
@@ -19,22 +18,15 @@ def refresh_dynamic_obstacles(scenario: Scenario) -> Scenario:
     It makes sure the scenario properties stay consistent. Especially:
     - assignments lanelet <-> obstacle
     - occupancy
+
+    See also https://github.com/CommonRoad/commonroad-io/issues/12
     """
 
     assert_predictions_are_trajectories(scenario=scenario)
     clear_dynamic_obstacles_from_lanelets(lanelet_network=scenario.lanelet_network)
 
     for old_obstacle in scenario.dynamic_obstacles:
-        new_obstacle = deepcopy(old_obstacle)
-
-        # This also removes the obstacle from its lanelets
-        scenario.remove_obstacle(old_obstacle)
-
-        recompute_lanelet_assignments(obstacle=new_obstacle, lanelet_network=scenario.lanelet_network)
-
-        # This also adds the obstacle to its lanelets
-        scenario.add_objects(new_obstacle)
-        recompute_occupancy_set(new_obstacle.prediction)
+        exchange_by_fresh_obstacle(scenario=scenario, obstacle=old_obstacle)
     return scenario
 
 
@@ -50,35 +42,19 @@ def clear_dynamic_obstacles_from_lanelets(lanelet_network: LaneletNetwork) -> La
     return lanelet_network
 
 
-def refresh_dynamic_obstacle(obstacle: DynamicObstacle, lanelet_network: LaneletNetwork) -> DynamicObstacle:
-    """See https://github.com/CommonRoad/commonroad-io/issues/12"""
+def exchange_by_fresh_obstacle(scenario: Scenario, obstacle: DynamicObstacle) -> Scenario:
+    new_obstacle = deepcopy(obstacle)
+    scenario.remove_obstacle(obstacle)  # This also removes the obstacle from its old lanelets
 
-    if not isinstance(obstacle.prediction, TrajectoryPrediction):
-        raise ValueError("Can only refresh TrajectoryPrediction")
-
-    recompute_lanelet_assignments(obstacle=obstacle, lanelet_network=lanelet_network)
-    recompute_occupancy_set(obstacle.prediction)
-
-    return obstacle
+    recompute_lanelet_assignments(obstacle=new_obstacle, lanelet_network=scenario.lanelet_network)
+    scenario.add_objects(new_obstacle)  # This also adds the obstacle to its new lanelets
+    recompute_occupancy_set(new_obstacle.prediction)
 
 
 def recompute_occupancy_set(prediction: TrajectoryPrediction) -> TrajectoryPrediction:
     prediction._invalidate_occupancy_set()
     _ = prediction.occupancy_set  # recompute it
     return prediction
-
-
-def reset_initial_state(
-    obstacle: DynamicObstacle,
-    state: TraceState,
-    signal_state: Optional[SignalState] = None,
-) -> DynamicObstacle:
-    """Modification of official `update_initial_state`.
-    Here, without doing a time step. No history gets appended and no prediction gets invalidated.
-    Also without recomputing lanelet assignments, as this is done elsewhere."""
-    obstacle.initial_state = state
-    obstacle.initial_signal_state = signal_state
-    return obstacle
 
 
 def recompute_lanelet_assignments(obstacle: DynamicObstacle, lanelet_network: LaneletNetwork) -> DynamicObstacle:
@@ -127,18 +103,36 @@ def recompute_prediction_lanelet_assignment(
 ) -> DynamicObstacle:
     """Based on `obstacle.prediction`, recompute `obstacle.prediction.{shape|center}_lanelet_assignment`."""
 
-    # Input checks and syntactic sugar
-    if not isinstance(obstacle.prediction, TrajectoryPrediction):
-        raise ValueError("Can only recompute lanelet assignment for TrajectoryPrediction")
-    prediction: TrajectoryPrediction = obstacle.prediction
-    initial_state: InitialState = obstacle.initial_state
+    prediction: TrajectoryPrediction = obstacle.prediction  # for better type hinting
 
-    # Actual recomputation
+    # Note that the following two functions also add the initial_state's lanelets to the
+    # prediction's {shape|center}_lanelet_assignment.
+    # If the intial state is one step earlier than prediction.trajectory.state_list[0],
+    # its lanelets will be stored under a separate dict key.
+    # If the intial state is at the same time step as prediction.trajectory.state_list[0],
+    # then the following functions overwrite the initial_state's lanelets by the ones of
+    # prediction.trajectory.state_list[0].
+    # In general, the initial_state should be 1 time step before the prediction's first state:
+    # https://github.com/CommonRoad/commonroad-io/issues/13
+
+    # This seems a bit messy to me, but
+    # apparently, this is how it works in commonroad. Most likely, it is safe to assume
+    # that the initial_state is the prediction.trajectory.state_list[0] anyway.
+    # In the scenario xml file, initial_state can be a time step earlier.
+
+    # This also adds the shape lanelets to the lanelet network!
     prediction.shape_lanelet_assignment = DynamicObstacleFactory.find_obstacle_shape_lanelets(
-        initial_state, prediction.trajectory.state_list, lanelet_network, obstacle.obstacle_id, obstacle.obstacle_shape
+        obstacle.initial_state,
+        prediction.trajectory.state_list,
+        lanelet_network,
+        obstacle.obstacle_id,
+        obstacle.obstacle_shape,
     )
+
+    # This does *not* add the center lanelets to the lanelet network, most likely because they are
+    # a subset of the shape lanelets anyway, which got added above already.
     prediction.center_lanelet_assignment = DynamicObstacleFactory.find_obstacle_center_lanelets(
-        initial_state, prediction.trajectory.state_list, lanelet_network
+        obstacle.initial_state, prediction.trajectory.state_list, lanelet_network
     )
 
     return obstacle
