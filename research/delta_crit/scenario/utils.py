@@ -2,15 +2,11 @@
 from copy import deepcopy
 
 from commonroad.common.reader.file_reader_xml import DynamicObstacleFactory  #  type: ignore
-
-# from commonroad.geometry.shape import Rectangle  # type: ignore
 from commonroad.prediction.prediction import TrajectoryPrediction  # type: ignore
 from commonroad.scenario.lanelet import LaneletNetwork  # type: ignore
 from commonroad.scenario.obstacle import DynamicObstacle  # type: ignore
 from commonroad.scenario.scenario import Scenario  # type: ignore
 from commonroad.scenario.state import InitialState  # type: ignore
-
-# from commonroad.scenario.trajectory import Trajectory  # type: ignore
 
 
 def refresh_dynamic_obstacles(scenario: Scenario) -> Scenario:
@@ -107,18 +103,9 @@ def recompute_prediction_lanelet_assignment(
 
     # Note that the following two functions also add the initial_state's lanelets to the
     # prediction's {shape|center}_lanelet_assignment.
-    # If the intial state is one step earlier than prediction.trajectory.state_list[0],
-    # its lanelets will be stored under a separate dict key.
-    # If the intial state is at the same time step as prediction.trajectory.state_list[0],
-    # then the following functions overwrite the initial_state's lanelets by the ones of
-    # prediction.trajectory.state_list[0].
-    # In general, the initial_state should be 1 time step before the prediction's first state:
-    # https://github.com/CommonRoad/commonroad-io/issues/13
-
-    # This seems a bit messy to me, but
-    # apparently, this is how it works in commonroad. Most likely, it is safe to assume
-    # that the initial_state is the prediction.trajectory.state_list[0] anyway.
-    # In the scenario xml file, initial_state can be a time step earlier.
+    # This should be no problem because CommonRoad intends the initial state to be
+    # one time step earlier than the prediction's first state.
+    # See also https://github.com/CommonRoad/commonroad-io/issues/13.
 
     # This also adds the shape lanelets to the lanelet network!
     prediction.shape_lanelet_assignment = DynamicObstacleFactory.find_obstacle_shape_lanelets(
@@ -134,5 +121,4 @@ def recompute_prediction_lanelet_assignment(
     prediction.center_lanelet_assignment = DynamicObstacleFactory.find_obstacle_center_lanelets(
         obstacle.initial_state, prediction.trajectory.state_list, lanelet_network
     )
-
     return obstacle
