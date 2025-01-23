@@ -14,7 +14,7 @@ from research.delta_crit.crime_utils.crime_utils import (
     write_scenario_config,
 )
 from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_from_json
-from research.delta_crit.scenario.utils import refresh_dynamic_obstacles
+from research.delta_crit.scenario.refresh_dynamic_obstacles import refresh_dynamic_obstacles
 
 
 def create_sut_scenario_files(

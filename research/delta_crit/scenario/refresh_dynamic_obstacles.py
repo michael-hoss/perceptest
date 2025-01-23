@@ -1,4 +1,3 @@
-# import numpy as np
 from copy import deepcopy
 
 from commonroad.common.reader.file_reader_xml import DynamicObstacleFactory  #  type: ignore

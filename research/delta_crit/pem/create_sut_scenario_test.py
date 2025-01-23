@@ -23,6 +23,14 @@ def test_create_sut_scenario_apply_to_all_objects(
     crime_config = config_simplified_straight
     sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=all_objects_pem_config)
 
+    # Visual Insights
+    utils_vis.visualize_scenario_at_time_steps(
+        sut_scenario,
+        plot_limit=crime_config.debug.plot_limits,
+        time_steps=[0],
+        print_obstacle_ids=True,
+    )
+
     # Assertions
     ego_id = 200
     abs_tol: float = 1e-11
@@ -50,14 +58,6 @@ def test_create_sut_scenario_apply_to_all_objects(
             assert obstacle_occupancy.shape.center[0] == expected_east
             assert obstacle_occupancy.shape.center[1] == expected_north
             assert obstacle_occupancy.shape.orientation == expected_orientation
-
-    # Visual Insights
-    utils_vis.visualize_scenario_at_time_steps(
-        sut_scenario,
-        plot_limit=crime_config.debug.plot_limits,
-        time_steps=[0, 1, 2, 3, 18, 19, 20],
-        print_obstacle_ids=True,
-    )
     pass
 
 

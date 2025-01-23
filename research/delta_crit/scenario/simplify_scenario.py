@@ -1,6 +1,7 @@
 from commonroad.scenario.scenario import Scenario  # type: ignore
 
 from research.delta_crit.scenario.create_dynamic_obstacle import create_steady_dynamic_obstacle
+from research.delta_crit.scenario.refresh_dynamic_obstacles import refresh_dynamic_obstacles
 
 
 def simplify_scenario(scenario: Scenario, ego_id: int, targets_east: float = 10, targets_north: float = 0) -> Scenario:
@@ -19,4 +20,5 @@ def simplify_scenario(scenario: Scenario, ego_id: int, targets_east: float = 10,
         )
         scenario.add_objects(target_vehicle)
 
+    refresh_dynamic_obstacles(scenario=scenario)
     return scenario
