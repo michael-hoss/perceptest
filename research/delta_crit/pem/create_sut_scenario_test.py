@@ -5,9 +5,6 @@ from math import isclose
 
 import commonroad_crime.utility.visualization as utils_vis
 import pytest
-from commonroad.geometry.shape import Rectangle  # type: ignore
-from commonroad.prediction.prediction import Occupancy  # type: ignore
-from commonroad.scenario.obstacle import DynamicObstacle  # type: ignore
 from commonroad.scenario.state import ExtendedPMState, InitialState  # type: ignore
 
 from research.delta_crit.crime_utils.crime_utils import (
@@ -15,6 +12,10 @@ from research.delta_crit.crime_utils.crime_utils import (
 )
 from research.delta_crit.pem.create_sut_scenario import create_sut_scenario, create_sut_scenario_files
 from research.delta_crit.pem.pem_config import PemConfig
+from research.delta_crit.scenario.assertion_utils import (
+    assert_constant_obstacle,
+    assert_obstacles_present,
+)
 
 
 def test_create_sut_scenario_apply_to_all_objects(
@@ -29,36 +30,23 @@ def test_create_sut_scenario_apply_to_all_objects(
         plot_limit=crime_config.debug.plot_limits,
         time_steps=[0],
         print_obstacle_ids=True,
+        print_lanelet_ids=True,
     )
 
     # Assertions
     ego_id = 200
-    abs_tol: float = 1e-11
-    for timestep in range(0, 22):
-        for obs_id in [200, 201, 202, 203]:
-            if timestep == 21:
-                assert sut_scenario.obstacle_by_id(obs_id).state_at_time(timestep) is None
-                continue
-
-            expected_east: float = 0 if obs_id == ego_id else -20
-            expected_north: float = 0
-            expected_orientation: float = 0
-
-            obstacle: DynamicObstacle = sut_scenario.obstacle_by_id(obs_id)
-
-            obstacle_state = obstacle.state_at_time(timestep)
-            assert isinstance(obstacle_state, InitialState if timestep == 0 else ExtendedPMState)
-
-            assert isclose(obstacle_state.position[0], expected_east, abs_tol=abs_tol)
-            assert isclose(obstacle_state.position[1], expected_north, abs_tol=abs_tol)
-            assert isclose(obstacle_state.orientation, expected_orientation, abs_tol=abs_tol)
-
-            obstacle_occupancy: Occupancy = obstacle.occupancy_at_time(timestep)
-            assert isinstance(obstacle_occupancy.shape, Rectangle)
-            assert obstacle_occupancy.shape.center[0] == expected_east
-            assert obstacle_occupancy.shape.center[1] == expected_north
-            assert obstacle_occupancy.shape.orientation == expected_orientation
-    pass
+    assert_obstacles_present(scenario=sut_scenario, expected_obstacle_ids=[200, 201, 202, 203])
+    for obstacle in sut_scenario.dynamic_obstacles:
+        assert_constant_obstacle(
+            obstacle=obstacle,
+            expected_east=0 if obstacle.obstacle_id == ego_id else -20,
+            expected_north=0,
+            expected_orientation=0,
+            expected_initial_state_stamp=0,
+            expected_final_time_stamp=20,
+            expected_lanelet_ids=set([47240]),
+            lanelet_network=sut_scenario.lanelet_network,
+        )
 
 
 def test_create_sut_scenario_multiple_timesteps(

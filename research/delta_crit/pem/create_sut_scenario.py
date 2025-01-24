@@ -58,13 +58,14 @@ def apply_perror_to_scenario(scenario: Scenario, perror: Perror, ego_vehicle: Dy
 
 
 def obtain_time_range_to_modify(perror: Perror, obstacle: DynamicObstacle) -> list[int]:
-    start_timestep: int = max(perror.start_timestep, obstacle.prediction.trajectory.initial_time_step)
+    start_timestep: int = max(perror.start_timestep, obstacle.initial_state.time_step)
 
-    end_timestep: int = min(perror.end_timestep, obstacle.prediction.trajectory.final_state.time_step)
     if perror.end_timestep == -1:
-        end_timestep = obstacle.prediction.trajectory.final_state.time_step
+        end_timestep = obstacle.prediction.final_time_step
+    else:
+        end_timestep = min(perror.end_timestep, obstacle.prediction.final_time_step)
 
-    return list(range(start_timestep, end_timestep))
+    return list(range(start_timestep, end_timestep + 1))
 
 
 def obtain_obstacles_to_modify(

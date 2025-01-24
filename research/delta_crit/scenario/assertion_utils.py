@@ -1,7 +1,7 @@
 from math import isclose
 
 from commonroad.geometry.shape import Rectangle  # type: ignore
-from commonroad.prediction.prediction import TrajectoryPrediction  # type: ignore
+from commonroad.prediction.prediction import Occupancy, TrajectoryPrediction  # type: ignore
 from commonroad.scenario.lanelet import LaneletNetwork  # type: ignore
 from commonroad.scenario.obstacle import DynamicObstacle  # type: ignore
 from commonroad.scenario.scenario import Scenario  # type: ignore
@@ -32,6 +32,13 @@ def assert_constant_obstacle_properties(
     assert isclose(obstacle.initial_state.position[0], expected_east, abs_tol=abs_tol)
     assert isclose(obstacle.initial_state.position[1], expected_north, abs_tol=abs_tol)
     assert isclose(obstacle.initial_state.orientation, expected_orientation, abs_tol=abs_tol)
+
+    # Check initial occupancy
+    initial_occupancy: Occupancy = obstacle.occupancy_at_time(obstacle.initial_state.time_step)
+    assert isinstance(initial_occupancy.shape, Rectangle)
+    assert initial_occupancy.shape.center[0] == expected_east
+    assert initial_occupancy.shape.center[1] == expected_north
+    assert initial_occupancy.shape.orientation == expected_orientation
 
     obs_prediction: TrajectoryPrediction = obstacle.prediction
 

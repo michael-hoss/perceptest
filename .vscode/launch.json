@@ -23,7 +23,7 @@
         "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
       },
       "console": "integratedTerminal",
-      "justMyCode": true
+      "justMyCode": false
     },
   ]
 }

@@ -17,9 +17,6 @@ def refresh_dynamic_obstacles(scenario: Scenario) -> Scenario:
 
     assert_predictions_are_trajectories(scenario=scenario)
 
-    # Might not be needed here, but makes it safer
-    clear_dynamic_obstacles_from_lanelets(lanelet_network=scenario.lanelet_network)
-
     for old_obstacle in scenario.dynamic_obstacles:
         refresh_dynamic_obstacle(scenario=scenario, obstacle=old_obstacle)
     return scenario
@@ -31,6 +28,9 @@ def assert_predictions_are_trajectories(scenario: Scenario) -> None:
 
 
 def clear_dynamic_obstacles_from_lanelets(lanelet_network: LaneletNetwork) -> LaneletNetwork:
+    """Use with caution!
+    Must be accompanied with setting the obstacle's references to lanelets to None.
+    Otherwise, key errors occur in scenario._remove_dynamic_obstacle_from_lanelets()."""
     for lanelet in lanelet_network.lanelets:
         lanelet.dynamic_obstacles_on_lanelet = {}
     return lanelet_network
@@ -48,14 +48,18 @@ def refresh_dynamic_obstacle(scenario: Scenario, obstacle: DynamicObstacle) -> S
 
 def add_obstacle_deeply(scenario: Scenario, obstacle: DynamicObstacle) -> Scenario:
     recompute_lanelet_assignments(obstacle=obstacle, lanelet_network=scenario.lanelet_network)
+    recompute_occupancies(obstacle=obstacle)
     scenario.add_objects(obstacle)  # This also adds the obstacle to its new lanelets
-    recompute_occupancy_set(obstacle.prediction)
 
 
-def recompute_occupancy_set(prediction: TrajectoryPrediction) -> TrajectoryPrediction:
-    prediction._invalidate_occupancy_set()
-    _ = prediction.occupancy_set  # recompute it
-    return prediction
+def recompute_occupancies(obstacle: DynamicObstacle) -> DynamicObstacle:
+    assert isinstance(obstacle.prediction, TrajectoryPrediction)
+    obstacle.prediction._invalidate_occupancy_set()
+    _ = obstacle.prediction.occupancy_set  # recompute prediction's occupancy
+
+    # Recompute initial state's occupancy
+    obstacle.initial_state = obstacle.initial_state
+    return obstacle
 
 
 def recompute_lanelet_assignments(obstacle: DynamicObstacle, lanelet_network: LaneletNetwork) -> DynamicObstacle:
