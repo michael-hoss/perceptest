@@ -14,6 +14,7 @@ from research.delta_crit.crime_utils.crime_utils import (
     write_scenario_config,
 )
 from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_from_json
+from research.delta_crit.scenario.refresh_dynamic_obstacles import refresh_dynamic_obstacles
 
 
 def create_sut_scenario_files(
@@ -35,27 +36,49 @@ def create_sut_scenario(crime_config: CriMeConfiguration, pem_config: PemConfig)
     ego_vehicle: DynamicObstacle = sut_scenario.obstacle_by_id(crime_config.vehicle.ego_id)
 
     for perror in pem_config:
-        if perror.object_id == -1:
-            obstacles_to_modify = []
-            for dynamic_obstacle in sut_scenario.dynamic_obstacles:
-                if dynamic_obstacle.obstacle_id != ego_vehicle.obstacle_id:
-                    obstacles_to_modify.append(dynamic_obstacle)
-        else:
-            obstacles_to_modify = [sut_scenario.obstacle_by_id(perror.object_id)]
+        apply_perror_to_scenario(scenario=sut_scenario, perror=perror, ego_vehicle=ego_vehicle)
 
-        for obstacle in obstacles_to_modify:
-            start_timestep = max(perror.start_timestep, obstacle.prediction.trajectory.initial_time_step)
-
-            end_timestep = min(perror.end_timestep, obstacle.prediction.trajectory.final_state.time_step)
-            if perror.end_timestep == -1:
-                end_timestep = obstacle.prediction.trajectory.final_state.time_step
-
-            for timestep in range(start_timestep, end_timestep):
-                ego_state: TraceState = ego_vehicle.state_at_time(time_step=timestep)
-                obstacle_state: TraceState = obstacle.state_at_time(time_step=timestep)
-                add_offset_long_lat(ego_state=ego_state, obstacle_state=obstacle_state, perror=perror)
-                add_offset_range_azimuth(ego_state, obstacle_state=obstacle_state, perror=perror)
+    refresh_dynamic_obstacles(scenario=sut_scenario)
     return sut_scenario, sut_config
+
+
+def apply_perror_to_scenario(scenario: Scenario, perror: Perror, ego_vehicle: DynamicObstacle) -> None:
+    obstacles_to_modify: list[DynamicObstacle] = obtain_obstacles_to_modify(
+        scenario=scenario, perror=perror, ego_vehicle=ego_vehicle
+    )
+    for obstacle in obstacles_to_modify:
+        time_range_to_modify: list[int] = obtain_time_range_to_modify(perror=perror, obstacle=obstacle)
+
+        for timestep in time_range_to_modify:
+            ego_state: TraceState = ego_vehicle.state_at_time(time_step=timestep)
+            obstacle_state: TraceState = obstacle.state_at_time(time_step=timestep)
+
+            add_offset_long_lat(ego_state=ego_state, obstacle_state=obstacle_state, perror=perror)
+            add_offset_range_azimuth(ego_state, obstacle_state=obstacle_state, perror=perror)
+
+
+def obtain_time_range_to_modify(perror: Perror, obstacle: DynamicObstacle) -> list[int]:
+    start_timestep: int = max(perror.start_timestep, obstacle.initial_state.time_step)
+
+    if perror.end_timestep == -1:
+        end_timestep = obstacle.prediction.final_time_step
+    else:
+        end_timestep = min(perror.end_timestep, obstacle.prediction.final_time_step)
+
+    return list(range(start_timestep, end_timestep + 1))
+
+
+def obtain_obstacles_to_modify(
+    scenario: Scenario, perror: Perror, ego_vehicle: DynamicObstacle
+) -> list[DynamicObstacle]:
+    if perror.object_id == -1:
+        obstacles_to_modify = []
+        for dynamic_obstacle in scenario.dynamic_obstacles:
+            if dynamic_obstacle.obstacle_id != ego_vehicle.obstacle_id:
+                obstacles_to_modify.append(dynamic_obstacle)
+    else:
+        obstacles_to_modify = [scenario.obstacle_by_id(perror.object_id)]
+    return obstacles_to_modify
 
 
 def add_offset_long_lat(ego_state: TraceState, obstacle_state: TraceState, perror: Perror) -> None:

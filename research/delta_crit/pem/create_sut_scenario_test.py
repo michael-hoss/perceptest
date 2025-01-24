@@ -3,7 +3,7 @@ import sys
 import tempfile
 from math import isclose
 
-# import commonroad_crime.utility.visualization as utils_vis
+import commonroad_crime.utility.visualization as utils_vis
 import pytest
 from commonroad.scenario.state import ExtendedPMState, InitialState  # type: ignore
 
@@ -12,6 +12,41 @@ from research.delta_crit.crime_utils.crime_utils import (
 )
 from research.delta_crit.pem.create_sut_scenario import create_sut_scenario, create_sut_scenario_files
 from research.delta_crit.pem.pem_config import PemConfig
+from research.delta_crit.scenario.assertion_utils import (
+    assert_constant_obstacle,
+    assert_obstacles_present,
+)
+
+
+def test_create_sut_scenario_apply_to_all_objects(
+    all_objects_pem_config: PemConfig, config_simplified_straight: CriMeConfiguration
+) -> None:
+    crime_config = config_simplified_straight
+    sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=all_objects_pem_config)
+
+    # Visual Insights
+    utils_vis.visualize_scenario_at_time_steps(
+        sut_scenario,
+        plot_limit=crime_config.debug.plot_limits,
+        time_steps=[0],
+        print_obstacle_ids=True,
+        print_lanelet_ids=True,
+    )
+
+    # Assertions
+    ego_id = 200
+    assert_obstacles_present(scenario=sut_scenario, expected_obstacle_ids=[200, 201, 202, 203])
+    for obstacle in sut_scenario.dynamic_obstacles:
+        assert_constant_obstacle(
+            obstacle=obstacle,
+            expected_east=0 if obstacle.obstacle_id == ego_id else -20,
+            expected_north=0,
+            expected_orientation=0,
+            expected_initial_state_stamp=0,
+            expected_final_time_stamp=20,
+            expected_lanelet_ids=set([47240]),
+            lanelet_network=sut_scenario.lanelet_network,
+        )
 
 
 def test_create_sut_scenario_multiple_timesteps(
