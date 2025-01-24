@@ -10,13 +10,13 @@ from commonroad.scenario.scenario import Scenario  # type: ignore
 from commonroad.scenario.state import ExtendedPMState, InitialState  # type: ignore
 from commonroad_crime.data_structure.configuration import CriMeConfiguration  # type: ignore
 
-from research.delta_crit.scenario.simplify_scenario import simplify_scenario
+from research.delta_crit.scenario.simplify_scenario import strip_down_to_test_scenario
 
 
 def test_simplify_scenario_all_properties_match(example_config_garching: CriMeConfiguration) -> None:
     # Function under test
     ego_id: int = 200
-    scenario: Scenario = simplify_scenario(scenario=example_config_garching.scenario, ego_id=ego_id)
+    scenario: Scenario = strip_down_to_test_scenario(scenario=example_config_garching.scenario, ego_id=ego_id)
 
     # Assertions
     ego_id = 200
@@ -92,19 +92,9 @@ def test_simplify_scenario_all_properties_match(example_config_garching: CriMeCo
         assert obstacle.initial_center_lanelet_ids == expected_initial_lanelet_ids
 
         # Check lanelet references in obstacle prediction
-        # They also added the initial state's lanelet assignment, which is a bag, but not a tragic one,
-        # so we tolerate it here.
-        # See also https://github.com/CommonRoad/commonroad-io/issues/13#issuecomment-2607990143
-        prediction_lanelet_assignment = {i: expected_initial_lanelet_ids for i in range(1, 21)}
-        prediction_lanelet_assignment_their_bug = {i: expected_initial_lanelet_ids for i in range(0, 21)}
-        assert (
-            obs_prediction.shape_lanelet_assignment == prediction_lanelet_assignment
-            or obs_prediction.shape_lanelet_assignment == prediction_lanelet_assignment_their_bug
-        )
-        assert (
-            obs_prediction.center_lanelet_assignment == prediction_lanelet_assignment
-            or obs_prediction.center_lanelet_assignment == prediction_lanelet_assignment_their_bug
-        )
+        expected_prediction_lanelet_assignment = {i: expected_initial_lanelet_ids for i in range(1, 21)}
+        assert obs_prediction.shape_lanelet_assignment == expected_prediction_lanelet_assignment
+        assert obs_prediction.center_lanelet_assignment == expected_prediction_lanelet_assignment
 
         # Other direction: check obstacle references in lanelets
         expected_object_ids_on_lanelet = set([200, 201, 202, 203])

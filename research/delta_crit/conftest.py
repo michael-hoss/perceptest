@@ -3,7 +3,7 @@ from commonroad.scenario.scenario import Scenario  # type: ignore
 from commonroad_crime.data_structure.configuration import CriMeConfiguration  # type: ignore
 
 from research.delta_crit.crime_utils.crime_utils import get_scenario, get_scenario_config
-from research.delta_crit.scenario.simplify_scenario import simplify_scenario
+from research.delta_crit.scenario.simplify_scenario import strip_down_to_test_scenario
 
 
 @pytest.fixture
@@ -23,13 +23,13 @@ def example_config_garching(scenario_id_garching: str) -> CriMeConfiguration:
 
 @pytest.fixture
 def scenario_simplified_straight(example_scenario_garching: Scenario) -> Scenario:
-    scenario = simplify_scenario(example_scenario_garching, ego_id=200)
+    scenario = strip_down_to_test_scenario(example_scenario_garching, ego_id=200)
     return scenario
 
 
 @pytest.fixture
 def scenario_simplified_side(example_scenario_garching: Scenario) -> Scenario:
-    scenario = simplify_scenario(example_scenario_garching, ego_id=200, targets_east=0, targets_north=10)
+    scenario = strip_down_to_test_scenario(example_scenario_garching, ego_id=200, targets_east=0, targets_north=10)
     return scenario
 
 

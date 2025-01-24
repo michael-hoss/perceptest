@@ -4,7 +4,9 @@ from research.delta_crit.scenario.create_dynamic_obstacle import create_steady_d
 from research.delta_crit.scenario.refresh_dynamic_obstacles import refresh_dynamic_obstacles
 
 
-def simplify_scenario(scenario: Scenario, ego_id: int, targets_east: float = 10, targets_north: float = 0) -> Scenario:
+def strip_down_to_test_scenario(
+    scenario: Scenario, ego_id: int, targets_east: float = 10, targets_north: float = 0
+) -> Scenario:
     """Create a minimal scenario with ego vehicle at 0,0 and all other dynamic obstacles at targets_east, targets_north. Otherwise, default values."""
 
     target_ids: list[int] = [obs.obstacle_id for obs in scenario.dynamic_obstacles if obs.obstacle_id != ego_id]
