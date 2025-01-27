@@ -14,15 +14,42 @@ from base.dict_utils.dict_utils import remove_key_recursively
 
 def get_local_crime_root() -> str:
     PERCEPTEST_ROOT = os.environ.get("PERCEPTEST_REPO")
-    assert PERCEPTEST_ROOT
-    CRIME_ROOT = os.path.join(PERCEPTEST_ROOT, "third_party/commonroad-crime")
-    return CRIME_ROOT
+    assert isinstance(PERCEPTEST_ROOT, str)
+    crime_root = os.path.join(PERCEPTEST_ROOT, "third_party/commonroad-crime")
+    return crime_root
+
+
+def get_delta_crit_root() -> str:
+    PERCEPTEST_ROOT = os.environ.get("PERCEPTEST_REPO")
+    assert isinstance(PERCEPTEST_ROOT, str)
+    delta_crit_root = os.path.join(PERCEPTEST_ROOT, "research/delta_crit")
+    return delta_crit_root
+
+
+def get_scenarios_dir() -> str:
+    delta_crit_root: str = get_delta_crit_root()
+    return os.path.join(delta_crit_root, "data/scenarios")
+
+
+def get_config_files_dir() -> str:
+    delta_crit_root: str = get_delta_crit_root()
+    return os.path.join(delta_crit_root, "data/config_files")
 
 
 def get_config_yaml(scenario_id: str) -> str:
-    """Get scenario config yaml from the committed ones in the crime submodule"""
-    crime_root: str = get_local_crime_root()
-    return os.path.join(crime_root, f"config_files/{scenario_id}.yaml")
+    """Get scenario config yaml path.
+    Search priority:
+    1) research/delta_crit/config_files/
+    2) third_party/commonroad-crime/config_files/
+    """
+    delta_crit_path: str = os.path.join(get_config_files_dir(), f"{scenario_id}.yaml")
+    if os.path.isfile(delta_crit_path):
+        return delta_crit_path
+    else:
+        crime_root: str = get_local_crime_root()
+        crime_path: str = os.path.join(crime_root, f"config_files/{scenario_id}.yaml")
+        assert os.path.isfile(crime_path)
+        return crime_path
 
 
 def get_scenario_config(scenario_id: str) -> CriMeConfiguration:
@@ -33,9 +60,19 @@ def get_scenario_config(scenario_id: str) -> CriMeConfiguration:
 
 
 def get_scenario_xml(scenario_id: str) -> str:
-    """Get scenario description xml from the committed ones in the crime submodule"""
-    crime_root: str = get_local_crime_root()
-    return os.path.join(crime_root, f"scenarios/{scenario_id}.xml")
+    """Get scenario xml path.
+    Search priority:
+    1) research/delta_crit/scenarios/
+    2) third_party/commonroad-crime/scenarios/
+    """
+    delta_crit_path: str = os.path.join(get_scenarios_dir(), f"{scenario_id}.xml")
+    if os.path.isfile(delta_crit_path):
+        return delta_crit_path
+    else:
+        crime_root: str = get_local_crime_root()
+        crime_path: str = os.path.join(crime_root, f"scenarios/{scenario_id}.xml")
+        assert os.path.isfile(crime_path)
+        return crime_path
 
 
 def get_scenario(scenario_id: str) -> Scenario:

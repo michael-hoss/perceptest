@@ -13,18 +13,21 @@ from research.delta_crit.crime_utils.crime_utils import (
     write_scenario,
     write_scenario_config,
 )
-from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_from_json
+from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_from_path_or_instance
 from research.delta_crit.scenario.refresh_dynamic_obstacles import refresh_dynamic_obstacles
 
 
 def create_sut_scenario_files(
-    scenario_id: str, pem_config_path: str, sut_scenario_path: str, sut_crime_config_path: str
+    scenario_id: str, pem_config: str | PemConfig, sut_scenario_path: str, sut_crime_config_path: str
 ) -> None:
+    pem_config_parsed: PemConfig = pem_config_from_path_or_instance(pem_config=pem_config)
     crime_config: CriMeConfiguration = get_scenario_config(scenario_id=scenario_id)
-    pem_config: PemConfig = pem_config_from_json(json_path=pem_config_path)
 
-    sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=pem_config)
+    sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=pem_config_parsed)
 
+    # TODO: change paths in sut_config.general to delta_crit/data/...
+    # (in a function called `set_delta_crit_paths`)
+    # TODO: puth these two functions into one function `write_scenario_and_config`
     write_scenario(scenario=sut_scenario, filename=sut_scenario_path)
     write_scenario_config(config=sut_config, filename=sut_crime_config_path)
 
@@ -126,7 +129,7 @@ def main() -> None:
 
     create_sut_scenario_files(
         scenario_id=args.scenario_id,
-        pem_config_path=args.pem_config,
+        pem_config=args.pem_config,
         sut_scenario_path=args.sut_scenario,
         sut_crime_config_path=args.sut_crime_config,
     )

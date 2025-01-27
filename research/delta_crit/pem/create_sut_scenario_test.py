@@ -166,7 +166,7 @@ def test_create_sut_scenario_files(scenario_id_garching: str, geometrical_pem_co
         # Function under test
         create_sut_scenario_files(
             scenario_id=scenario_id_garching,
-            pem_config_path=geometrical_pem_config_path,
+            pem_config=geometrical_pem_config_path,
             sut_scenario_path=sut_scenario_path,
             sut_crime_config_path=sut_crime_config_path,
         )

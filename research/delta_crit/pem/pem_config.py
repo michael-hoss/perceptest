@@ -11,18 +11,18 @@ class Perror:
     The CS in which the offsets are specified is the ego vehicle coordinate system."""
 
     # Set to 0 to begin from initial time step
-    start_timestep: int  # included
+    start_timestep: int = 0  # included
 
     # Set to -1 to apply until the final time step
-    end_timestep: int  # excluded
+    end_timestep: int = -1  # included!
 
-    offset_longitudinal: float  # in meters
-    offset_lateral: float  #  in meters
-    offset_range: float  # in meters to target obstacle
-    offset_azimuth: float  # in degrees, from longitudinal axis counterclockwise to target obstacle
+    offset_longitudinal: float = 0  # in meters
+    offset_lateral: float = 0  #  in meters
+    offset_range: float = 0  # in meters to target obstacle
+    offset_azimuth: float = 0  # in degrees, from longitudinal axis counterclockwise to target obstacle
 
     # Set to -1 to apply to all objects
-    object_id: int  # CommonRoad obstacle id to which this error applies
+    object_id: int = -1  # CommonRoad obstacle id to which this error applies
 
 
 # PemConfig contains all errors of a scenario
@@ -34,3 +34,14 @@ def pem_config_from_json(json_path: str) -> PemConfig:
         list_of_dicts: list[dict] = json.load(file)
     pem_config: list[Perror] = Perror.schema().load(list_of_dicts, many=True)  # type: ignore
     return pem_config
+
+
+def pem_config_from_path_or_instance(pem_config: str | PemConfig) -> PemConfig:
+    if isinstance(pem_config, str):
+        return pem_config_from_json(json_path=pem_config)
+    elif isinstance(pem_config, list):
+        for perror in pem_config:
+            assert isinstance(perror, Perror)
+        return pem_config
+    else:
+        raise ValueError("pem_config must be either path to json or PemConfig")
