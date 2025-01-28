@@ -3,15 +3,13 @@ import os
 
 import pytest
 
+from research.delta_crit.crime_utils.crime_utils import get_pem_configs_dir
 from research.delta_crit.pem.pem_config import PemConfig, pem_config_from_json
 
 
 @pytest.fixture
 def geometrical_pem_config_path() -> str:
-    PERCEPTEST_ROOT = os.environ.get("PERCEPTEST_REPO")
-    assert PERCEPTEST_ROOT
-    file_path: str = os.path.join(PERCEPTEST_ROOT, "research/delta_crit/pem/example_configs/geometrical.json")
-    return file_path
+    return os.path.join(get_pem_configs_dir(), "geometrical.json")
 
 
 @pytest.fixture
@@ -36,10 +34,7 @@ def geometrical_pem_config(geometrical_pem_config_path: str) -> PemConfig:
 
 @pytest.fixture
 def temporal_pem_config_path() -> str:
-    PERCEPTEST_ROOT = os.environ.get("PERCEPTEST_REPO")
-    assert PERCEPTEST_ROOT
-    file_path: str = os.path.join(PERCEPTEST_ROOT, "research/delta_crit/pem/example_configs/temporal.json")
-    return file_path
+    return os.path.join(get_pem_configs_dir(), "temporal.json")
 
 
 @pytest.fixture
@@ -49,10 +44,7 @@ def temporal_pem_config(temporal_pem_config_path: str) -> PemConfig:
 
 @pytest.fixture
 def all_objects_pem_config_path() -> str:
-    PERCEPTEST_ROOT = os.environ.get("PERCEPTEST_REPO")
-    assert PERCEPTEST_ROOT
-    file_path: str = os.path.join(PERCEPTEST_ROOT, "research/delta_crit/pem/example_configs/all_objects.json")
-    return file_path
+    return os.path.join(get_pem_configs_dir(), "all_objects.json")
 
 
 @pytest.fixture
