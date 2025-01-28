@@ -9,7 +9,7 @@ from commonroad.scenario.state import TraceState  # type: ignore
 from research.delta_crit.crime_utils.crime_utils import (
     CriMeConfiguration,
     Scenario,
-    get_scenario_config,
+    get_crime_config,
     write_scenario,
     write_scenario_config,
 )
@@ -21,7 +21,7 @@ def create_sut_scenario_files(
     scenario_id: str, pem_config: str | PemConfig, sut_scenario_path: str, sut_crime_config_path: str
 ) -> None:
     pem_config_parsed: PemConfig = pem_config_from_path_or_instance(pem_config=pem_config)
-    crime_config: CriMeConfiguration = get_scenario_config(scenario_id=scenario_id)
+    crime_config: CriMeConfiguration = get_crime_config(scenario_id=scenario_id)
 
     sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=pem_config_parsed)
 

@@ -9,15 +9,15 @@ from commonroad.scenario.obstacle import DynamicObstacle, Obstacle, StaticObstac
 from research.delta_crit.crime_utils.crime_utils import (  # type: ignore
     CriMeConfiguration,
     Scenario,
+    get_crime_config,
     get_scenario,
-    get_scenario_config,
     write_scenario,
     write_scenario_config,
 )
 
 
 def test_get_scenario_config(scenario_id_garching) -> None:
-    config: CriMeConfiguration = get_scenario_config(scenario_id=scenario_id_garching)
+    config: CriMeConfiguration = get_crime_config(scenario_id=scenario_id_garching)
 
     assert isinstance(config, CriMeConfiguration)
     assert config.time.braking_vel_threshold == 0.2
@@ -46,7 +46,7 @@ def test_write_scenario(scenario_id_garching: str) -> None:
 
 
 def test_write_scenario_config(scenario_id_garching: str) -> None:
-    scenario_config: Scenario = get_scenario_config(scenario_id=scenario_id_garching)
+    scenario_config: Scenario = get_crime_config(scenario_id=scenario_id_garching)
 
     with tempfile.TemporaryDirectory() as temp_dir:
         output_filename = os.path.join(temp_dir, f"{scenario_id_garching}.yaml")

@@ -57,7 +57,7 @@ def get_config_yaml(scenario_id: str) -> str:
         return crime_path
 
 
-def get_scenario_config(scenario_id: str) -> CriMeConfiguration:
+def get_crime_config(scenario_id: str) -> CriMeConfiguration:
     config_yaml_path = get_config_yaml(scenario_id=scenario_id)
     config = CriMeConfiguration.load(config_yaml_path, scenario_id)
     config.update()  # Here, we could specify/overwrite the ego_id, too!
@@ -95,7 +95,7 @@ def visualize_statically(scenario_id: str) -> None:
 
 
 def visualize_time_steps(scenario_id: str, time_steps: list[int]) -> None:
-    config = get_scenario_config(scenario_id=scenario_id)
+    config = get_crime_config(scenario_id=scenario_id)
 
     utils_vis.visualize_scenario_at_time_steps(
         config.scenario, plot_limit=config.debug.plot_limits, time_steps=time_steps
