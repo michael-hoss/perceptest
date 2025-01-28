@@ -31,9 +31,14 @@ def get_scenarios_dir() -> str:
     return os.path.join(delta_crit_root, "data/scenarios")
 
 
-def get_config_files_dir() -> str:
+def get_crime_configs_dir() -> str:
     delta_crit_root: str = get_delta_crit_root()
-    return os.path.join(delta_crit_root, "data/config_files")
+    return os.path.join(delta_crit_root, "data/crime_configs")
+
+
+def get_pem_configs_dir() -> str:
+    delta_crit_root: str = get_delta_crit_root()
+    return os.path.join(delta_crit_root, "data/pem_configs")
 
 
 def get_config_yaml(scenario_id: str) -> str:
@@ -42,7 +47,7 @@ def get_config_yaml(scenario_id: str) -> str:
     1) research/delta_crit/config_files/
     2) third_party/commonroad-crime/config_files/
     """
-    delta_crit_path: str = os.path.join(get_config_files_dir(), f"{scenario_id}.yaml")
+    delta_crit_path: str = os.path.join(get_crime_configs_dir(), f"{scenario_id}.yaml")
     if os.path.isfile(delta_crit_path):
         return delta_crit_path
     else:

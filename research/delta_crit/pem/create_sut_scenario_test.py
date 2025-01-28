@@ -3,7 +3,7 @@ import sys
 import tempfile
 from math import isclose
 
-import commonroad_crime.utility.visualization as utils_vis
+# import commonroad_crime.utility.visualization as utils_vis
 import pytest
 from commonroad.scenario.state import ExtendedPMState, InitialState  # type: ignore
 
@@ -25,13 +25,13 @@ def test_create_sut_scenario_apply_to_all_objects(
     sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=all_objects_pem_config)
 
     # Visual Insights
-    utils_vis.visualize_scenario_at_time_steps(
-        sut_scenario,
-        plot_limit=crime_config.debug.plot_limits,
-        time_steps=[0],
-        print_obstacle_ids=True,
-        print_lanelet_ids=True,
-    )
+    # utils_vis.visualize_scenario_at_time_steps(
+    #     sut_scenario,
+    #     plot_limit=crime_config.debug.plot_limits,
+    #     time_steps=[0],
+    #     print_obstacle_ids=True,
+    #     print_lanelet_ids=True,
+    # )
 
     # Assertions
     ego_id = 200

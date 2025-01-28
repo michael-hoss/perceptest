@@ -3,7 +3,7 @@ import os
 import commonroad_crime.utility.visualization as utils_vis
 
 from research.delta_crit.crime_utils.crime_utils import (
-    get_config_files_dir,
+    get_crime_configs_dir,
     get_scenario_config,
     get_scenarios_dir,
 )
@@ -21,7 +21,7 @@ def main() -> None:
             offset_range=-10,
         )
     ]
-    sut_config_path = os.path.join(get_config_files_dir(), f"{scenario_id_sut}.yaml")
+    sut_config_path = os.path.join(get_crime_configs_dir(), f"{scenario_id_sut}.yaml")
     sut_scenario_path = os.path.join(get_scenarios_dir(), f"{scenario_id_sut}.xml")
 
     create_sut_scenario_files(
