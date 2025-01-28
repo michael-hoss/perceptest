@@ -11,8 +11,8 @@ from research.delta_crit.crime_utils.crime_utils import (  # type: ignore
     Scenario,
     get_crime_config,
     get_scenario,
+    write_crime_config_shallow,
     write_scenario,
-    write_scenario_config,
 )
 
 
@@ -39,7 +39,7 @@ def test_write_scenario(scenario_id_garching: str) -> None:
         output_filename = os.path.join(temp_dir, f"{scenario_id_garching}.xml")
 
         # function under test
-        write_scenario(scenario=scenario, filename=output_filename)
+        write_scenario(scenario=scenario, file_path=output_filename)
 
         # assertions
         assert os.path.isfile(path=output_filename)
@@ -52,7 +52,7 @@ def test_write_scenario_config(scenario_id_garching: str) -> None:
         output_filename = os.path.join(temp_dir, f"{scenario_id_garching}.yaml")
 
         # function under test
-        write_scenario_config(config=scenario_config, filename=output_filename)
+        write_crime_config_shallow(config=scenario_config, file_path=output_filename)
 
         # assertions
         assert os.path.isfile(path=output_filename)

@@ -1,6 +1,5 @@
 import os
 import sys
-import tempfile
 from math import isclose
 
 # import commonroad_crime.utility.visualization as utils_vis
@@ -9,8 +8,10 @@ from commonroad.scenario.state import ExtendedPMState, InitialState  # type: ign
 
 from research.delta_crit.crime_utils.crime_utils import (
     CriMeConfiguration,
+    crime_paths_factory_for_delta_crit,
+    get_crime_configs_dir,
 )
-from research.delta_crit.pem.create_sut_scenario import create_sut_scenario, create_sut_scenario_files
+from research.delta_crit.pem.create_sut_scenario import create_sut_crime_config, create_sut_crime_config_files
 from research.delta_crit.pem.pem_config import PemConfig
 from research.delta_crit.scenario.assertion_utils import (
     assert_constant_obstacle,
@@ -22,8 +23,8 @@ def test_create_sut_scenario_apply_to_all_objects(
     all_objects_pem_config: PemConfig, config_simplified_straight: CriMeConfiguration
 ) -> None:
     crime_config = config_simplified_straight
-    sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=all_objects_pem_config)
-
+    sut_config = create_sut_crime_config(crime_config=crime_config, pem_config=all_objects_pem_config)
+    sut_scenario = sut_config.scenario
     # Visual Insights
     # utils_vis.visualize_scenario_at_time_steps(
     #     sut_scenario,
@@ -53,7 +54,8 @@ def test_create_sut_scenario_multiple_timesteps(
     temporal_pem_config: PemConfig, config_simplified_straight: CriMeConfiguration
 ) -> None:
     crime_config = config_simplified_straight
-    sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=temporal_pem_config)
+    sut_config = create_sut_crime_config(crime_config=crime_config, pem_config=temporal_pem_config)
+    sut_scenario = sut_config.scenario
 
     expected_east_modified: float = 20
     expected_east_original: float = 10
@@ -83,7 +85,8 @@ def test_create_sut_scenario_keep_rest_constant(
     geometrical_pem_config: PemConfig, config_simplified_straight: CriMeConfiguration
 ) -> None:
     crime_config = config_simplified_straight
-    sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=geometrical_pem_config)
+    sut_config = create_sut_crime_config(crime_config=crime_config, pem_config=geometrical_pem_config)
+    sut_scenario = sut_config.scenario
 
     modified_timestep: int = 10
     ego_id: int = 200
@@ -111,7 +114,8 @@ def test_create_sut_scenario_straight_targets(
     geometrical_pem_config: PemConfig, config_simplified_straight: CriMeConfiguration
 ) -> None:
     crime_config = config_simplified_straight
-    sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=geometrical_pem_config)
+    sut_config = create_sut_crime_config(crime_config=crime_config, pem_config=geometrical_pem_config)
+    sut_scenario = sut_config.scenario
 
     modified_timestep = 10
     abs_tol = 1e-11
@@ -136,7 +140,8 @@ def test_create_sut_scenario_side_targets(
     geometrical_pem_config: PemConfig, config_simplified_side: CriMeConfiguration
 ) -> None:
     crime_config = config_simplified_side
-    sut_scenario, sut_config = create_sut_scenario(crime_config=crime_config, pem_config=geometrical_pem_config)
+    sut_config = create_sut_crime_config(crime_config=crime_config, pem_config=geometrical_pem_config)
+    sut_scenario = sut_config.scenario
 
     example_timestep = 10
     abs_tol = 1e-11
@@ -158,22 +163,37 @@ def test_create_sut_scenario_side_targets(
 
 
 def test_create_sut_scenario_files(scenario_id_garching: str, geometrical_pem_config_path: str) -> None:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        # Define output paths
-        sut_scenario_path: str = os.path.join(temp_dir, f"{scenario_id_garching}.xml")
-        sut_crime_config_path: str = os.path.join(temp_dir, f"{scenario_id_garching}.yaml")
+    sut_suffix = "unittest"
+    sut_scenario_id: str = f"{scenario_id_garching}_{sut_suffix}"
+    general_config = crime_paths_factory_for_delta_crit(scenario_name=sut_scenario_id)
+    expected_scenario_path: str = general_config.path_scenario
+    expected_crime_config_path: str = os.path.join(get_crime_configs_dir(), f"{sut_scenario_id}.yaml")
 
-        # Function under test
-        create_sut_scenario_files(
-            scenario_id=scenario_id_garching,
-            pem_config=geometrical_pem_config_path,
-            sut_scenario_path=sut_scenario_path,
-            sut_crime_config_path=sut_crime_config_path,
-        )
+    if os.path.isfile(expected_scenario_path):
+        os.remove(expected_scenario_path)
 
-        # Assert files are present
-        assert os.path.isfile(sut_scenario_path)
-        assert os.path.isfile(sut_crime_config_path)
+    if os.path.isfile(expected_crime_config_path):
+        os.remove(expected_crime_config_path)
+
+    # Function under test
+    create_sut_crime_config_files(
+        scenario_id=scenario_id_garching,
+        pem_config=geometrical_pem_config_path,
+        sut_suffix=sut_suffix,
+    )
+
+    # Assert files are present
+    try:
+        assert os.path.isfile(expected_scenario_path)
+        os.remove(expected_scenario_path)
+    finally:
+        pass
+
+    try:
+        assert os.path.isfile(expected_crime_config_path)
+        os.remove(expected_crime_config_path)
+    finally:
+        pass
 
 
 if __name__ == "__main__":
