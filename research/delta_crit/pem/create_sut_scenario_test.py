@@ -10,13 +10,10 @@ from research.delta_crit.crime_utils.assertion_utils import (
     assert_constant_obstacle,
     assert_obstacles_present,
 )
-from research.delta_crit.crime_utils.crime_utils import (
-    CriMeConfiguration,
-    crime_paths_factory_for_delta_crit_example_data,
-    get_crime_configs_dir,
-)
+from research.delta_crit.crime_utils.crime_utils import CriMeConfiguration
 from research.delta_crit.pem.create_sut_scenario import create_sut_crime_config, create_sut_crime_config_files
 from research.delta_crit.pem.pem_config import PemConfig
+from research.delta_crit.pipeline_utils.dir_utils import set_up_populated_workdir
 
 
 def test_create_sut_scenario_apply_to_all_objects(
@@ -163,37 +160,24 @@ def test_create_sut_scenario_side_targets(
 
 
 def test_create_sut_scenario_files(scenario_id_garching: str, geometrical_pem_config_path: str) -> None:
+    workdir: str = set_up_populated_workdir(example_scenario_id=scenario_id_garching)
+
     sut_suffix = "unittest"
     sut_scenario_id: str = f"{scenario_id_garching}_{sut_suffix}"
-    general_config = crime_paths_factory_for_delta_crit_example_data(scenario_name=sut_scenario_id)
-    expected_scenario_path: str = general_config.path_scenario
-    expected_crime_config_path: str = os.path.join(get_crime_configs_dir(), f"{sut_scenario_id}.yaml")
-
-    if os.path.isfile(expected_scenario_path):
-        os.remove(expected_scenario_path)
-
-    if os.path.isfile(expected_crime_config_path):
-        os.remove(expected_crime_config_path)
+    expected_scenario_path: str = os.path.join(workdir, f"{sut_scenario_id}.xml")
+    expected_crime_config_path: str = os.path.join(workdir, f"{sut_scenario_id}.yaml")
 
     # Function under test
     create_sut_crime_config_files(
+        workdir=workdir,
         scenario_id=scenario_id_garching,
         pem_config=geometrical_pem_config_path,
         sut_suffix=sut_suffix,
     )
 
     # Assert files are present
-    try:
-        assert os.path.isfile(expected_scenario_path)
-        os.remove(expected_scenario_path)
-    finally:
-        pass
-
-    try:
-        assert os.path.isfile(expected_crime_config_path)
-        os.remove(expected_crime_config_path)
-    finally:
-        pass
+    assert os.path.isfile(expected_scenario_path)
+    assert os.path.isfile(expected_crime_config_path)
 
 
 if __name__ == "__main__":
