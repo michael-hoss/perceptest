@@ -17,13 +17,18 @@ from research.delta_crit.crime_utils.refresh_dynamic_obstacles import refresh_dy
 from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_from_path_or_instance
 
 
-def create_sut_crime_config_files(scenario_id: str, pem_config: str | PemConfig, sut_suffix: str = "sut") -> None:
+def create_sut_crime_config_files(
+    workdir: str, scenario_id: str, pem_config: str | PemConfig, sut_suffix: str = "sut"
+) -> str:
+    """All files are read from workdir and written to workdir."""
+
     pem_config_parsed: PemConfig = pem_config_from_path_or_instance(pem_config=pem_config)
-    crime_config: CriMeConfiguration = get_crime_config(scenario_id=scenario_id)
+    crime_config: CriMeConfiguration = get_crime_config(scenario_id=scenario_id, custom_workdir=workdir)
 
     sut_config = create_sut_crime_config(crime_config=crime_config, pem_config=pem_config_parsed, sut_suffix=sut_suffix)
 
-    write_crime_config_deep(config=sut_config)
+    output_dir: str = write_crime_config_deep(config=sut_config, output_dir=workdir)
+    return output_dir
 
 
 def create_sut_crime_config(
@@ -126,13 +131,18 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Apply a perception error model (PEM) to a CommonRoad scenario in order to synthesize an SUT scenario."
     )
+    parser.add_argument("--workdir", type=str, help="Directory for reading and writing all files")
     parser.add_argument("--scenario_id", type=str, help="Original CommonRoad scenario ID")
     parser.add_argument("--pem_config", type=str, help="Path to PEM config json")
+    parser.add_argument("--sut_suffix", type=str, help="Suffix of the newly created scenario")
+
     args = parser.parse_args()
 
     create_sut_crime_config_files(
+        workdir=args.workdir,
         scenario_id=args.scenario_id,
         pem_config=args.pem_config,
+        sut_suffix=args.sut_suffix,
     )
 
 

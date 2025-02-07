@@ -1,9 +1,9 @@
 import os
+import tempfile
 from copy import deepcopy
 from typing import Optional
 
-import commonroad_crime
-import commonroad_crime.utility.visualization as utils_vis
+import commonroad_crime.utility.visualization as crime_vis
 from commonroad.common.file_reader import CommonRoadFileReader  # type: ignore
 from commonroad.common.file_writer import CommonRoadFileWriter  # type: ignore
 from commonroad.planning.planning_problem import PlanningProblemSet  # type: ignore
@@ -55,6 +55,19 @@ def get_delta_crit_example_data_paths() -> GeneralConfiguration:
     return deepcopy(delta_crit_paths)
 
 
+def create_general_config_for_workdir(workdir: str, scenario_name: str) -> GeneralConfiguration:
+    workdir = os.path.abspath(workdir)
+    general_config = GeneralConfiguration(
+        path_scenarios=workdir,
+        path_scenarios_batch=workdir,
+        path_output_abs=workdir,
+        path_logs=workdir,
+        # Leave icons path at original on purpose for now
+    )
+    general_config.set_scenario_name(scenario_name=scenario_name)
+    return general_config
+
+
 def crime_paths_factory_for_delta_crit_example_data(scenario_name: str) -> GeneralConfiguration:
     general_config: GeneralConfiguration = get_delta_crit_example_data_paths()
     general_config.set_scenario_name(scenario_name=scenario_name)
@@ -83,34 +96,15 @@ def get_config_yaml(scenario_id: str, custom_dir: Optional[str] = None) -> str:
         return crime_path
 
 
-def set_all_paths_to_workdir(config_general: GeneralConfiguration, workdir: str) -> GeneralConfiguration:
-    """Assumes that all relevant files (except icons) are in the very same directory of
-    the crime config itself."""
-
-    workdir = os.path.abspath(workdir)
-
-    config_general.path_root_abs = workdir
-    config_general.path_scenarios = workdir
-    config_general.path_scenarios_batch = workdir
-    config_general.path_output_abs = workdir
-    config_general.path_logs = workdir
-
-    # Icons are only found if crime is installed editable from the local repo
-    # See https://github.com/CommonRoad/commonroad-crime/issues/6
-    crime_package_root = os.path.dirname(commonroad_crime.__file__)
-    crime_repo_root = os.path.normpath(os.path.join(crime_package_root, ".."))
-    config_general.path_icons = os.path.join(crime_repo_root, "docs/icons")
-
-
 def get_crime_config(scenario_id: str, custom_workdir: Optional[str] = None) -> CriMeConfiguration:
     """Assumes config filename == scenario_id == scenario filename.
-    If a custom_dir is given, assumes all relevant files are in that dir."""
+    If a custom_workdir is given, assumes all relevant files are in that dir."""
 
     config_yaml_path = get_config_yaml(scenario_id=scenario_id, custom_dir=custom_workdir)
     config = CriMeConfiguration.load(config_yaml_path, scenario_id)
 
     if custom_workdir:
-        config.general = set_all_paths_to_workdir(config_general=config.general, workdir=custom_workdir)
+        config.general = create_general_config_for_workdir(workdir=custom_workdir, scenario_name=scenario_id)
     elif os.path.abspath(os.path.dirname(config_yaml_path)) == os.path.abspath(get_crime_configs_dir()):
         # Config is from delta crit repo examples.
         # Recompute absolute paths for better portability.
@@ -153,7 +147,7 @@ def visualize_statically(scenario_id: str) -> None:
 def visualize_time_steps(scenario_id: str, time_steps: list[int]) -> None:
     config = get_crime_config(scenario_id=scenario_id)
 
-    utils_vis.visualize_scenario_at_time_steps(
+    crime_vis.visualize_scenario_at_time_steps(
         config.scenario, plot_limit=config.debug.plot_limits, time_steps=time_steps
     )
 
@@ -183,17 +177,22 @@ def write_crime_config_shallow(config: CriMeConfiguration, file_path: str) -> No
     OmegaConf.save(config=config_dict_omega, f=file_path)
 
 
-def write_crime_config_deep(config: CriMeConfiguration, custom_path_for_config: str | None = None) -> None:
+def write_crime_config_deep(config: CriMeConfiguration, output_dir: Optional[str] = None) -> str:
     """
     Write both the config yaml and the referenced scenario xml.
 
     The config yaml basename is adopted from the name of the scenario.
     The scenario path and basename are taken from the config path settings.
     """
-    if custom_path_for_config is None:
-        config_path = os.path.join(get_crime_configs_dir(), f"{config.general.name_scenario}.yaml")
-    else:
-        config_path = custom_path_for_config
+    output_dir = output_dir or tempfile.mkdtemp(prefix="delta_crit")
 
+    config_path = os.path.join(output_dir, f"{config.general.name_scenario}.yaml")
+    scenario_path = os.path.join(output_dir, f"{config.general.name_scenario}.xml")
+
+    config.general = create_general_config_for_workdir(workdir=output_dir, scenario_name=config.general.name_scenario)
+
+    print(f"Saving CriMe config and CommonRoad scenario to {output_dir}")
     write_crime_config_shallow(config=config, file_path=config_path)
-    write_scenario(scenario=config.scenario, file_path=config.general.path_scenario)
+    write_scenario(scenario=config.scenario, file_path=scenario_path)
+
+    return output_dir
