@@ -3,7 +3,7 @@ from commonroad.scenario.scenario import Scenario  # type: ignore
 from commonroad_crime.data_structure.configuration import CriMeConfiguration  # type: ignore
 
 from research.delta_crit.crime_utils.crime_utils import get_crime_config, get_scenario
-from research.delta_crit.scenario.simplify_scenario import strip_down_to_test_scenario
+from research.delta_crit.crime_utils.simplify_scenario import strip_down_to_test_scenario
 
 
 @pytest.fixture

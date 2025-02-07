@@ -13,8 +13,8 @@ from research.delta_crit.crime_utils.crime_utils import (
     get_crime_config,
     write_crime_config_deep,
 )
+from research.delta_crit.crime_utils.refresh_dynamic_obstacles import refresh_dynamic_obstacles
 from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_from_path_or_instance
-from research.delta_crit.scenario.refresh_dynamic_obstacles import refresh_dynamic_obstacles
 
 
 def create_sut_crime_config_files(scenario_id: str, pem_config: str | PemConfig, sut_suffix: str = "sut") -> None:

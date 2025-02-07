@@ -6,6 +6,10 @@ from math import isclose
 import pytest
 from commonroad.scenario.state import ExtendedPMState, InitialState  # type: ignore
 
+from research.delta_crit.crime_utils.assertion_utils import (
+    assert_constant_obstacle,
+    assert_obstacles_present,
+)
 from research.delta_crit.crime_utils.crime_utils import (
     CriMeConfiguration,
     crime_paths_factory_for_delta_crit,
@@ -13,10 +17,6 @@ from research.delta_crit.crime_utils.crime_utils import (
 )
 from research.delta_crit.pem.create_sut_scenario import create_sut_crime_config, create_sut_crime_config_files
 from research.delta_crit.pem.pem_config import PemConfig
-from research.delta_crit.scenario.assertion_utils import (
-    assert_constant_obstacle,
-    assert_obstacles_present,
-)
 
 
 def test_create_sut_scenario_apply_to_all_objects(
