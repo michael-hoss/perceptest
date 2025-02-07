@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<commonRoad timeStepSize="0.1" commonRoadVersion="2020a" author="Vanessa Bui, Markus Koschi, Sebastian Lutz, Surabhi Verma" affiliation="Technical University of Munich, Germany" source="Bing Maps" benchmarkID="DEU_Gar-1_1_T-1" date="2025-01-28">
+<commonRoad timeStepSize="0.1" commonRoadVersion="2020a" author="Michael Hoss, Vanessa Bui, Markus Koschi, Sebastian Lutz, Surabhi Verma" affiliation="Spleenlab GmbH, Technical University of Munich, Germany" source="Bing Maps" benchmarkID="DEU_Gar-1_1_T-1" date="2025-01-28">
   <location>
     <geoNameId>-999</geoNameId>
     <gpsLatitude>999</gpsLatitude>

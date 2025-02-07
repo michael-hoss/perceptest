@@ -6,17 +6,17 @@ from math import isclose
 import pytest
 from commonroad.scenario.state import ExtendedPMState, InitialState  # type: ignore
 
+from research.delta_crit.crime_utils.assertion_utils import (
+    assert_constant_obstacle,
+    assert_obstacles_present,
+)
 from research.delta_crit.crime_utils.crime_utils import (
     CriMeConfiguration,
-    crime_paths_factory_for_delta_crit,
+    crime_paths_factory_for_delta_crit_example_data,
     get_crime_configs_dir,
 )
 from research.delta_crit.pem.create_sut_scenario import create_sut_crime_config, create_sut_crime_config_files
 from research.delta_crit.pem.pem_config import PemConfig
-from research.delta_crit.scenario.assertion_utils import (
-    assert_constant_obstacle,
-    assert_obstacles_present,
-)
 
 
 def test_create_sut_scenario_apply_to_all_objects(
@@ -165,7 +165,7 @@ def test_create_sut_scenario_side_targets(
 def test_create_sut_scenario_files(scenario_id_garching: str, geometrical_pem_config_path: str) -> None:
     sut_suffix = "unittest"
     sut_scenario_id: str = f"{scenario_id_garching}_{sut_suffix}"
-    general_config = crime_paths_factory_for_delta_crit(scenario_name=sut_scenario_id)
+    general_config = crime_paths_factory_for_delta_crit_example_data(scenario_name=sut_scenario_id)
     expected_scenario_path: str = general_config.path_scenario
     expected_crime_config_path: str = os.path.join(get_crime_configs_dir(), f"{sut_scenario_id}.yaml")
 

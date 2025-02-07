@@ -5,11 +5,11 @@ import pytest
 from commonroad.scenario.scenario import Scenario  # type: ignore
 from commonroad_crime.data_structure.configuration import CriMeConfiguration  # type: ignore
 
-from research.delta_crit.scenario.assertion_utils import (
+from research.delta_crit.crime_utils.assertion_utils import (
     assert_constant_obstacle,
     assert_obstacles_present,
 )
-from research.delta_crit.scenario.simplify_scenario import strip_down_to_test_scenario
+from research.delta_crit.crime_utils.simplify_scenario import strip_down_to_test_scenario
 
 
 def test_strip_down_scenario_all_properties_match(example_config_garching: CriMeConfiguration) -> None:

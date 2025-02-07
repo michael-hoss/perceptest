@@ -1,7 +1,7 @@
 from commonroad.scenario.scenario import Scenario  # type: ignore
 
-from research.delta_crit.scenario.create_dynamic_obstacle import create_steady_dynamic_obstacle
-from research.delta_crit.scenario.refresh_dynamic_obstacles import refresh_dynamic_obstacles
+from research.delta_crit.crime_utils.create_dynamic_obstacle import create_steady_dynamic_obstacle
+from research.delta_crit.crime_utils.refresh_dynamic_obstacles import refresh_dynamic_obstacles
 
 
 def strip_down_to_test_scenario(

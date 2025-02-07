@@ -3,12 +3,17 @@ from commonroad.scenario.scenario import Scenario  # type: ignore
 from commonroad_crime.data_structure.configuration import CriMeConfiguration  # type: ignore
 
 from research.delta_crit.crime_utils.crime_utils import get_crime_config, get_scenario
-from research.delta_crit.scenario.simplify_scenario import strip_down_to_test_scenario
+from research.delta_crit.crime_utils.simplify_scenario import strip_down_to_test_scenario
 
 
 @pytest.fixture
 def scenario_id_garching() -> str:
     return "DEU_Gar-1_1_T-1"
+
+
+@pytest.fixture
+def scenario_id_garching_sut() -> str:
+    return "DEU_Gar-1_1_T-1_sut"
 
 
 @pytest.fixture

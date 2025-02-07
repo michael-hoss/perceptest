@@ -9,12 +9,12 @@ from commonroad.scenario.state import TraceState  # type: ignore
 from research.delta_crit.crime_utils.crime_utils import (
     CriMeConfiguration,
     Scenario,
-    crime_paths_factory_for_delta_crit,
+    crime_paths_factory_for_delta_crit_example_data,
     get_crime_config,
     write_crime_config_deep,
 )
+from research.delta_crit.crime_utils.refresh_dynamic_obstacles import refresh_dynamic_obstacles
 from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_from_path_or_instance
-from research.delta_crit.scenario.refresh_dynamic_obstacles import refresh_dynamic_obstacles
 
 
 def create_sut_crime_config_files(scenario_id: str, pem_config: str | PemConfig, sut_suffix: str = "sut") -> None:
@@ -33,7 +33,7 @@ def create_sut_crime_config(
 
     apply_pem_to_crime_config(crime_config=sut_config, pem=pem_config)
 
-    sut_config.general = crime_paths_factory_for_delta_crit(
+    sut_config.general = crime_paths_factory_for_delta_crit_example_data(
         scenario_name=f"{sut_config.general.name_scenario}_{sut_suffix}"
     )
     return sut_config
