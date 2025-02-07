@@ -44,17 +44,19 @@ def get_pem_configs_dir() -> str:
     return os.path.join(delta_crit_root, "example_data/pem_configs")
 
 
-delta_crit_paths = GeneralConfiguration(
-    path_scenarios=get_scenarios_dir(),
-    path_scenarios_batch=os.path.join(get_scenarios_dir(), "batch"),
-    path_output_abs=os.path.join(get_delta_crit_root(), "example_data/crime_outputs"),
-    path_logs=os.path.join(get_delta_crit_root(), "example_data/crime_outputs/logs"),
-    # Leave icons path at original on purpose for now
-)
+def get_delta_crit_example_data_paths() -> GeneralConfiguration:
+    delta_crit_paths = GeneralConfiguration(
+        path_scenarios=get_scenarios_dir(),
+        path_scenarios_batch=os.path.join(get_scenarios_dir(), "batch"),
+        path_output_abs=os.path.join(get_delta_crit_root(), "example_data/crime_outputs"),
+        path_logs=os.path.join(get_delta_crit_root(), "example_data/crime_outputs/logs"),
+        # Leave icons path at original on purpose for now
+    )
+    return deepcopy(delta_crit_paths)
 
 
-def crime_paths_factory_for_delta_crit(scenario_name: str) -> GeneralConfiguration:
-    general_config: GeneralConfiguration = deepcopy(delta_crit_paths)
+def crime_paths_factory_for_delta_crit_example_data(scenario_name: str) -> GeneralConfiguration:
+    general_config: GeneralConfiguration = get_delta_crit_example_data_paths()
     general_config.set_scenario_name(scenario_name=scenario_name)
     return general_config
 
@@ -93,22 +95,26 @@ def set_all_paths_to_workdir(config_general: GeneralConfiguration, workdir: str)
     config_general.path_output_abs = workdir
     config_general.path_logs = workdir
 
-    # Only works if crime is installed editable from the local repo
+    # Icons are only found if crime is installed editable from the local repo
     # See https://github.com/CommonRoad/commonroad-crime/issues/6
     crime_package_root = os.path.dirname(commonroad_crime.__file__)
     crime_repo_root = os.path.normpath(os.path.join(crime_package_root, ".."))
     config_general.path_icons = os.path.join(crime_repo_root, "docs/icons")
 
 
-def get_crime_config(scenario_id: str, custom_dir: Optional[str] = None) -> CriMeConfiguration:
+def get_crime_config(scenario_id: str, custom_workdir: Optional[str] = None) -> CriMeConfiguration:
     """Assumes config filename == scenario_id == scenario filename.
     If a custom_dir is given, assumes all relevant files are in that dir."""
 
-    config_yaml_path = get_config_yaml(scenario_id=scenario_id, custom_dir=custom_dir)
+    config_yaml_path = get_config_yaml(scenario_id=scenario_id, custom_dir=custom_workdir)
     config = CriMeConfiguration.load(config_yaml_path, scenario_id)
 
-    if custom_dir:
-        config.general = set_all_paths_to_workdir(config_general=config.general, workdir=custom_dir)
+    if custom_workdir:
+        config.general = set_all_paths_to_workdir(config_general=config.general, workdir=custom_workdir)
+    elif os.path.abspath(os.path.dirname(config_yaml_path)) == os.path.abspath(get_crime_configs_dir()):
+        # Config is from delta crit repo examples.
+        # Recompute absolute paths for better portability.
+        config.general = crime_paths_factory_for_delta_crit_example_data(scenario_name=scenario_id)
 
     config.update()  # Here, we could specify/overwrite the ego_id, too!
     return config
