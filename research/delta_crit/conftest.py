@@ -12,6 +12,11 @@ def scenario_id_garching() -> str:
 
 
 @pytest.fixture
+def scenario_id_garching_sut() -> str:
+    return "DEU_Gar-1_1_T-1_sut"
+
+
+@pytest.fixture
 def example_scenario_garching(scenario_id_garching: str) -> Scenario:
     return get_scenario(scenario_id=scenario_id_garching)
 

@@ -1,8 +1,8 @@
 general:
-  path_scenarios: /home/mhoss/git/perceptest/research/delta_crit/data/scenarios
-  path_scenarios_batch: /home/mhoss/git/perceptest/research/delta_crit/data/scenarios/batch
-  path_output_abs: /home/mhoss/git/perceptest/research/delta_crit/data/crime_outputs
-  path_logs: /home/mhoss/git/perceptest/research/delta_crit/data/crime_outputs/logs
+  path_scenarios: /home/mhoss/git/perceptest/research/delta_crit/example_data/scenarios
+  path_scenarios_batch: /home/mhoss/git/perceptest/research/delta_crit/example_data/scenarios/batch
+  path_output_abs: /home/mhoss/git/perceptest/research/delta_crit/example_data/crime_outputs
+  path_logs: /home/mhoss/git/perceptest/research/delta_crit/example_data/crime_outputs/logs
   path_icons: /home/mhoss/git/perceptest/third_party/commonroad-crime/docs/icons
   name_scenario: DEU_Gar-1_1_T-1_sut
 vehicle:

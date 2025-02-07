@@ -1,6 +1,8 @@
 import os
 from copy import deepcopy
+from typing import Optional
 
+import commonroad_crime
 import commonroad_crime.utility.visualization as utils_vis
 from commonroad.common.file_reader import CommonRoadFileReader  # type: ignore
 from commonroad.common.file_writer import CommonRoadFileWriter  # type: ignore
@@ -47,7 +49,7 @@ delta_crit_paths = GeneralConfiguration(
     path_scenarios_batch=os.path.join(get_scenarios_dir(), "batch"),
     path_output_abs=os.path.join(get_delta_crit_root(), "example_data/crime_outputs"),
     path_logs=os.path.join(get_delta_crit_root(), "example_data/crime_outputs/logs"),
-    path_icons=os.path.join(get_local_crime_root(), "docs/icons"),
+    # Leave icons path at original on purpose for now
 )
 
 
@@ -57,12 +59,18 @@ def crime_paths_factory_for_delta_crit(scenario_name: str) -> GeneralConfigurati
     return general_config
 
 
-def get_config_yaml(scenario_id: str) -> str:
+def get_config_yaml(scenario_id: str, custom_dir: Optional[str] = None) -> str:
     """Get scenario config yaml path.
     Search priority:
+    0) custom_dir
     1) research/delta_crit/example_data/crime_configs/
     2) third_party/commonroad-crime/config_files/
     """
+    if custom_dir is not None:
+        custom_path: str = os.path.join(custom_dir, f"{scenario_id}.yaml")
+        assert os.path.isfile(custom_path), "Could not find config under this path"
+        return custom_path
+
     delta_crit_path: str = os.path.join(get_crime_configs_dir(), f"{scenario_id}.yaml")
     if os.path.isfile(delta_crit_path):
         return delta_crit_path
@@ -73,9 +81,35 @@ def get_config_yaml(scenario_id: str) -> str:
         return crime_path
 
 
-def get_crime_config(scenario_id: str) -> CriMeConfiguration:
-    config_yaml_path = get_config_yaml(scenario_id=scenario_id)
+def set_all_paths_to_workdir(config_general: GeneralConfiguration, workdir: str) -> GeneralConfiguration:
+    """Assumes that all relevant files (except icons) are in the very same directory of
+    the crime config itself."""
+
+    workdir = os.path.abspath(workdir)
+
+    config_general.path_root_abs = workdir
+    config_general.path_scenarios = workdir
+    config_general.path_scenarios_batch = workdir
+    config_general.path_output_abs = workdir
+    config_general.path_logs = workdir
+
+    # Only works if crime is installed editable from the local repo
+    # See https://github.com/CommonRoad/commonroad-crime/issues/6
+    crime_package_root = os.path.dirname(commonroad_crime.__file__)
+    crime_repo_root = os.path.normpath(os.path.join(crime_package_root, ".."))
+    config_general.path_icons = os.path.join(crime_repo_root, "docs/icons")
+
+
+def get_crime_config(scenario_id: str, custom_dir: Optional[str] = None) -> CriMeConfiguration:
+    """Assumes config filename == scenario_id == scenario filename.
+    If a custom_dir is given, assumes all relevant files are in that dir."""
+
+    config_yaml_path = get_config_yaml(scenario_id=scenario_id, custom_dir=custom_dir)
     config = CriMeConfiguration.load(config_yaml_path, scenario_id)
+
+    if custom_dir:
+        config.general = set_all_paths_to_workdir(config_general=config.general, workdir=custom_dir)
+
     config.update()  # Here, we could specify/overwrite the ego_id, too!
     return config
 
