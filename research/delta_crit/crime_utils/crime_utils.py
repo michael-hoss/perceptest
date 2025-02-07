@@ -29,24 +29,24 @@ def get_delta_crit_root() -> str:
 
 def get_scenarios_dir() -> str:
     delta_crit_root: str = get_delta_crit_root()
-    return os.path.join(delta_crit_root, "data/scenarios")
+    return os.path.join(delta_crit_root, "example_data/scenarios")
 
 
 def get_crime_configs_dir() -> str:
     delta_crit_root: str = get_delta_crit_root()
-    return os.path.join(delta_crit_root, "data/crime_configs")
+    return os.path.join(delta_crit_root, "example_data/crime_configs")
 
 
 def get_pem_configs_dir() -> str:
     delta_crit_root: str = get_delta_crit_root()
-    return os.path.join(delta_crit_root, "data/pem_configs")
+    return os.path.join(delta_crit_root, "example_data/pem_configs")
 
 
 delta_crit_paths = GeneralConfiguration(
     path_scenarios=get_scenarios_dir(),
     path_scenarios_batch=os.path.join(get_scenarios_dir(), "batch"),
-    path_output_abs=os.path.join(get_delta_crit_root(), "data/crime_outputs"),
-    path_logs=os.path.join(get_delta_crit_root(), "data/crime_outputs/logs"),
+    path_output_abs=os.path.join(get_delta_crit_root(), "example_data/crime_outputs"),
+    path_logs=os.path.join(get_delta_crit_root(), "example_data/crime_outputs/logs"),
     path_icons=os.path.join(get_local_crime_root(), "docs/icons"),
 )
 
@@ -60,7 +60,7 @@ def crime_paths_factory_for_delta_crit(scenario_name: str) -> GeneralConfigurati
 def get_config_yaml(scenario_id: str) -> str:
     """Get scenario config yaml path.
     Search priority:
-    1) research/delta_crit/config_files/
+    1) research/delta_crit/example_data/crime_configs/
     2) third_party/commonroad-crime/config_files/
     """
     delta_crit_path: str = os.path.join(get_crime_configs_dir(), f"{scenario_id}.yaml")
