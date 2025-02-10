@@ -74,6 +74,7 @@ def save_scenario_figure_at_time_steps(
     time_steps: list[int],
     print_obstacle_ids: bool = False,
     print_lanelet_ids: bool = False,
+    file_format: str = "png",  # ["png", "pdf", "svg"]
 ) -> str:
     original_config = get_crime_config(scenario_id=config_name, custom_workdir=workdir)
     crime_vis.plt.figure(figsize=(12, 8))
@@ -87,6 +88,6 @@ def save_scenario_figure_at_time_steps(
 
     timesteps_for_path: str = "_".join([str(time_step) for time_step in time_steps])
     filename_wo_suffix = f"{config_name}_at_timesteps_{timesteps_for_path}"
-    figure_path: str = save_current_fig(workdir=workdir, filename_wo_suffix=filename_wo_suffix)
+    figure_path: str = save_current_fig(workdir=workdir, filename_wo_suffix=filename_wo_suffix, suffix=file_format)
     crime_vis.plt.close()
     return figure_path
