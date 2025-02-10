@@ -49,9 +49,12 @@ def create_sut_crime_config(
 
 
 def update_metadata(scenario: Scenario, original_scenario_name: str) -> Scenario:
-    scenario.author = "Michael Hoss"
-    scenario.affiliation = "Spleenlab GmbH"
-    scenario.source = original_scenario_name
+    if "Michael Hoss" not in scenario.author:
+        scenario.author = "Michael Hoss, " + scenario.author
+
+    if "Spleenlab" not in scenario.affiliation:
+        scenario.affiliation = "Spleenlab GmbH, " + scenario.affiliation
+    scenario.source = "Disturbed original scenario " + original_scenario_name
     return scenario
 
 
