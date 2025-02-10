@@ -38,23 +38,27 @@ def create_sut_crime_config(
 
     apply_pem_to_crime_config(crime_config=sut_config, pem=pem_config)
 
-    sut_config.scenario = update_metadata(
-        scenario=sut_config.scenario, original_scenario_name=sut_config.general.name_scenario
-    )
-    sut_config.general = crime_paths_factory_for_delta_crit_example_data(
-        scenario_name=f"{sut_config.general.name_scenario}_{sut_suffix}"
-    )
+    sut_config.scenario = adjust_scenario_metadata(scenario=sut_config.scenario, sut_suffix=sut_suffix)
+    sut_config.general = crime_paths_factory_for_delta_crit_example_data(scenario_name=sut_config.scenario.scenario_id)
 
     return sut_config
 
 
-def update_metadata(scenario: Scenario, original_scenario_name: str) -> Scenario:
+def adjust_scenario_metadata(scenario: Scenario, sut_suffix: str = "sut") -> Scenario:
+    original_scenario_id: str = str(scenario.scenario_id)
+
     if "Michael Hoss" not in scenario.author:
         scenario.author = "Michael Hoss, " + scenario.author
 
     if "Spleenlab" not in scenario.affiliation:
         scenario.affiliation = "Spleenlab GmbH, " + scenario.affiliation
-    scenario.source = "Disturbed original scenario " + original_scenario_name
+    scenario.source = "Disturbed version of original scenario " + original_scenario_id
+
+    # TODO solve scenario_id differently, as just appending "_sut" does not comply with
+    # the workings of CR's ScenarioID class.
+    # Probably I should use `prediction_id`: enumerates different predictions for the same initial configuration (e.g. 1) and just increment it by 1??
+    # Or by an int hash of the applied PEM??
+    scenario.scenario_id = f"{original_scenario_id}_{sut_suffix}"
     return scenario
 
 
