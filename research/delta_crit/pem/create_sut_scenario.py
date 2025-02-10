@@ -14,7 +14,12 @@ from research.delta_crit.crime_utils.crime_utils import (
     write_crime_config_deep,
 )
 from research.delta_crit.crime_utils.refresh_dynamic_obstacles import refresh_dynamic_obstacles
-from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_from_path_or_instance
+from research.delta_crit.pem.pem_config import (
+    PemConfig,
+    Perror,
+    int_hash_of_pem_config,
+    pem_config_from_path_or_instance,
+)
 
 
 def create_sut_crime_config_files(
@@ -25,26 +30,24 @@ def create_sut_crime_config_files(
     pem_config_parsed: PemConfig = pem_config_from_path_or_instance(pem_config=pem_config)
     crime_config: CriMeConfiguration = get_crime_config(scenario_id=scenario_id, custom_workdir=workdir)
 
-    sut_config = create_sut_crime_config(crime_config=crime_config, pem_config=pem_config_parsed, sut_suffix=sut_suffix)
+    sut_config = create_sut_crime_config(crime_config=crime_config, pem_config=pem_config_parsed)
 
     output_dir: str = write_crime_config_deep(config=sut_config, output_dir=workdir)
     return output_dir
 
 
-def create_sut_crime_config(
-    crime_config: CriMeConfiguration, pem_config: PemConfig, sut_suffix: str = "sut"
-) -> CriMeConfiguration:
+def create_sut_crime_config(crime_config: CriMeConfiguration, pem_config: PemConfig) -> CriMeConfiguration:
     sut_config = deepcopy(crime_config)
 
     apply_pem_to_crime_config(crime_config=sut_config, pem=pem_config)
 
-    sut_config.scenario = adjust_scenario_metadata(scenario=sut_config.scenario, sut_suffix=sut_suffix)
+    sut_config.scenario = adjust_scenario_metadata(scenario=sut_config.scenario, pem_config=pem_config)
     sut_config.general = crime_paths_factory_for_delta_crit_example_data(scenario_name=sut_config.scenario.scenario_id)
 
     return sut_config
 
 
-def adjust_scenario_metadata(scenario: Scenario, sut_suffix: str = "sut") -> Scenario:
+def adjust_scenario_metadata(scenario: Scenario, pem_config: PemConfig) -> Scenario:
     original_scenario_id: str = str(scenario.scenario_id)
 
     if "Michael Hoss" not in scenario.author:
@@ -58,7 +61,7 @@ def adjust_scenario_metadata(scenario: Scenario, sut_suffix: str = "sut") -> Sce
     # the workings of CR's ScenarioID class.
     # Probably I should use `prediction_id`: enumerates different predictions for the same initial configuration (e.g. 1) and just increment it by 1??
     # Or by an int hash of the applied PEM??
-    scenario.scenario_id = f"{original_scenario_id}_{sut_suffix}"
+    scenario.scenario_id.prediction_id = int_hash_of_pem_config(pem_config=pem_config)
     return scenario
 
 

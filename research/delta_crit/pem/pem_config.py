@@ -1,3 +1,4 @@
+import hashlib
 import json
 from dataclasses import dataclass
 
@@ -51,3 +52,14 @@ def pem_config_from_path_or_instance(pem_config: str | PemConfig) -> PemConfig:
         return pem_config
     else:
         raise ValueError("pem_config must be either path to json or PemConfig")
+
+
+def int_hash_of_pem_config(pem_config: PemConfig, max_value: int = int(1e6)) -> int:
+    """Compute an integer hash from a list of dataclass_json objects."""
+    json_strings = [obj.to_json() for obj in pem_config]  # type: ignore
+    combined_string = "|".join(json_strings)
+
+    hash_bytes = hashlib.sha256(combined_string.encode()).digest()
+    hash_int = int.from_bytes(hash_bytes, "big")
+    small_int = abs(hash_int) % max_value
+    return small_int
