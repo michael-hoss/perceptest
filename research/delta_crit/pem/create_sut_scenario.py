@@ -38,10 +38,21 @@ def create_sut_crime_config(
 
     apply_pem_to_crime_config(crime_config=sut_config, pem=pem_config)
 
+    sut_config.scenario = update_metadata(
+        scenario=sut_config.scenario, original_scenario_name=sut_config.general.name_scenario
+    )
     sut_config.general = crime_paths_factory_for_delta_crit_example_data(
         scenario_name=f"{sut_config.general.name_scenario}_{sut_suffix}"
     )
+
     return sut_config
+
+
+def update_metadata(scenario: Scenario, original_scenario_name: str) -> Scenario:
+    scenario.author = "Michael Hoss"
+    scenario.affiliation = "Spleenlab GmbH"
+    scenario.source = original_scenario_name
+    return scenario
 
 
 def apply_pem_to_crime_config(crime_config: CriMeConfiguration, pem: PemConfig) -> None:
