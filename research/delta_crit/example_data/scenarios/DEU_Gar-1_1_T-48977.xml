@@ -1,18 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<commonRoad timeStepSize="0.1" commonRoadVersion="2020a" author="Michael Hoss, Vanessa Bui, Markus Koschi, Sebastian Lutz, Surabhi Verma" affiliation="Spleenlab GmbH, Technical University of Munich, Germany" source="Bing Maps" benchmarkID="DEU_Gar-1_1_T-1" date="2025-01-28">
+<commonRoad timeStepSize="0.1" commonRoadVersion="2020a" author="Michael Hoss, Vanessa Bui, Markus Koschi, Sebastian Lutz, Surabhi Verma" affiliation="Spleenlab GmbH, Technical University of Munich, Germany" source="Disturbed version of original scenario DEU_Gar-1_1_T-1" benchmarkID="DEU_Gar-1_1_T-48977" date="2025-02-20">
   <location>
     <geoNameId>-999</geoNameId>
     <gpsLatitude>999</gpsLatitude>
     <gpsLongitude>999</gpsLongitude>
   </location>
   <scenarioTags>
+    <lane_following/>
     <speed_limit/>
+    <comfort/>
+    <rural/>
+    <no_oncoming_traffic/>
     <merging_lanes/>
     <multi_lane/>
-    <comfort/>
-    <no_oncoming_traffic/>
-    <rural/>
-    <lane_following/>
   </scenarioTags>
   <lanelet id="47238">
     <leftBound>
@@ -93,7 +93,7 @@
     </rightBound>
     <successor ref="47242"/>
     <adjacentLeft ref="47240" drivingDir="same"/>
-    <laneletType>unknown</laneletType>
+    <laneletType>country</laneletType>
   </lanelet>
   <lanelet id="47240">
     <leftBound>
@@ -158,7 +158,7 @@
     </rightBound>
     <successor ref="47244"/>
     <adjacentRight ref="47238" drivingDir="same"/>
-    <laneletType>unknown</laneletType>
+    <laneletType>country</laneletType>
   </lanelet>
   <lanelet id="47242">
     <leftBound>
@@ -264,7 +264,7 @@
     <predecessor ref="47238"/>
     <successor ref="47246"/>
     <adjacentLeft ref="47244" drivingDir="same"/>
-    <laneletType>unknown</laneletType>
+    <laneletType>country</laneletType>
   </lanelet>
   <lanelet id="47244">
     <leftBound>
@@ -362,7 +362,7 @@
     <predecessor ref="47240"/>
     <successor ref="47246"/>
     <adjacentRight ref="47242" drivingDir="same"/>
-    <laneletType>unknown</laneletType>
+    <laneletType>country</laneletType>
   </lanelet>
   <lanelet id="47246">
     <leftBound>
@@ -539,7 +539,7 @@
     </rightBound>
     <predecessor ref="47242"/>
     <predecessor ref="47244"/>
-    <laneletType>unknown</laneletType>
+    <laneletType>country</laneletType>
   </lanelet>
   <dynamicObstacle id="200">
     <type>car</type>
@@ -1199,8 +1199,8 @@
         </time>
         <position>
           <point>
-            <x>24.2065</x>
-            <y>-2.3569</y>
+            <x>27.2065</x>
+            <y>-2.3404</y>
           </point>
         </position>
         <velocity>
@@ -1219,8 +1219,8 @@
         </time>
         <position>
           <point>
-            <x>25.2381</x>
-            <y>-2.1170</y>
+            <x>28.2369</x>
+            <y>-2.0323</y>
           </point>
         </position>
         <velocity>
@@ -1239,8 +1239,8 @@
         </time>
         <position>
           <point>
-            <x>26.2697</x>
-            <y>-1.8770</y>
+            <x>29.2653</x>
+            <y>-1.7146</y>
           </point>
         </position>
         <velocity>
@@ -1259,8 +1259,8 @@
         </time>
         <position>
           <point>
-            <x>27.3013</x>
-            <y>-1.6371</y>
+            <x>30.2907</x>
+            <y>-1.3858</y>
           </point>
         </position>
         <velocity>
@@ -1279,8 +1279,8 @@
         </time>
         <position>
           <point>
-            <x>28.3330</x>
-            <y>-1.3971</y>
+            <x>31.3120</x>
+            <y>-1.0433</y>
           </point>
         </position>
         <velocity>
@@ -1299,8 +1299,8 @@
         </time>
         <position>
           <point>
-            <x>29.3645</x>
-            <y>-1.1572</y>
+            <x>32.3270</x>
+            <y>-0.6843</y>
           </point>
         </position>
         <velocity>

@@ -2,8 +2,7 @@ import os
 
 import commonroad_crime.utility.visualization as crime_vis
 from commonroad.scenario.scenario import Scenario  # type: ignore
-
-from research.delta_crit.crime_utils.crime_utils import get_crime_config
+from commonroad_crime.data_structure.crime_interface import CriMeConfiguration
 
 
 def open_figure() -> None:
@@ -69,24 +68,24 @@ def close_current_fig() -> None:
 
 
 def save_scenario_figure_at_time_steps(
-    config_name: str,
+    crime_config: CriMeConfiguration,
     workdir: str,
     time_steps: list[int],
     print_obstacle_ids: bool = False,
     print_lanelet_ids: bool = False,
+    file_format: str = "png",  # ["png", "pdf", "svg"]
 ) -> str:
-    original_config = get_crime_config(scenario_id=config_name, custom_workdir=workdir)
     crime_vis.plt.figure(figsize=(12, 8))
     render_time_steps_into_figure(
-        original_config.scenario,
-        plot_limit=original_config.debug.plot_limits,
+        crime_config.scenario,
+        plot_limit=crime_config.debug.plot_limits,
         time_steps=time_steps,
         print_obstacle_ids=print_obstacle_ids,
         print_lanelet_ids=print_lanelet_ids,
     )
 
     timesteps_for_path: str = "_".join([str(time_step) for time_step in time_steps])
-    filename_wo_suffix = f"{config_name}_at_timesteps_{timesteps_for_path}"
-    figure_path: str = save_current_fig(workdir=workdir, filename_wo_suffix=filename_wo_suffix)
+    filename_wo_suffix = f"{crime_config.scenario.scenario_id}_at_timesteps_{timesteps_for_path}"
+    figure_path: str = save_current_fig(workdir=workdir, filename_wo_suffix=filename_wo_suffix, suffix=file_format)
     crime_vis.plt.close()
     return figure_path
