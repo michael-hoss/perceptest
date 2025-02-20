@@ -1,18 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<commonRoad timeStepSize="0.1" commonRoadVersion="2020a" author="Michael Hoss, Vanessa Bui, Markus Koschi, Sebastian Lutz, Surabhi Verma" affiliation="Spleenlab GmbH, Technical University of Munich, Germany" source="Disturbed original scenario DEU_Gar-1_1_T-1" benchmarkID="DEU_Gar-1_1_T-1" date="2025-02-10">
+<commonRoad timeStepSize="0.1" commonRoadVersion="2020a" author="Michael Hoss, Vanessa Bui, Markus Koschi, Sebastian Lutz, Surabhi Verma" affiliation="Spleenlab GmbH, Technical University of Munich, Germany" source="Disturbed version of original scenario DEU_Gar-1_1_T-1" benchmarkID="DEU_Gar-1_1_T-48977" date="2025-02-20">
   <location>
     <geoNameId>-999</geoNameId>
     <gpsLatitude>999</gpsLatitude>
     <gpsLongitude>999</gpsLongitude>
   </location>
   <scenarioTags>
-    <comfort/>
     <lane_following/>
     <speed_limit/>
-    <merging_lanes/>
-    <no_oncoming_traffic/>
-    <multi_lane/>
+    <comfort/>
     <rural/>
+    <no_oncoming_traffic/>
+    <merging_lanes/>
+    <multi_lane/>
   </scenarioTags>
   <lanelet id="47238">
     <leftBound>

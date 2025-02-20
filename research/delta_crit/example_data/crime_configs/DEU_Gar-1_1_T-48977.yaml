@@ -2,13 +2,12 @@ general:
   # Convention of DeltaCrit code: when a config file is under example_data/crime_configs,
   # then the paths are automatically (re)computed to the absolute paths of where the code
   # is currently at. 
-
-  # path_scenarios: /home/mhoss/git/perceptest/research/delta_crit/example_data/scenarios
-  # path_scenarios_batch: /home/mhoss/git/perceptest/research/delta_crit/example_data/scenarios/batch
-  # path_output_abs: /home/mhoss/git/perceptest/research/delta_crit/example_data/crime_outputs
-  # path_logs: /home/mhoss/git/perceptest/research/delta_crit/example_data/crime_outputs/logs
+  # path_scenarios: /tmp/delta_crit/20250220_103618.611015_52738b00
+  # path_scenarios_batch: /tmp/delta_crit/20250220_103618.611015_52738b00
+  # path_output_abs: /tmp/delta_crit/20250220_103618.611015_52738b00
+  # path_logs: /tmp/delta_crit/20250220_103618.611015_52738b00
   # path_icons: /home/mhoss/git/perceptest/third_party/commonroad-crime/docs/icons
-  name_scenario: DEU_Gar-1_1_T-1_sut
+  name_scenario: DEU_Gar-1_1_T-48977
 vehicle:
   width: null
   length: null
@@ -42,7 +41,11 @@ vehicle:
     reference_point: rear
 debug:
   save_plots: true
-  plot_limits: null
+  plot_limits:
+  - -20.0
+  - 50.0
+  - -10.0
+  - 10.0
   draw_visualization: false
   draw_icons: true
 time:
