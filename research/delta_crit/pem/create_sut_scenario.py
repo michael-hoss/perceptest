@@ -22,9 +22,7 @@ from research.delta_crit.pem.pem_config import (
 )
 
 
-def create_sut_crime_config_files(
-    workdir: str, scenario_id: str, pem_config: str | PemConfig, sut_suffix: str = "sut"
-) -> str:
+def create_sut_crime_config_files(workdir: str, scenario_id: str, pem_config: str | PemConfig) -> str:
     """All files are read from workdir and written to workdir."""
 
     pem_config_parsed: PemConfig = pem_config_from_path_or_instance(pem_config=pem_config)
@@ -32,8 +30,8 @@ def create_sut_crime_config_files(
 
     sut_config = create_sut_crime_config(crime_config=crime_config, pem_config=pem_config_parsed)
 
-    output_dir: str = write_crime_config_deep(config=sut_config, output_dir=workdir)
-    return output_dir
+    write_crime_config_deep(config=sut_config, output_dir=workdir)
+    return str(sut_config.scenario.scenario_id)
 
 
 def create_sut_crime_config(crime_config: CriMeConfiguration, pem_config: PemConfig) -> CriMeConfiguration:
@@ -155,16 +153,15 @@ def main() -> None:
     parser.add_argument("--workdir", type=str, help="Directory for reading and writing all files")
     parser.add_argument("--scenario_id", type=str, help="Original CommonRoad scenario ID")
     parser.add_argument("--pem_config", type=str, help="Path to PEM config json")
-    parser.add_argument("--sut_suffix", type=str, help="Suffix of the newly created scenario")
 
     args = parser.parse_args()
 
-    create_sut_crime_config_files(
+    sut_scenario_id: str = create_sut_crime_config_files(
         workdir=args.workdir,
         scenario_id=args.scenario_id,
         pem_config=args.pem_config,
-        sut_suffix=args.sut_suffix,
     )
+    print(f"Created files for new scenario ID {sut_scenario_id}")
 
 
 if __name__ == "__main__":

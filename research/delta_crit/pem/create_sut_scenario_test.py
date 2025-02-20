@@ -162,18 +162,15 @@ def test_create_sut_scenario_side_targets(
 def test_create_sut_scenario_files(scenario_id_garching: str, geometrical_pem_config_path: str) -> None:
     workdir: str = set_up_populated_workdir(example_scenario_id=scenario_id_garching)
 
-    sut_suffix = "unittest"
-    sut_scenario_id: str = f"{scenario_id_garching}_{sut_suffix}"
-    expected_scenario_path: str = os.path.join(workdir, f"{sut_scenario_id}.xml")
-    expected_crime_config_path: str = os.path.join(workdir, f"{sut_scenario_id}.yaml")
-
     # Function under test
-    create_sut_crime_config_files(
+    sut_scenario_id: str = create_sut_crime_config_files(
         workdir=workdir,
         scenario_id=scenario_id_garching,
         pem_config=geometrical_pem_config_path,
-        sut_suffix=sut_suffix,
     )
+
+    expected_scenario_path: str = os.path.join(workdir, f"{sut_scenario_id}.xml")
+    expected_crime_config_path: str = os.path.join(workdir, f"{sut_scenario_id}.yaml")
 
     # Assert files are present
     assert os.path.isfile(expected_scenario_path)
