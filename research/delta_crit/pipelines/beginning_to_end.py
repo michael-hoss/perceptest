@@ -6,7 +6,7 @@ from commonroad_crime.measure import TTC  # type: ignore
 from research.delta_crit.crime_utils.crime_utils import get_crime_config
 from research.delta_crit.crime_utils.vis_utils import (
     close_current_fig,
-    save_criticality_curve,
+    save_delta_criticality_curve,
     save_scenario_figure_at_time_steps,
 )
 from research.delta_crit.delta_crime.delta_crime import compute_delta
@@ -78,17 +78,14 @@ def main() -> None:
     res_interface.save_to_file(output_dir=workdir)
     sut_interface.save_to_file(output_dir=workdir)
 
-    save_criticality_curve(crime_interface=res_interface, workdir=workdir)
-    save_criticality_curve(crime_interface=sut_interface, workdir=workdir)
-
-    # See also
+    # For more plotting opportunities, see also
     # https://commonroad.in.tum.de/tutorials/commonroad-crime-more
 
     # Analyze the delta criticality
     delta_dict = compute_delta(sut=sut_interface, res=res_interface)
     delta_dict
 
-    # TODO this would also be a nice delta!!
+    save_delta_criticality_curve(res_interface=res_interface, sut_interface=sut_interface, workdir=workdir)
 
 
 if __name__ == "__main__":

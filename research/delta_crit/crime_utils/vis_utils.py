@@ -94,19 +94,21 @@ def save_scenario_figure_at_time_steps(
     return figure_path
 
 
-def save_criticality_curve(crime_interface: CriMeInterface, workdir: str) -> str:
-    file_name_wo_suffix: str = f"{crime_interface.config.scenario.scenario_id}_crit_curve"
-    plot_criticality_curve(crime_interface)
+def save_delta_criticality_curve(res_interface: CriMeInterface, sut_interface: CriMeInterface, workdir: str) -> str:
+    file_name_wo_suffix: str = f"{res_interface.config.scenario.scenario_id}_delta_crit_curve"
+    plot_delta_criticality_curve(res_interface, sut_interface)
     figure_path = save_current_fig(workdir=workdir, filename_wo_suffix=file_name_wo_suffix, suffix="png")
     close_current_fig()
     return figure_path
 
 
-def plot_criticality_curve(crime: CriMeInterface, nr_per_row: int = 2, flag_latex: bool = True):
+def plot_delta_criticality_curve(
+    res_crime: CriMeInterface, sut_crime: CriMeInterface, nr_per_row: int = 2, flag_latex: bool = True
+):
     if flag_latex:
         configure_latex()
-    if crime.measures is not None and crime.time_start is not None and crime.time_end is not None:
-        nr_metrics = len(crime.measures)
+    if res_crime.measures is not None and res_crime.time_start is not None and res_crime.time_end is not None:
+        nr_metrics = len(res_crime.measures)
         if nr_metrics > nr_per_row:
             nr_column = nr_per_row
             nr_row = math.ceil(nr_metrics / nr_column)
@@ -116,7 +118,7 @@ def plot_criticality_curve(crime: CriMeInterface, nr_per_row: int = 2, flag_late
         fig, axs = crime_vis.plt.subplots(nr_row, nr_column, figsize=(7.5 * nr_column, 5 * nr_row))
 
         count_row, count_column = 0, 0
-        for measure in crime.measures:
+        for measure in res_crime.measures:
             if nr_metrics == 1:
                 ax = axs
             elif nr_row == 1:
@@ -124,7 +126,7 @@ def plot_criticality_curve(crime: CriMeInterface, nr_per_row: int = 2, flag_late
             else:
                 ax = axs[count_row, count_column]
 
-            plot_measure(measure, crime, ax)
+            plot_measure(measure, res_crime, sut_crime, ax)
 
             count_column += 1
             if count_column > nr_per_row - 1:
@@ -133,23 +135,32 @@ def plot_criticality_curve(crime: CriMeInterface, nr_per_row: int = 2, flag_late
         crime_vis.plt.show()
 
 
-def plot_measure(measure, crime, ax) -> None:
-    criticality_list_list: list = []  # y axis values
+def plot_measure(measure, res_crime, sut_crime, ax) -> None:
+    res_criticality_list_list: list = []  # y axis values reference system
+    sut_criticality_list_list: list = []  # y axis values system under test
     time_list: list = []  # x axis values
 
-    for time_step in range(crime.time_start, crime.time_end + 1):
-        if measure.measure_name.value in crime.criticality_dict[time_step]:
-            criticality_list_list.append(crime.criticality_dict[time_step][measure.measure_name.value])
+    for time_step in range(res_crime.time_start, res_crime.time_end + 1):
+        if measure.measure_name.value in res_crime.criticality_dict[time_step]:
+            res_criticality_list_list.append(res_crime.criticality_dict[time_step][measure.measure_name.value])
+            sut_criticality_list_list.append(sut_crime.criticality_dict[time_step][measure.measure_name.value])
             time_list.append(time_step)
-    criticality_list: np.ndarray = np.array(criticality_list_list)
+    res_criticality_list: np.ndarray = np.array(res_criticality_list_list)
+    sut_criticality_list: np.ndarray = np.array(sut_criticality_list_list)
 
-    min_value, max_value = get_min_max_values(criticality_list)
-    criticality_list_clean = clean_criticality_list(criticality_list, min_value, max_value)
+    res_min_value, res_max_value = get_min_max_values(res_criticality_list)
+    sut_min_value, sut_max_value = get_min_max_values(sut_criticality_list)
+    res_criticality_list_clean = clean_criticality_list(res_criticality_list, res_min_value, res_max_value)
+    sut_criticality_list_clean = clean_criticality_list(sut_criticality_list, sut_min_value, sut_max_value)
 
-    # Do the actual plot!
-    ax.plot(time_list, criticality_list_clean)
+    # Do the actual plots!
+    ax.plot(time_list, res_criticality_list_clean)
+    ax.plot(time_list, sut_criticality_list_clean)
 
-    customize_y_axis_ticks_and_labels(min_value, max_value, criticality_list)
+    min_value = min(res_min_value, sut_min_value)
+    max_value = max(res_max_value, sut_max_value)
+    criticality_lists = [res_criticality_list, sut_criticality_list]
+    customize_y_axis_ticks_and_labels(min_value, max_value, criticality_lists)
 
     ax.axis(xmin=time_list[0], xmax=time_list[-1])
     ax.title.set_text(measure.measure_name.value)
@@ -158,20 +169,21 @@ def plot_measure(measure, crime, ax) -> None:
         ax.invert_yaxis()
 
 
-def customize_y_axis_ticks_and_labels(min_value, max_value, criticality_list) -> None:
+def customize_y_axis_ticks_and_labels(min_value, max_value, criticality_lists) -> None:
     ticks, _ = crime_vis.plt.yticks()
     # Update ticks and labels
     new_ticks = [tick for tick in ticks if min_value <= tick <= max_value]  # Keep ticks within the finite range
     new_labels = ["{:.4g}".format(tick) for tick in new_ticks]  # Limit to 4 significant digits
 
     # Check for infinities and add custom labels
-    if np.any(np.isposinf(criticality_list)):
-        new_ticks.append(max_value)  # Place at max finite value or a predefined position
-        new_labels.append("inf")
+    for criticality_list in criticality_lists:
+        if np.any(np.isposinf(criticality_list)):
+            new_ticks.append(max_value)  # Place at max finite value or a predefined position
+            new_labels.append("inf")
 
-    if np.any(np.isneginf(criticality_list)):
-        new_ticks = [min_value] + new_ticks  # Place at min finite value or a predefined position
-        new_labels = ["-inf"] + new_labels
+        if np.any(np.isneginf(criticality_list)):
+            new_ticks = [min_value] + new_ticks  # Place at min finite value or a predefined position
+            new_labels = ["-inf"] + new_labels
 
     # Apply the updated ticks and labels to the plot
     crime_vis.plt.yticks(new_ticks, new_labels)
