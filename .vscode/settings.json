@@ -33,6 +33,8 @@
     "**/*.egg-info": true
   },
 
+  "debug.inlineValues": "off", // on, off or auto.
+
   // Pylance somehow only considers PYTHONPATH if it is set in the bashrc.
   // Pylance does not consider PYTHONPATH in the activation hook of my conda env.
   // Thus, we need to specify additional pythonpaths here.
