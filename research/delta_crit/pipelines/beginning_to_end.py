@@ -5,6 +5,7 @@ from commonroad_crime.measure import TTC  # type: ignore
 
 from research.delta_crit.crime_utils.crime_utils import get_crime_config
 from research.delta_crit.crime_utils.vis_utils import save_scenario_figure_at_time_steps
+from research.delta_crit.delta_crime.delta_crime import compute_delta
 from research.delta_crit.pem.create_sut_scenario import create_sut_crime_config_files
 from research.delta_crit.pem.pem_config import PemConfig, Perror, pem_config_to_json
 from research.delta_crit.pipeline_utils.dir_utils import set_up_populated_workdir
@@ -61,13 +62,17 @@ def main() -> None:
 
     # Save criticality results to files
     # TODO: make sense of these dots in the visualization
-    res_interface.visualize(time_step=int(0.5 * (start_toi + end_toi)))
-    sut_interface.visualize(time_step=int(0.5 * (start_toi + end_toi)))
+    example_time_step = int(0.5 * (start_toi + end_toi))
+    example_time_step = start_toi
+    res_interface.visualize(time_step=example_time_step)
+    sut_interface.visualize(time_step=example_time_step)
 
     res_interface.save_to_file(output_dir=workdir)
     sut_interface.save_to_file(output_dir=workdir)
 
     # TODO compute delta of criticalities
+    delta_dict = compute_delta(sut=sut_interface, res=res_interface)
+    delta_dict
 
 
 if __name__ == "__main__":
