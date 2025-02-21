@@ -18,6 +18,7 @@ def render_time_steps_into_figure(
     time_steps: list[int],
     print_obstacle_ids: bool = False,
     print_lanelet_ids: bool = False,
+    ego_id: int | None = None,
 ):
     rnd = crime_vis.MPRenderer(plot_limits=plot_limit)
 
@@ -39,15 +40,17 @@ def render_time_steps_into_figure(
         plot_traj_begin_index = plot_traj_begin_time_step - obs.prediction.initial_time_step
         plot_traj_end_index = plot_traj_end_time_step - obs.prediction.initial_time_step
 
+        color = crime_vis.TUMcolor.TUMblue if obs.obstacle_id != ego_id else crime_vis.TUMcolor.TUMdarkred
+
         crime_vis.draw_state_list(
             rnd,
             obs.prediction.trajectory.state_list[plot_traj_begin_index : plot_traj_end_index + 1],
-            color=crime_vis.TUMcolor.TUMblue,
+            color=color,
             linewidth=5,
         )
         for ts in time_steps:
             if plot_traj_begin_time_step - 1 <= ts <= plot_traj_end_time_step:
-                crime_vis.draw_dyn_vehicle_shape(rnd, obs, ts, color=crime_vis.TUMcolor.TUMblue)
+                crime_vis.draw_dyn_vehicle_shape(rnd, obs, ts, color=color)
 
 
 def show_figure() -> None:
@@ -85,6 +88,7 @@ def save_scenario_figure_at_time_steps(
         time_steps=time_steps,
         print_obstacle_ids=print_obstacle_ids,
         print_lanelet_ids=print_lanelet_ids,
+        ego_id=crime_config.vehicle.ego_id,
     )
 
     timesteps_for_path: str = "_".join([str(time_step) for time_step in time_steps])
