@@ -1,7 +1,8 @@
 import os
 
+from commonroad_crime.data_structure.base import CriMeBase
 from commonroad_crime.data_structure.crime_interface import CriMeInterface  # type: ignore
-from commonroad_crime.measure import TTC  # type: ignore
+from commonroad_crime.measure import BTN, CI, DA, HW, PF, STN, ALongReq, TTCStar  # type: ignore
 
 from research.delta_crit.crime_utils.crime_utils import get_crime_config
 from research.delta_crit.crime_utils.vis_utils import (
@@ -63,8 +64,26 @@ def main() -> None:
     res_interface = CriMeInterface(res_config)
     sut_interface = CriMeInterface(sut_config)
 
-    res_interface.evaluate_scenario([TTC], time_start=0, time_end=20)
-    sut_interface.evaluate_scenario([TTC], time_start=0, time_end=20)
+    used_measures: list[CriMeBase] = [
+        CI,
+        DA,
+        HW,
+        # TTC,
+        TTCStar,
+        # TTR,
+        ALongReq,
+        # LongJ,
+        BTN,
+        STN,
+        # P_MC makes problems for SUT
+        PF,
+    ]
+    # used_measures = [TTC]
+    # res_interface.evaluate_scenario(used_measures, time_start=8, time_end=17)
+    sut_interface.evaluate_scenario(used_measures, time_start=8, time_end=17)
+
+    res_interface.save_to_file(output_dir=workdir)
+    sut_interface.save_to_file(output_dir=workdir)
 
     # Save criticality results to files
     example_time_step = int(0.5 * (start_toi + end_toi))
@@ -75,9 +94,6 @@ def main() -> None:
     sut_interface.visualize(time_step=example_time_step)
     close_current_fig()
 
-    res_interface.save_to_file(output_dir=workdir)
-    sut_interface.save_to_file(output_dir=workdir)
-
     # For more plotting opportunities, see also
     # https://commonroad.in.tum.de/tutorials/commonroad-crime-more
 
@@ -86,6 +102,7 @@ def main() -> None:
     delta_dict
 
     save_delta_criticality_curve(res_interface=res_interface, sut_interface=sut_interface, workdir=workdir)
+    pass
 
 
 if __name__ == "__main__":
