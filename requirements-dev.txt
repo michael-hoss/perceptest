@@ -7,7 +7,7 @@
 # manually by installing both this file and the respetive requirements.txt file.
 
 # Development tools
-ruff==0.9.4
+ruff==0.11.2
 debugpy==1.8.12
 pytest==8.3.4
 mypy==1.14.1
