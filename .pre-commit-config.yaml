@@ -9,7 +9,7 @@ repos:
       - id: end-of-file-fixer
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.8.3
+    rev: v0.11.4
     hooks:
       # Run the linter.
       - id: ruff
@@ -23,7 +23,7 @@ repos:
     hooks:
       - id: bazel-buildifier
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.13.0  # this should correspond to the mypy version in requirements-dev.txt
+    rev: v1.15.0  # this should correspond to the mypy version in requirements-dev.txt
     hooks:
       - id: mypy
         types: [python]
