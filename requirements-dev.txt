@@ -7,14 +7,14 @@
 # manually by installing both this file and the respetive requirements.txt file.
 
 # Development tools
-ruff==0.9.4
+ruff==0.11.2
 debugpy==1.8.12
 pytest==8.3.4
-mypy==1.14.1
-pre-commit==4.1.0
+mypy==1.15.0
+pre-commit==4.2.0
 
 # Requirements for development utilities and tests
-python-dotenv==1.0.1
+python-dotenv==1.1.0
 requests==2.32.3
 
 # Library stubs for type checking
