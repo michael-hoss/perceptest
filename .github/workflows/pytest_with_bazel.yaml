@@ -57,7 +57,6 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
           submodules: true
           token: ${{ secrets.CHECKOUT_PRIVATE_RESEARCH_FOR_PERCEPTEST }}
-      - uses: bazelbuild/setup-bazelisk@v3
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
@@ -70,24 +69,12 @@ jobs:
           pip install -r requirements.txt
           cd ../..
           pip install -e third_party/commonroad-crime
-      - name: Do perceptest-specific preparations
-        run: |
-          cp .env_bazel_test_default .env
-      - name: Bazel build
-        run: |
-          bazel build //...
       - name: Test with bazel and pytest
         run: |
           # 
           cd research/delta_crit
           pytest
           cd ../..
-
-          # leave out nuscenes things
-          # bazel test //... --test_output=all -- \
-          #   -//research/v2x_eval/... \
-          #   -//inputs/artery/... \
-          #   -//inputs/nuscenes/... 
 
   v2x_eval:
     if: github.event.pull_request.draft == false
