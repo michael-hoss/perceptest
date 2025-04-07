@@ -69,12 +69,10 @@ jobs:
           pip install -r requirements.txt
           cd ../..
           pip install -e third_party/commonroad-crime
-      - name: Test with bazel and pytest
+      - name: pytest for delta_crit
         run: |
-          # 
           cd research/delta_crit
           pytest
-          cd ../..
 
   v2x_eval:
     if: github.event.pull_request.draft == false
