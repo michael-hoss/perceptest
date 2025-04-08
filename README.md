@@ -12,8 +12,6 @@ Test the object-based environment perception of automated driving systems.
     - `nuscenes`: helpers for the nuScenes 3D object tracking evaluation
 - `research`: code for specific academic publications
     - `v2x_eval`: Evaluate own object tracking data on nuscenes tracking metrics
-    - `delta_crit`: (WIP) Compare criticality metrics between reference and tested object lists to infer perception safety
-    - `metric_bench`: (TBD) Analyze how well certain metrics can make statements about the perception quality
 - `third_party`: third-party software as git submodules
 
 ## Run the code on your own
